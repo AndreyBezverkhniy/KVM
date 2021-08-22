@@ -228,13 +228,13 @@ const vector<string> &operators, int &result) {
 // gets values of expressions in brackets
 // then impliments two-stack-algorithm to math expression without brackets
 // saves result to corresponding argument-variable
-bool calculateExpression(vector<Literal> &program, int &literalPoint,
+bool calculateExpression(vector<Literal> &program, int &literalPointer,
 int &result) {
 	// preparing expression for algorithm: separating operands from operators
 	// and calculating expresions in brackets
 	vector<int> operands;
 	vector<string> operators;
-	if (!parseExpression(program,literalPoint,operands,operators)) {
+	if (!parseExpression(program,literalPointer,operands,operators)) {
 		return false;
 	}
 	if (operands.size() == 1) {
@@ -249,8 +249,8 @@ int &result) {
 }
 
 // handles assignment instruction
-bool handleAssignInstruction(vector<Literal> &program, int &literalPoint) {
-	string variableName = program[literalPoint].getValue();
+bool handleAssignInstruction(vector<Literal> &program, int &literalPointer) {
+	string variableName = program[literalPointer].getValue();
 	if (isNumber(variableName)) {
 		cout << "Can not assign new value to a number: " << variableName
 		<< endl;
@@ -260,21 +260,21 @@ bool handleAssignInstruction(vector<Literal> &program, int &literalPoint) {
 		cout << "Variable " << variableName << " was not declared" << endl;
 		return false;
 	}
-	if (program[literalPoint + 1] != Literal("=",SIGN_LITERAL)) {
+	if (program[literalPointer + 1] != Literal("=",SIGN_LITERAL)) {
 		cout << "Assignment pattern expects operator '=' after variable name"
 		<< endl;
 		return false;
 	}
-	literalPoint += 2; // "name ="
+	literalPointer += 2; // "name ="
 	int result;
-	if (!calculateExpression(program, literalPoint, result)) {
+	if (!calculateExpression(program, literalPointer, result)) {
 		return false;
 	}
-	if (program[literalPoint] != Literal(";",SIGN_LITERAL)) {
+	if (program[literalPointer] != Literal(";",SIGN_LITERAL)) {
 		cout << "Template define expects ';' at the end" << endl;
 		return false;
 	}
-	literalPoint += 1; // ";"
+	literalPointer += 1; // ";"
 	if (variableName == "CON") { // reserved name for console working
 		cout << "CON: " << result << endl;
 		return true;
@@ -285,17 +285,32 @@ bool handleAssignInstruction(vector<Literal> &program, int &literalPoint) {
 
 // handles variable declaration instruction
 bool handleVarInstruction(vector<Literal> &program, int &literalPointer, string &variableName) {
-	if (program[literalPointer+1].getType() != WORD_LITERAL) {
-		cout << "Template var meets incorrect format of variable name" << endl;
-		return false;
+	literalPointer++; // WORD(var)
+	for (;;) {
+		if (program[literalPointer].getType() != WORD_LITERAL) {
+			cout << "Template var meets incorrect format of variable name" << endl;
+			return false;
+		}
+		variableName = program[literalPointer].getValue();
+		declareVariable(variableName);
+		literalPointer++; // WORD(name)
+		if (program[literalPointer] == Literal("=",SIGN_LITERAL)) {
+			literalPointer++; // SIGN(=)
+			int value;
+			calculateExpression(program, literalPointer, value);
+			assignVariable(variableName, value);
+		}
+		if (program[literalPointer] == Literal(";",SIGN_LITERAL)) {
+			literalPointer++; // SIGN(;)
+			break;
+		}
+		if (program[literalPointer] != Literal(",",SIGN_LITERAL)) {
+			cout << "Variable declaration pattern expects "
+			<< "';' or ',' after name " << variableName << endl;
+			return false;
+		}
+		literalPointer++; // SIGN(,)
 	}
-	if (program[literalPointer+2] != Literal(";",SIGN_LITERAL)) {
-		cout << "Template var expects ';' at the end" << endl;
-		return false;
-	}
-	variableName = program[literalPointer+1].getValue();
-	declareVariable(variableName);
-	literalPointer += 3; // WORD(var) WORD(variableName) SIGN(;)
 	return true;
 }
 

@@ -1,6 +1,4 @@
-var a,b;
-a=10;
-b=20;
+var a=10,b=20;
 CON=a;
 CON=b;
 
