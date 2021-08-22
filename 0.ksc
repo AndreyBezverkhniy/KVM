@@ -1,26 +1,6 @@
-CON=9/9+5%3*3*4-(6-1)*(7-1);
-
-var a; // this is comment
-/*this
-is multiline
-comment*/
-var b;
-var c;
-
-{a=CON;
-b=CON;
-}
-
-var arg1;
-var arg2;
-var result;
-arg1=a;
-arg2=b;
-import "0 func.ksc";
-arg1=result;
-arg2=1000;
-import "0 func.ksc";
-c=result;
-
-CON=c;
+var a,b;
+a=10;
+b=20;
+CON=a;
+CON=b;
 

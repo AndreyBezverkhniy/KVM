@@ -82,12 +82,20 @@ class Literal{
 			value.clear();
 			type = INLINE_COMMENT_LITERAL;
 			return true;
-		} else if (value == "/" && character == '*') {
+		}
+		if (value == "/" && character == '*') {
 			value.clear();
 			type = MULTILINE_COMMENT_LITERAL;
 			return true;
 		}
-		state = COMPLITED_LITERAL_STATE; // signs contains only character
+		if ( ((value == "=" || value == "!" || value == ">" || value == "<")
+		&& character == '=') || (value == "|" && character == '|') ||
+		(value == "&" && character == '&') ) {
+			value += character;
+			state = COMPLITED_LITERAL_STATE;
+			return true;
+		}
+		state = COMPLITED_LITERAL_STATE;
 		return false;
 	}
 

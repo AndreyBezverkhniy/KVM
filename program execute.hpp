@@ -4,10 +4,15 @@
 #include <string>
 #include <vector>
 #include <stack>
+#include <set>
 #include "literal.hpp"
 #include "program memory.hpp"
 
 using namespace std;
+
+bool calculateExpression(vector<Literal> &program, int &literalPointer, int &result);
+
+bool executeBlock(vector<Literal> &program, int &literalPointer);
 
 // chech if word represents unsigned int number
 bool isNumber(string word) {
@@ -51,8 +56,6 @@ bool getWordValue(string word, int &result) {
 	return true;
 }
 
-bool calculateExpression(vector<Literal> &program, int &literalPointer, int &result);
-
 bool getOperand(vector<Literal> &program, int &literalPointer, int &operand) {
 	if (program[literalPointer].getType() == WORD_LITERAL) {
 		// number or variable
@@ -80,12 +83,66 @@ bool getOperand(vector<Literal> &program, int &literalPointer, int &operand) {
 	return false;
 }
 
-bool getOperator(vector<Literal> &program, int &literalPointer, char &math_operator) {
+int getOperatorPriority(string math_operator) {
+	if (math_operator == "||") {
+		return 1;
+	}
+	if (math_operator == "&&") {
+		return 2;
+	}
+	if (math_operator == "==" || math_operator == "!=" || math_operator == ">="
+	|| math_operator == "<=" || math_operator == ">" || math_operator == "<") {
+		return 3;
+	}
+	if (math_operator == "+" || math_operator == "-") {
+		return 4;
+	}
+	if (math_operator == "*" || math_operator == "/" || math_operator == "%") {
+		return 5;
+	}
+	return 0;
+}
+
+bool calculate(int operand1, int operand2, string math_operator, int &result) {
+	if (false) {
+		//just to align elseif
+	} else if (math_operator == "||") {
+		result = operand1 || operand2;
+	} else if (math_operator == "&&") {
+		result = operand1 && operand2;
+	} else if (math_operator == "==") {
+		result = operand1 == operand2;
+	} else if (math_operator == "!=") {
+		result = operand1 != operand2;
+	} else if (math_operator == ">=") {
+		result = operand1 >= operand2;
+	} else if (math_operator == "<=") {
+		result = operand1 <= operand2;
+	} else if (math_operator == ">") {
+		result = operand1 > operand2;
+	} else if (math_operator == "<") {
+		result = operand1 < operand2;
+	} else if (math_operator == "+") {
+		result = operand1 + operand2;
+	} else if (math_operator == "-") {
+		result = operand1 - operand2;
+	} else if (math_operator == "*") {
+		result = operand1 * operand2;
+	} else if (math_operator == "/") {
+		result = operand1 / operand2;
+	} else if (math_operator == "%") {
+		result = operand1 % operand2;
+	} else {
+		return false;
+	}
+	return true;
+}
+
+bool getOperator(vector<Literal> &program, int &literalPointer, string &math_operator) {
 	if (program[literalPointer].getType() == SIGN_LITERAL){
 		string sign = program[literalPointer].getValue();
-		if (sign == "+" || sign == "-" || sign == "*" || sign == "/"
-		|| sign == "%") {
-			math_operator = sign[0];
+		if (getOperatorPriority(sign) != 0) {
+			math_operator = sign;
 			literalPointer++;
 			return true;
 		}
@@ -96,12 +153,12 @@ bool getOperator(vector<Literal> &program, int &literalPointer, char &math_opera
 // calculates expressions in brackets, then separates simplified expression to
 // operators (ints) and operands
 bool parseExpression(vector<Literal> &program, int &literalPointer,
-vector<int> &operands, vector<char> &operators) {
+vector<int> &operands, vector<string> &operators) {
 	// expression contain math signs, correct bracket sequences, numbers,
-	// variables. ends by ';',')' signs and if vector ends
+	// variables. ends by ';', ')', ',' signs and if vector ends
 	for(;;){
 		int operand;
-		char math_operator;
+		string math_operator;
 		// if operand is bracket with expression inside, it calculates and
 		// result is used as operand
 		if (!getOperand(program, literalPointer, operand)) {
@@ -111,9 +168,10 @@ vector<int> &operands, vector<char> &operators) {
 			// check end of expression
 			if (literalPointer == program.size()
 			|| program[literalPointer].getValue() == ";"
-			|| program[literalPointer].getValue() == ")") {
+			|| program[literalPointer].getValue() == ")"
+			|| program[literalPointer].getValue() == ",") {
 				operands.push_back(operand);
-				operators.push_back(';'); // considered as lowest priority
+				operators.push_back(";"); // considered as lowest priority
 				// empty operator
 				break; // expression parsed successfully
 			}
@@ -127,53 +185,17 @@ vector<int> &operands, vector<char> &operators) {
 	return true;
 }
 
-int getOperatorPriority(char math_operator) {
-	switch (math_operator) {
-	case '+':
-	case '-':
-		return 1;
-	case '*':
-	case '/':
-	case '%':
-		return 2;
-	}
-	return 0;
-}
-
-bool calculate(int operand1, int operand2, char math_operator, int &result) {
-	switch (math_operator) {
-	case '+':
-	result = operand1 + operand2;
-		break;
-	case '-':
-	result = operand1 - operand2;
-		break;
-	case '*':
-	result = operand1 * operand2;
-		break;
-	case '/':
-	result = operand1 / operand2;
-		break;
-	case '%':
-	result = operand1 % operand2;
-		break;
-	default:
-		return false;
-	}
-	return true;
-}
-
 // calculates value of math expression without brackets
 // expression is separated to arrays of operands and operators
 // saves result to corresponding argument-variable
 bool twoStackAlgorithm(const vector<int> &operands,
-const vector<char> &operators, int &result) {
+const vector<string> &operators, int &result) {
 	stack<int> operandStack;
-	stack<char> operatorStack;
+	stack<string> operatorStack;
 	// last operand and operator in stacks are separated to variables for
 	// availability of its prenultimate ones
 	int currentOperand = operands[0];
-	char currentOperator = operators[0];
+	string currentOperator = operators[0];
 
 	for (int i=1; i < operands.size(); i++) {
 		// put next operand and operator to stacks
@@ -190,7 +212,7 @@ const vector<char> &operators, int &result) {
 			int operand1 = operandStack.top();
 			operandStack.pop();
 			int operand2 = currentOperand;
-			char math_operator = operatorStack.top();
+			string math_operator = operatorStack.top();
 			operatorStack.pop();
 			if (!calculate(operand1,operand2,math_operator,operationResult)) {
 				cout << "Calculation error: " << operand1 << math_operator << operand2 << endl;
@@ -211,7 +233,7 @@ int &result) {
 	// preparing expression for algorithm: separating operands from operators
 	// and calculating expresions in brackets
 	vector<int> operands;
-	vector<char> operators;
+	vector<string> operators;
 	if (!parseExpression(program,literalPoint,operands,operators)) {
 		return false;
 	}
@@ -262,7 +284,7 @@ bool handleAssignInstruction(vector<Literal> &program, int &literalPoint) {
 }
 
 // handles variable declaration instruction
-bool handleVarInstruction(vector<Literal> &program, int &literalPointer) {
+bool handleVarInstruction(vector<Literal> &program, int &literalPointer, string &variableName) {
 	if (program[literalPointer+1].getType() != WORD_LITERAL) {
 		cout << "Template var meets incorrect format of variable name" << endl;
 		return false;
@@ -271,37 +293,57 @@ bool handleVarInstruction(vector<Literal> &program, int &literalPointer) {
 		cout << "Template var expects ';' at the end" << endl;
 		return false;
 	}
-	string variableName = program[literalPointer+1].getValue();
+	variableName = program[literalPointer+1].getValue();
 	declareVariable(variableName);
 	literalPointer += 3; // WORD(var) WORD(variableName) SIGN(;)
 	return true;
 }
 
-// handles variable declaration deletion instruction
-bool handleDeleteInstruction(vector<Literal> &program, int &literalPointer) {
-	if (program[literalPointer+1].getType() != WORD_LITERAL) {
-		cout << "Template delete meets incorrect format of variable name"
-		<< endl;
+// handles if instruction
+bool handleIfInstruction(vector<Literal> &program, int &literalPointer,
+int &condition) {
+	if (program[literalPointer+1] != Literal("(",SIGN_LITERAL)) {
+		cout << "Expects '(' after if/while" << endl;
 		return false;
 	}
-	if (program[literalPointer+2] != Literal(";",SIGN_LITERAL)) {
-		cout << "Template delete expects ';' at the end" << endl;
+	literalPointer += 2; // WORD(if) SIGN('(')
+	if (!calculateExpression(program,literalPointer,condition)) {
 		return false;
 	}
-	string variableName = program[literalPointer+1].getValue();
-	if (!doesVariableExist(variableName)) {
-		cout << "Deletion of not existing variable "
-		<< variableName << endl;
+	if (program[literalPointer] != Literal(")",SIGN_LITERAL)) {
+		cout << "Expects ')' after if/while(condition" << endl;
 		return false;
 	}
-	deleteVariable(variableName);
-	literalPointer += 3; // WORD(delete) WORD(variableName) SIGN(;)
+	if (program[literalPointer+1] != Literal("{",SIGN_LITERAL)) {
+		cout << "Expects '{' after if/while(condition)" << endl;
+		return false;
+	}
+	literalPointer += 2; // SIGN(')') SIGN('{')
+	if (condition) {
+		if (!executeBlock(program,literalPointer)) {
+			return false;
+		}
+	} else {
+		for (int i=literalPointer; i < program.size(); i++) {
+			if (program[i] == Literal("}", SIGN_LITERAL)) {
+				literalPointer = i;
+				break;
+			}
+		}
+	}
+	if (program[literalPointer] != Literal("}",SIGN_LITERAL)) {
+		cout << "Expects '}' after block end" << endl;
+		return false;
+	}
+	literalPointer ++; // SIGN('}')
 	return true;
 }
 
 // starts program execution from literalPointer
 // returns true if success
 bool executeBlock(vector<Literal> &program, int &literalPointer) {
+	set<string> scopeVariables; // variables created in block witch scope
+	// of the block
 	while (literalPointer < program.size()
 	&& program[literalPointer] != Literal("}", SIGN_LITERAL)) {
 		if (program[literalPointer] == Literal("{", SIGN_LITERAL)) {
@@ -317,14 +359,32 @@ bool executeBlock(vector<Literal> &program, int &literalPointer) {
 			literalPointer++; // closing '}'
 		} else 	if (program[literalPointer] == Literal("var",WORD_LITERAL)) {
 			// var name;
-			if (!handleVarInstruction(program, literalPointer)) {
+			string name;
+			if (!handleVarInstruction(program, literalPointer, name)) {
 				return false;
 			}
-		} else 	if (program[literalPointer] == Literal("delete",WORD_LITERAL)) {
-			// delete name;
-			if (!handleDeleteInstruction(program, literalPointer)) {
+			if (scopeVariables.find(name) != scopeVariables.end()) {
+				cout << "Double declaration of variable " << name
+				<< "in this scope" << endl;
 				return false;
 			}
+			scopeVariables.insert(name);
+		} else 	if (program[literalPointer] == Literal("if",WORD_LITERAL)) {
+			// if (<expression>) {...}
+			int condition;
+			if (!handleIfInstruction(program, literalPointer, condition)) {
+				return false;
+			}
+		} else 	if (program[literalPointer] == Literal("while",WORD_LITERAL)) {
+			// while (<expression>) {...}
+			int condition;
+			int circlePointer = literalPointer;
+			do {
+				literalPointer = circlePointer;
+				if (!handleIfInstruction(program, literalPointer, condition)) {
+					return false;
+				}
+			} while (condition);
 		} else if (program[literalPointer].getType() != WORD_LITERAL) {
 			cout << "Unexpected non-word literal: "
 			<< program[literalPointer].getValue() << endl;
@@ -335,6 +395,9 @@ bool executeBlock(vector<Literal> &program, int &literalPointer) {
 				return false;
 			}
 		}
+	}
+	for (auto variable : scopeVariables) {
+		deleteVariable(variable);
 	}
 	return true;
 }

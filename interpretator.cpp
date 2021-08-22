@@ -25,8 +25,6 @@ int main(int argc, char* argv[]) {
 	}
 	printProgram(program);
 
-	return 0;
-
 	// execution
 	cout << endl << "EXECUTION" << endl << endl;
 	bool success = execute(program);
