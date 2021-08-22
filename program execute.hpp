@@ -7,12 +7,15 @@
 #include <set>
 #include "literal.hpp"
 #include "program memory.hpp"
+#include "program function.hpp"
 
 using namespace std;
 
-bool calculateExpression(vector<Literal> &program, int &literalPointer, int &result);
+bool calculateExpression(vector<Literal> &program, int &literalPointer,
+int &result);
 
-bool executeBlock(vector<Literal> &program, int &literalPointer);
+bool executeBlock(vector<Literal> &program, int &literalPointer,
+int &returnValue, bool &returned);
 
 // chech if word represents unsigned int number
 bool isNumber(string word) {
@@ -284,21 +287,22 @@ bool handleAssignInstruction(vector<Literal> &program, int &literalPointer) {
 }
 
 // handles variable declaration instruction
-bool handleVarInstruction(vector<Literal> &program, int &literalPointer, string &variableName) {
+bool handleVarInstruction(vector<Literal> &program, int &literalPointer, vector<string> &variableNames) {
 	literalPointer++; // WORD(var)
 	for (;;) {
 		if (program[literalPointer].getType() != WORD_LITERAL) {
 			cout << "Template var meets incorrect format of variable name" << endl;
 			return false;
 		}
-		variableName = program[literalPointer].getValue();
-		declareVariable(variableName);
+		string name = program[literalPointer].getValue();
+		variableNames.push_back(name);
+		declareVariable(name);
 		literalPointer++; // WORD(name)
 		if (program[literalPointer] == Literal("=",SIGN_LITERAL)) {
 			literalPointer++; // SIGN(=)
 			int value;
 			calculateExpression(program, literalPointer, value);
-			assignVariable(variableName, value);
+			assignVariable(name, value);
 		}
 		if (program[literalPointer] == Literal(";",SIGN_LITERAL)) {
 			literalPointer++; // SIGN(;)
@@ -306,7 +310,7 @@ bool handleVarInstruction(vector<Literal> &program, int &literalPointer, string 
 		}
 		if (program[literalPointer] != Literal(",",SIGN_LITERAL)) {
 			cout << "Variable declaration pattern expects "
-			<< "';' or ',' after name " << variableName << endl;
+			<< "';' or ',' after name " << name << endl;
 			return false;
 		}
 		literalPointer++; // SIGN(,)
@@ -314,9 +318,33 @@ bool handleVarInstruction(vector<Literal> &program, int &literalPointer, string 
 	return true;
 }
 
+void skipCurrentBlock(vector<Literal> &program, int &literalPointer) {
+	int blockDeep = 1; // block deep level
+	while (literalPointer < program.size() && blockDeep != 0) {
+		if (program[literalPointer] == Literal("{", SIGN_LITERAL)) {
+			blockDeep++;
+		}
+		if (program[literalPointer] == Literal("}", SIGN_LITERAL)) {
+			blockDeep--;
+			break;
+		}
+		literalPointer++;
+	}
+}
+
+bool findFromPosition(const vector<Literal> &program, int &literalPointer, Literal literal) {
+	while (literalPointer < program.size()) {
+		if (program[literalPointer] == literal) {
+			break;
+		}
+		literalPointer++;
+	}
+	return (literalPointer < program.size());
+}
+
 // handles if instruction
 bool handleIfInstruction(vector<Literal> &program, int &literalPointer,
-int &condition) {
+int &condition, int &returnValue, bool &returned) {
 	if (program[literalPointer+1] != Literal("(",SIGN_LITERAL)) {
 		cout << "Expects '(' after if/while" << endl;
 		return false;
@@ -335,16 +363,11 @@ int &condition) {
 	}
 	literalPointer += 2; // SIGN(')') SIGN('{')
 	if (condition) {
-		if (!executeBlock(program,literalPointer)) {
+		if (!executeBlock(program, literalPointer, returnValue, returned)) {
 			return false;
 		}
 	} else {
-		for (int i=literalPointer; i < program.size(); i++) {
-			if (program[i] == Literal("}", SIGN_LITERAL)) {
-				literalPointer = i;
-				break;
-			}
-		}
+		skipCurrentBlock(program, literalPointer);
 	}
 	if (program[literalPointer] != Literal("}",SIGN_LITERAL)) {
 		cout << "Expects '}' after block end" << endl;
@@ -356,7 +379,9 @@ int &condition) {
 
 // starts program execution from literalPointer
 // returns true if success
-bool executeBlock(vector<Literal> &program, int &literalPointer) {
+bool executeBlock(vector<Literal> &program, int &literalPointer, 
+int &returnValue, bool &returned) {
+	returned = false;
 	set<string> scopeVariables; // variables created in block witch scope
 	// of the block
 	while (literalPointer < program.size()
@@ -364,7 +389,8 @@ bool executeBlock(vector<Literal> &program, int &literalPointer) {
 		if (program[literalPointer] == Literal("{", SIGN_LITERAL)) {
 			// {...}
 			literalPointer++; // opening '}'
-			if (!executeBlock(program, literalPointer)) {
+			if (!executeBlock(program, literalPointer, returnValue,
+			returned)) {
 				return false;
 			}
 			if (program[literalPointer] != Literal("}", SIGN_LITERAL)) {
@@ -372,23 +398,63 @@ bool executeBlock(vector<Literal> &program, int &literalPointer) {
 				return false;
 			}
 			literalPointer++; // closing '}'
+			if (returned) {
+				skipCurrentBlock(program, literalPointer);
+			}
 		} else 	if (program[literalPointer] == Literal("var",WORD_LITERAL)) {
 			// var name;
-			string name;
-			if (!handleVarInstruction(program, literalPointer, name)) {
+			vector<string> variableNames;
+			if (!handleVarInstruction(program, literalPointer, variableNames)) {
 				return false;
 			}
-			if (scopeVariables.find(name) != scopeVariables.end()) {
-				cout << "Double declaration of variable " << name
-				<< "in this scope" << endl;
+			for (auto name : variableNames) {
+				if (scopeVariables.find(name) != scopeVariables.end()) {
+					cout << "Double declaration of variable " << name
+					<< " in this scope" << endl;
+					return false;
+				}
+				if (functions.find(name) != functions.end()) {
+					cout << "Variable copies name of existing function " << name
+					<< "(...)" << endl;
+					return false;
+				}
+				scopeVariables.insert(name);
+			}
+		} else 	if (program[literalPointer] == Literal("return",WORD_LITERAL)) {
+			// return <expression>;
+			literalPointer++; // return
+			if (!calculateExpression(program, literalPointer, returnValue)) {
 				return false;
 			}
-			scopeVariables.insert(name);
+			if (program[literalPointer] != Literal(";", SIGN_LITERAL)) {
+				cout << "Expects ';' after return <expression>" << endl;
+				return false;
+			}
+			literalPointer++; // ';'
+			skipCurrentBlock(program,literalPointer);
+			returned = true;
+		} else 	if (program[literalPointer] == Literal("function",WORD_LITERAL)) {
+			// function fname(<arguments>) {...}
+			if (!findFromPosition(program, literalPointer,
+			Literal("{",SIGN_LITERAL))) {
+				return false;
+			}
+			literalPointer++; // '{'
+			skipCurrentBlock(program, literalPointer);
+			if (program[literalPointer] != Literal("}",SIGN_LITERAL)) {
+				cout << "Function body expect '}' at the end" << endl;
+				return false;
+			}
+			literalPointer++; // '}'
 		} else 	if (program[literalPointer] == Literal("if",WORD_LITERAL)) {
 			// if (<expression>) {...}
 			int condition;
-			if (!handleIfInstruction(program, literalPointer, condition)) {
+			if (!handleIfInstruction(program, literalPointer, condition,
+			returnValue, returned)) {
 				return false;
+			}
+			if (returned) {
+				skipCurrentBlock(program, literalPointer);
 			}
 		} else 	if (program[literalPointer] == Literal("while",WORD_LITERAL)) {
 			// while (<expression>) {...}
@@ -396,8 +462,13 @@ bool executeBlock(vector<Literal> &program, int &literalPointer) {
 			int circlePointer = literalPointer;
 			do {
 				literalPointer = circlePointer;
-				if (!handleIfInstruction(program, literalPointer, condition)) {
+				if (!handleIfInstruction(program, literalPointer, condition,
+				returnValue, returned)) {
 					return false;
+				}
+				if (returned) {
+					skipCurrentBlock(program, literalPointer);
+					break;
 				}
 			} while (condition);
 		} else if (program[literalPointer].getType() != WORD_LITERAL) {
@@ -418,7 +489,7 @@ bool executeBlock(vector<Literal> &program, int &literalPointer) {
 }
 
 // it's just shell for executeBlock function to execute whole program as block
-bool execute(vector<Literal> &program) {
+bool execute(vector<Literal> &program,  int &returnValue, bool &returned) {
 	int literalPointer = 0;
-	return executeBlock(program, literalPointer);
+	return executeBlock(program, literalPointer, returnValue, returned);
 }

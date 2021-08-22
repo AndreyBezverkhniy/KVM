@@ -34,7 +34,8 @@ class Literal{
 			value = character;
 		} else if (character >= '0' && character <= '9'
 		|| character >= 'a' && character <= 'z'
-		|| character >= 'A' && character <= 'Z') {
+		|| character >= 'A' && character <= 'Z'
+		|| character == '_') {
 			type = WORD_LITERAL;
 			value = character;
 		} else if (character == '"') {
@@ -60,7 +61,8 @@ class Literal{
 	bool addSymbolToWord(char character) {
 		if (character >= '0' && character <= '9'
 		|| character >= 'a' && character <= 'z'
-		|| character >= 'A' && character <= 'Z') {
+		|| character >= 'A' && character <= 'Z'
+		|| character == '_') {
 			value += character;
 			return true;
 		}

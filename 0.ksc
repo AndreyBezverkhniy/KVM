@@ -1,4 +1,6 @@
-var a=10,b=20;
-CON=a;
-CON=b;
+/**/
+
+function func(x,y){
+return x+y;
+}
 

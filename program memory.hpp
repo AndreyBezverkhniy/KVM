@@ -15,8 +15,11 @@ value of variable is getting in the same way: variables[name].top().
 #include <map>
 #include <string>
 #include <stack>
+#include "program function.hpp"
 
 using namespace std;
+
+map<string,FunctionDescription> functions;
 
 map<string,stack<int>> variables;
 

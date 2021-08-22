@@ -2,7 +2,10 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
+#include <string>
 #include "literal.hpp"
+#include "program function.hpp"
 
 using namespace std;
 
@@ -24,6 +27,11 @@ void printProgram(const vector<Literal> &program, bool highlighting = false) {
 			}
 			instructionStarts = false;
 		}
+		/*for (auto functionDescription: functions) {
+			if (functionDescription.second.bodyPointer == i) {
+				cout << "funciton{" << functionDescription.first << "}";
+			}
+		} //*/
 		if (highlighting) {
 			cout << "<";
 		}
@@ -52,4 +60,23 @@ void printProgram(const vector<Literal> &program, bool highlighting = false) {
 		}
 	}
 	cout << endl;
+}
+
+void printFunctions(const map<string,FunctionDescription> &functions,
+const vector<Literal> &program) {
+	for (auto function : functions) {
+		cout << "function " << function.first << " at "
+		<< function.second.bodyPointer << " :" << endl;
+		const auto &arguments = function.second.arguments;
+		for (int i=0; i < arguments.size(); i++) {
+			cout << "arg" << i << "=" << arguments[i] << " ";
+		}
+		cout << endl;
+		int bodyPointer = function.second.bodyPointer;
+		for (int i = 0; i < 4; i++) {
+			cout << program[bodyPointer+i].getValue() << " ";
+		}
+		cout << endl;
+		cout << "FEnd" << endl;
+	}
 }

@@ -1,0 +1,18 @@
+/**/
+
+var a=12,b=18,r;
+
+if(a>b){
+	r=b;
+	b=a;
+	a=r;
+}
+
+while(b>0){
+	r=b;
+	b=a%b;
+	a=r;
+}
+
+CON=a;
+

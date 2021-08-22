@@ -1,0 +1,37 @@
+/*
+multiline
+comment
+*/
+// inline comment
+
+var a,b=10,c; // variable declaration
+// var b; error double declaration
+
+c=5+5*(2-1)-b+10; // assign operator
+
+a=CON; // reads a from console;
+CON=a; // prints b to console
+
+import "Sample_2.ksc"; // is replacing by src file content
+import "Sample_2.ksc";
+
+CON=c; // 10
+{
+	var c=20; // this is ok
+	CON=c; // 20
+}
+CON=c; // 10
+
+if(0){ // 0 is false
+	CON=111; // not printed
+}
+if(10&&20){ // npot 0 is true
+	CON=222; // 222
+}
+
+var i=5;
+while(i>=0){ // 5 4 3 2 1 0
+CON=i;
+i=i-1;
+}
+

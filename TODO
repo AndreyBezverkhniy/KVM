@@ -1,5 +1,15 @@
-var several names
-var with assignment
+
+'_' admited in word literals
+if false block passing error fixed
+execute return
+name->{blockpointer,arguments} second read
+execution function declaration skip
+return from nested blocks
+reject variable names as existing function
+----------------------------------------
+assign->expression and operator=
+function call
+
 пользовательские функции
 встроенные функции работы с консолью
 

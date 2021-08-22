@@ -5,6 +5,8 @@ reads whole program and executes, if it all is possible.
 */
 
 #include <iostream>
+#include <map>
+#include <string>
 #include "program.hpp"
 
 using namespace std;
@@ -20,15 +22,28 @@ int main(int argc, char* argv[]) {
 
 	// reading program
 	vector<Literal> program;
-	if (!readProgram(program, sourceFilePath)) {
+	if (!readProgram(sourceFilePath, program)) {
 		return 0; // reading failed
 	}
+
+	if (!prepareFunctions(functions, program)) {
+		return 0; // preparing failed
+	}
+
 	printProgram(program);
+
+	//printFunctions(functions, program);
 
 	// execution
 	cout << endl << "EXECUTION" << endl << endl;
-	bool success = execute(program);
-	cout << endl << "EXECUTION " << (success ? "FINISHED" : "FAILED") << endl;
+	bool returned;
+	int returnValue;
+	bool success = execute(program, returnValue, returned);
+	cout << endl;
+	if (returned) {
+		cout << "return " << returnValue << endl;
+	}
+	cout << "EXECUTION " << (success ? "FINISHED" : "FAILED") << endl;
 
 	return 0;
 }

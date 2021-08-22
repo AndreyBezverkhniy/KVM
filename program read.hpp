@@ -4,12 +4,76 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <map>
+#include "program memory.hpp"
 #include "literal.hpp"
+#include "program function.hpp"
 
 using namespace std;
 
+bool prepareFunctions(map<string,FunctionDescription> &functions,
+const vector<Literal> &program) {
+	for (auto function : functions) {
+		
+		string functionName = function.first;
+		FunctionDescription &functionDescription = functions[functionName];
+		int &bodyPointer = functionDescription.bodyPointer;
+		
+		functionDescription.arguments.clear();
+
+		bodyPointer++; // fname
+		
+		if (program[bodyPointer] != Literal("(", SIGN_LITERAL)) {
+			cout << "Expected '(' after function name" << endl;
+			return false;
+		}
+		bodyPointer++; // '('
+
+		// reading argument names
+		string argumentName;
+		for (;;) {
+			argumentName = program[bodyPointer].getValue();
+			if (program[bodyPointer].getType() != WORD_LITERAL) {
+				cout << argumentName << "is not an agrument name" << endl;
+				return false;
+			}
+			bodyPointer++; // argumentName
+			functionDescription.arguments.push_back(argumentName);
+			if (program[bodyPointer] != Literal(",", SIGN_LITERAL)) {
+				break;
+			}
+			bodyPointer++; // ','
+		}
+
+		if (program[bodyPointer] != Literal(")", SIGN_LITERAL)) {
+			cout << "Expected ')' after function name(<arguments>" << endl;
+			return false;
+		}
+		bodyPointer++; // ')'
+		if (program[bodyPointer] != Literal("{", SIGN_LITERAL)) {
+			cout << "Expected '{' after function name(<arguments>)" << endl;
+			return false;
+		}
+	}
+	return true;
+}
+
 bool readSourceFile(vector<string> &importChain, string sourceFilePath,
 vector<Literal> &program);
+
+bool addFunction(Literal functionLiteral, int literalPointer) {
+	if (functionLiteral.getType() != WORD_LITERAL) {
+		cout << "Function name must be a word" << endl;
+		return false;
+	}
+	string functionName = functionLiteral.getValue();
+	if (functions.find(functionName) != functions.end()) {
+		cout << "Double declaration of function " << functionName << endl;
+		return false;
+	}
+	functions[functionName] = literalPointer;
+	return true;
+}
 
 // returns true if importingFilePath is in import chain,
 // i.e. imports it-self through several imports
@@ -26,7 +90,8 @@ void popNLastElements(vector<Literal> &program, int n) {
 	}
 }
 
-bool expandImportInstruction(vector<string> &importChain, vector<Literal> &program) {
+bool expandImportInstruction(vector<string> &importChain,
+vector<Literal> &program) {
 	string importingFilePath; // file to import
 	importingFilePath = program[program.size()-2].getValue();
 	if (checkRecursiveImport(importChain, importingFilePath)) {
@@ -117,6 +182,15 @@ vector<Literal> &program) {
 			}
 			literal.makeEmpty();           // initiate next literal
 			literal.addNextSymbol(byte);   // by symbol
+			// collect functions
+			if (program.size() > 1 &&
+			program[program.size() - 2] == Literal("function", WORD_LITERAL)) {
+				Literal functionLiteral = program[program.size()-1];
+				int literalPointer = program.size() - 1;
+				if (!addFunction(functionLiteral, literalPointer)) {
+					return false;
+				}
+			}
 			// handle import instruction if presents
 			if (endsByImportInstruction(program)) {
 				bool importedSuccessfully =
@@ -139,7 +213,7 @@ vector<Literal> &program) {
 
 // it's just shell for readSourceFile function to create variable
 // importChain for passing to the first argument of reference type
-bool readProgram(vector<Literal> &program, string sourceFilePath) {
+bool readProgram(string sourceFilePath, vector<Literal> &program) {
 	vector<string> importChain;
 	// chain of nested file imports for recursive imports tracing
 	// root source file considered to be the first member of the chain
