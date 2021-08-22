@@ -39,33 +39,93 @@ int toNumber(string word) {
 	return result;
 }
 
+bool parseFunctionValue(vector<Literal> &program, int &literalPointer,
+int &result) {
+	string functionName = program[literalPointer].getValue();
+	FunctionDescription &description = functions[functionName];
+	literalPointer++; // functionName
+	if (program[literalPointer] != Literal("(",SIGN_LITERAL)) {
+		cout << "Expected '(' after function call: " << functionName << endl;
+		return false;
+	}
+	literalPointer++; // (
+	int argumentNumber = 0;
+	vector<int> argumentsPassed;
+	while (argumentNumber < description.arguments.size()) {
+		if (argumentNumber > 0) {
+			if (program[literalPointer] != Literal(",",SIGN_LITERAL)) {
+				cout << "Expected ',' between arguments in call of function: "
+				<< functionName << endl;
+				return false;
+			}
+			literalPointer++; // ,
+		}
+		int argumentPassed;
+		if (!calculateExpression(program, literalPointer, argumentPassed)) {
+			return false;
+		}
+		argumentsPassed.push_back(argumentPassed);
+		argumentNumber++;
+	}
+	if (program[literalPointer] != Literal(")",SIGN_LITERAL)) {
+		cout << "Expected ')' after function call: " << functionName << endl;
+		return false;
+	}
+	literalPointer++; // )
+	for (int argumentIndex = 0; argumentIndex < argumentsPassed.size();
+	argumentIndex++) {
+		string argumentName = description.arguments[argumentIndex];
+		declareVariable(argumentName);
+		assignVariable(argumentName,argumentsPassed[argumentIndex]);
+	}
+	int savedPointer = literalPointer;
+	literalPointer = description.bodyPointer;
+	result = 0; // by default
+	bool garbage;
+	if (!executeBlock(program,literalPointer,result,garbage)) {
+		return false;
+	}
+	literalPointer = savedPointer;
+	for (auto argumentName : description.arguments) {
+		deleteVariable(argumentName);
+	}
+	return true;
+}
+
 // handles numbers and variables
 // saves result to corresponding argument-variable
-bool getWordValue(string word, int &result) {
+bool parseLiteralValue(vector<Literal> &program, int &literalPointer,
+int &result) {
+	string word = program[literalPointer].getValue();
 	if (isNumber(word)) {
 		result = toNumber(word);
+		literalPointer++; // number
 		return true;
 	}
 	if (word == "CON") { // reserved name for console working
 		cout << "> ";
 		cin >> result;
+		literalPointer++; // CON
 		return true;
+	}
+	if (functions.find(word) != functions.end()) {
+		return parseFunctionValue(program, literalPointer, result);
 	}
 	if (!doesVariableExist(word)) {
 		cout << "Variable " << word << " was not declared" << endl;
 		return false;
 	}
 	result = getVariableValue(word);
+	literalPointer++; // variable
 	return true;
 }
 
-bool getOperand(vector<Literal> &program, int &literalPointer, int &operand) {
+bool parseOperand(vector<Literal> &program, int &literalPointer, int &operand) {
 	if (program[literalPointer].getType() == WORD_LITERAL) {
 		// number or variable
-		if (!getWordValue(program[literalPointer].getValue(), operand)) {
+		if (!parseLiteralValue(program, literalPointer, operand)) {
 			return false;
 		}
-		literalPointer++;
 		return true;
 	} else if (program[literalPointer] == Literal("(",SIGN_LITERAL)) {
 		// calculating expression in brackets to just number operand
@@ -141,7 +201,7 @@ bool calculate(int operand1, int operand2, string math_operator, int &result) {
 	return true;
 }
 
-bool getOperator(vector<Literal> &program, int &literalPointer, string &math_operator) {
+bool parseOperator(vector<Literal> &program, int &literalPointer, string &math_operator) {
 	if (program[literalPointer].getType() == SIGN_LITERAL){
 		string sign = program[literalPointer].getValue();
 		if (getOperatorPriority(sign) != 0) {
@@ -164,10 +224,10 @@ vector<int> &operands, vector<string> &operators) {
 		string math_operator;
 		// if operand is bracket with expression inside, it calculates and
 		// result is used as operand
-		if (!getOperand(program, literalPointer, operand)) {
+		if (!parseOperand(program, literalPointer, operand)) {
 			return false;
 		}
-		if (!getOperator(program, literalPointer, math_operator)) {
+		if (!parseOperator(program, literalPointer, math_operator)) {
 			// check end of expression
 			if (literalPointer == program.size()
 			|| program[literalPointer].getValue() == ";"
@@ -260,7 +320,7 @@ bool handleAssignInstruction(vector<Literal> &program, int &literalPointer) {
 		return false;
 	}
 	if ( !(doesVariableExist(variableName) || variableName == "CON") ) {
-		cout << "Variable " << variableName << " was not declared" << endl;
+		cout << "LVariable " << variableName << " was not declared" << endl;
 		return false;
 	}
 	if (program[literalPointer + 1] != Literal("=",SIGN_LITERAL)) {
@@ -320,19 +380,21 @@ bool handleVarInstruction(vector<Literal> &program, int &literalPointer, vector<
 
 void skipCurrentBlock(vector<Literal> &program, int &literalPointer) {
 	int blockDeep = 1; // block deep level
-	while (literalPointer < program.size() && blockDeep != 0) {
+	while (literalPointer < program.size()) {
 		if (program[literalPointer] == Literal("{", SIGN_LITERAL)) {
 			blockDeep++;
 		}
 		if (program[literalPointer] == Literal("}", SIGN_LITERAL)) {
 			blockDeep--;
+		}
+		if (blockDeep == 0) {
 			break;
 		}
 		literalPointer++;
 	}
 }
 
-bool findFromPosition(const vector<Literal> &program, int &literalPointer, Literal literal) {
+bool findFromPosition(vector<Literal> &program, int &literalPointer, Literal literal) {
 	while (literalPointer < program.size()) {
 		if (program[literalPointer] == literal) {
 			break;
@@ -491,5 +553,10 @@ int &returnValue, bool &returned) {
 // it's just shell for executeBlock function to execute whole program as block
 bool execute(vector<Literal> &program,  int &returnValue, bool &returned) {
 	int literalPointer = 0;
-	return executeBlock(program, literalPointer, returnValue, returned);
+	bool success = executeBlock(program, literalPointer, returnValue,
+	returned);
+	if (!success) {
+		cout << "Error: literalPointer=" << literalPointer << endl;
+	}
+	return success;
 }
