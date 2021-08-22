@@ -26,13 +26,13 @@ int main(int argc, char* argv[]) {
 		return 0; // reading failed
 	}
 
-	if (!prepareFunctions(functions, program)) {
+	if (!prepareFunctions(program)) {
 		return 0; // preparing failed
 	}
 
 	printProgram(program);
 
-	//printFunctions(functions, program);
+	//printFunctions(program);
 
 	// execution
 	cout << endl << "EXECUTION" << endl << endl;

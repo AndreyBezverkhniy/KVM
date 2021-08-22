@@ -7,11 +7,11 @@ using namespace std;
 // Literal can be empty or typed
 const char EMPTY_LITERAL = 0; // with no value
 const char SPACES_LITERAL = 1; // ' ', '\t', '\n' and '\r' characters
-const char WORD_LITERAL = 2;
-const char STRING_LITERAL = 3;
+const char WORD_LITERAL = 2; // consists digits, alphabet characters and '_'
+const char STRING_LITERAL = 3; // "..."
 const char SIGN_LITERAL = 4;
-const char INLINE_COMMENT_LITERAL = 5;
-const char MULTILINE_COMMENT_LITERAL = 6;
+const char INLINE_COMMENT_LITERAL = 5; // //...\n
+const char MULTILINE_COMMENT_LITERAL = 6; // /* ...*/
 
 // literal can be build character by character
 // start state is "in progress", that changes to "complited" or "failed"
@@ -20,6 +20,128 @@ const char COMPLITED_LITERAL_STATE = 1;
 const char FAILED_LITERAL_STATE = 2;
 
 class Literal{
+
+	public:
+
+	Literal() {
+		makeEmpty();
+	}
+
+	Literal(string _value, char _type) {
+		value = _value;
+		type = _type;
+		// user literal instance considered to be complited
+		state = COMPLITED_LITERAL_STATE;
+	}
+
+	void makeEmpty() {
+		value.clear();
+		type = EMPTY_LITERAL;
+		// waiting of adding characters
+		state = IN_PROGRESS_LITERAL_STATE;
+	}
+
+	string getValue() const {
+		return value;
+	}
+
+	int getType() const {
+		return type;
+	}
+
+	bool isEmpty() const {
+		return type == EMPTY_LITERAL;
+	}
+
+	int getState() const {
+		return state;
+	}
+
+	bool isComplited() const {
+		return state == COMPLITED_LITERAL_STATE;
+	}
+
+	bool isFailed() const {
+		return state == FAILED_LITERAL_STATE;
+	}
+
+	bool isInProgress() const {
+		return state == IN_PROGRESS_LITERAL_STATE;
+	}
+
+	bool addNextSymbol(char character) {
+		if (state != IN_PROGRESS_LITERAL_STATE) {
+			// No way to expand complited or failed literal
+			return false;
+		}
+		switch (type) {
+		case EMPTY_LITERAL:
+			return addSymbolToEmpty(character);
+		case SPACES_LITERAL:
+			return addSymbolToSpaces(character);
+		case WORD_LITERAL:
+			return addSymbolToWord(character);
+		case STRING_LITERAL:
+			return addSymbolToString(character);
+		case SIGN_LITERAL:
+			return addSymbolToSign(character);
+		case INLINE_COMMENT_LITERAL:
+			return addSymbolToInlineComment(character);
+		case MULTILINE_COMMENT_LITERAL:
+			return addSymbolToMultilineComment(character);
+		};
+		return false;
+	}
+
+	void makeComplited() {
+		if (state != IN_PROGRESS_LITERAL_STATE) {
+			  return;
+		}
+		switch (type) {
+		case EMPTY_LITERAL:
+			return makeComplitedEmpty();
+		case SPACES_LITERAL:
+			return makeComplitedSpaces();
+		case WORD_LITERAL:
+			return makeComplitedWord();
+		case STRING_LITERAL:
+			return makeComplitedString();
+		case SIGN_LITERAL:
+			return makeComplitedSign();
+		case INLINE_COMMENT_LITERAL:
+			return makeComplitedInlineComment();
+		case MULTILINE_COMMENT_LITERAL:
+			return makeComplitedMultilineComment();
+		};
+	}
+
+	string getTypeName() const {
+		switch (type) {
+		case EMPTY_LITERAL:
+			return "EMPTY";
+			break;
+		case WORD_LITERAL:
+			return "WORD";
+			break;
+		case STRING_LITERAL:
+			return "STRING";
+			break;
+		case SIGN_LITERAL:
+			return "SIGN";
+			break;
+		}
+	}
+
+	friend bool operator==(Literal l,Literal r) {
+		// value univocal defines type
+		// state does not matter
+		// comparation of content only
+		return l.value == r.value;
+	}
+
+	friend bool operator!=(Literal l,Literal r) {
+		return !(l == r);
+	}
 
 	private:
 
@@ -152,128 +274,6 @@ class Literal{
 		// state complited occurs explicitely when "*/" is added
 		// otherwise multiline comment is not ended by "*/" that means fail
 		state = FAILED_LITERAL_STATE;
-	}
-
-	public:
-
-	Literal() {
-		makeEmpty();
-	}
-
-	Literal(string _value, char _type) {
-		value = _value;
-		type = _type;
-		// user literal instance considered to be complited
-		state = COMPLITED_LITERAL_STATE;
-	}
-
-	void makeEmpty() {
-		value.clear();
-		type = EMPTY_LITERAL;
-		// waiting of adding characters
-		state = IN_PROGRESS_LITERAL_STATE;
-	}
-
-	string getValue() const {
-		return value;
-	}
-
-	int getType() const {
-		return type;
-	}
-
-	bool isEmpty() const {
-		return type == EMPTY_LITERAL;
-	}
-
-	int getState() const {
-		return state;
-	}
-
-	bool isComplited() const {
-		return state == COMPLITED_LITERAL_STATE;
-	}
-
-	bool isFailed() const {
-		return state == FAILED_LITERAL_STATE;
-	}
-
-	bool isInProgress() const {
-		return state == IN_PROGRESS_LITERAL_STATE;
-	}
-
-	bool addNextSymbol(char character) {
-		if (state != IN_PROGRESS_LITERAL_STATE) {
-			// No way to expand complited or failed literal
-			return false;
-		}
-		switch (type) {
-		case EMPTY_LITERAL:
-			return addSymbolToEmpty(character);
-		case SPACES_LITERAL:
-			return addSymbolToSpaces(character);
-		case WORD_LITERAL:
-			return addSymbolToWord(character);
-		case STRING_LITERAL:
-			return addSymbolToString(character);
-		case SIGN_LITERAL:
-			return addSymbolToSign(character);
-		case INLINE_COMMENT_LITERAL:
-			return addSymbolToInlineComment(character);
-		case MULTILINE_COMMENT_LITERAL:
-			return addSymbolToMultilineComment(character);
-		};
-		return false;
-	}
-
-	void makeComplited() {
-		if (state != IN_PROGRESS_LITERAL_STATE) {
-			  return;
-		}
-		switch (type) {
-		case EMPTY_LITERAL:
-			return makeComplitedEmpty();
-		case SPACES_LITERAL:
-			return makeComplitedSpaces();
-		case WORD_LITERAL:
-			return makeComplitedWord();
-		case STRING_LITERAL:
-			return makeComplitedString();
-		case SIGN_LITERAL:
-			return makeComplitedSign();
-		case INLINE_COMMENT_LITERAL:
-			return makeComplitedInlineComment();
-		case MULTILINE_COMMENT_LITERAL:
-			return makeComplitedMultilineComment();
-		};
-	}
-
-	char* getTypeName() const {
-		switch (type) {
-		case EMPTY_LITERAL:
-			return "EMPTY";
-			break;
-		case WORD_LITERAL:
-			return "WORD";
-			break;
-		case STRING_LITERAL:
-			return "STRING";
-			break;
-		case SIGN_LITERAL:
-			return "SIGN";
-			break;
-		}
-	}
-
-	friend bool operator==(Literal l,Literal r) {
-		// value univocal defines type
-		// state does not matter
-		// comparation of content only
-		return l.value == r.value;
-	}
-
-	friend bool operator!=(Literal l,Literal r) {
-		return !(l == r);
 	}
 
 };

@@ -62,8 +62,7 @@ void printProgram(const vector<Literal> &program, bool highlighting = false) {
 	cout << endl;
 }
 
-void printFunctions(const map<string,FunctionDescription> &functions,
-const vector<Literal> &program) {
+void printFunctions(const vector<Literal> &program) {
 	for (auto function : functions) {
 		cout << "function " << function.first << " at "
 		<< function.second.bodyPointer << " :" << endl;

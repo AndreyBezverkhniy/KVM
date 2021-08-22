@@ -1,10 +1,15 @@
-----------------------------------------
-only second read function search
-HARD REFUCTORING
-operator=
-assign->expression
+Now-------------------------------------------
 
-пользовательские функции
-встроенные функции работы с консолью
+take out function search to second program read iteration
+take out expression functions to separate source file
+execeuteBlock divide to functions
+hard refactoring
+
+Future----------------------------------------
+
+add operator=
+exchange assign to expression instruction
+add unar operators +,-,! 
+add inbuilt console work functions
 
 

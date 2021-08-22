@@ -11,8 +11,7 @@
 
 using namespace std;
 
-bool prepareFunctions(map<string,FunctionDescription> &functions,
-const vector<Literal> &program) {
+bool prepareFunctions(const vector<Literal> &program) {
 	for (auto function : functions) {
 		
 		string functionName = function.first;

@@ -13,7 +13,6 @@ a=CON; // reads a from console;
 CON=a; // prints b to console
 
 import "Sample_2.ksc"; // is replacing by src file content
-import "Sample_2.ksc";
 
 CON=c; // 10
 {
@@ -33,16 +32,6 @@ var i=5;
 while(i>=0){ // 5 4 3 2 1 0
 CON=i;
 i=i-1;
-}
-
-function pow(x,n){
-	if(n<0){
-		return 0;
-	}
-	if(n==0){
-		return 1;
-	}
-	return x*pow(x,n-1);
 }
 
 CON=pow(3,0-1);

@@ -103,7 +103,7 @@ int &result) {
 		return true;
 	}
 	if (word == "CON") { // reserved name for console working
-		cout << "> ";
+		cout << "IN> ";
 		cin >> result;
 		literalPointer++; // CON
 		return true;
@@ -339,7 +339,7 @@ bool handleAssignInstruction(vector<Literal> &program, int &literalPointer) {
 	}
 	literalPointer += 1; // ";"
 	if (variableName == "CON") { // reserved name for console working
-		cout << "CON: " << result << endl;
+		cout << "OUT> " << result << endl;
 		return true;
 	}
 	assignVariable(variableName, result); // usual variable assignment
