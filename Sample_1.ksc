@@ -12,8 +12,6 @@ c=5+5*(2-1)-b+10; // assign operator
 a=CON; // reads a from console;
 CON=a; // prints b to console
 
-import "Sample_2.ksc"; // is replacing by src file content
-
 CON=c; // 10
 {
 	var c=20; // this is ok
@@ -40,4 +38,6 @@ CON=pow(3,1);
 CON=pow(3,2);
 CON=pow(3,3);
 CON=pow(3,4);
+
+import "Sample_2.ksc"; // is replacing by src file content
 

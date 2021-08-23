@@ -11,68 +11,116 @@
 
 using namespace std;
 
-bool prepareFunctions(const vector<Literal> &program) {
-	for (auto function : functions) {
-		
-		string functionName = function.first;
-		FunctionDescription &functionDescription = functions[functionName];
-		int &bodyPointer = functionDescription.bodyPointer;
-		
-		functionDescription.arguments.clear();
+template<class T> bool hasVectorAnElement(vector<T> &array, T element) {
+	return find(array.begin(), array.end(), element) != array.end();
+}
 
-		bodyPointer++; // fname
-		
-		if (program[bodyPointer] != Literal("(", SIGN_LITERAL)) {
+void skipCurrentBlock(int &literalIntex) {
+	int blockDeep = 1; // deep of nesting blocks
+	while (literalIntex < program.size()) {
+		if (program[literalIntex] == Literal("{", SIGN_LITERAL)) {
+			blockDeep++;
+		}
+		if (program[literalIntex] == Literal("}", SIGN_LITERAL)) {
+			blockDeep--;
+		}
+		if (blockDeep == 0) {
+			// whole block (with nested ones) is skiped
+			break;
+		}
+		literalIntex++;
+	}
+}
+
+bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
+	
+	if (program[literalIntex] != Literal(")", SIGN_LITERAL)) {
+		string argumentName;
+		for (;;) {
+			if (program[literalIntex].getType() != WORD_LITERAL) {
+				cout << argumentName << " is not an agrument name" << endl;
+				return false;
+			}
+			argumentName = program[literalIntex].getValue();
+			if (hasVectorAnElement(argumentList, argumentName)) {
+				cout << "Repeated name of function argument "
+				<< argumentName << endl;
+				return false;
+			}
+			argumentList.push_back(argumentName);
+			literalIntex++; // argumentName
+			if (program[literalIntex] != Literal(",", SIGN_LITERAL)) {
+				break; // no more arguments
+			}
+			literalIntex++; // ','
+		}
+	}
+	return true;
+
+}
+
+// second iteration of program read
+// collect information about functions declared
+bool prepareFunctions(int &failureIntex) {
+	int &literalIntex=failureIntex;
+	literalIntex=0;
+	while (literalIntex < program.size()) {
+
+		if (program[literalIntex] != Literal("function")) {
+			// search function declaration
+			literalIntex++;
+			continue;
+		}
+		literalIntex++; // function
+
+		string functionName = program[literalIntex].getValue();
+		if (program[literalIntex].getType() != WORD_LITERAL) {
+			cout << functionName << " is not a function name" << endl;
+			return false;
+		}
+		if (doesFunctionExist(functionName)) {
+			cout << "Repeated declaration of function " << functionName << endl;
+			return false;
+		}
+		literalIntex++; // functionName
+
+		if (program[literalIntex] != Literal("(")) {
 			cout << "Expected '(' after function name" << endl;
 			return false;
 		}
-		bodyPointer++; // '('
+		literalIntex++; // '('
 
-		// reading argument names
-		string argumentName;
-		for (;;) {
-			argumentName = program[bodyPointer].getValue();
-			if (program[bodyPointer].getType() != WORD_LITERAL) {
-				cout << argumentName << "is not an agrument name" << endl;
-				return false;
-			}
-			bodyPointer++; // argumentName
-			functionDescription.arguments.push_back(argumentName);
-			if (program[bodyPointer] != Literal(",", SIGN_LITERAL)) {
-				break;
-			}
-			bodyPointer++; // ','
-		}
+		FunctionDescription &functionDescription = functions[functionName];
 
-		if (program[bodyPointer] != Literal(")", SIGN_LITERAL)) {
-			cout << "Expected ')' after function name(<arguments>" << endl;
+		parseArgumentList(literalIntex,functionDescription.arguments);
+
+		if (program[literalIntex] != Literal(")", SIGN_LITERAL)) {
+			cout << "Expected ')' after function name(<arguments" << endl;
 			return false;
 		}
-		bodyPointer++; // ')'
-		if (program[bodyPointer] != Literal("{", SIGN_LITERAL)) {
+		literalIntex++; // ')'
+
+		if (program[literalIntex] != Literal("{", SIGN_LITERAL)) {
 			cout << "Expected '{' after function name(<arguments>)" << endl;
 			return false;
 		}
+		literalIntex++; // '{'
+
+		// save function start point
+		functionDescription.bodyIntex = literalIntex;
+		skipCurrentBlock(literalIntex); // skip function body
+
+		if (program[literalIntex] != Literal("}", SIGN_LITERAL)) {
+			cout << "Expected '}' at the end of function " << functionName
+			<< endl;
+			return false;
+		}
+		literalIntex++; // '}'
 	}
 	return true;
 }
 
-bool readSourceFile(vector<string> &importChain, string sourceFilePath,
-vector<Literal> &program);
-
-bool addFunction(Literal functionLiteral, int literalPointer) {
-	if (functionLiteral.getType() != WORD_LITERAL) {
-		cout << "Function name must be a word" << endl;
-		return false;
-	}
-	string functionName = functionLiteral.getValue();
-	if (functions.find(functionName) != functions.end()) {
-		cout << "Double declaration of function " << functionName << endl;
-		return false;
-	}
-	functions[functionName] = literalPointer;
-	return true;
-}
+bool readSourceFile(vector<string> &importChain, string sourceFilePath);
 
 // returns true if importingFilePath is in import chain,
 // i.e. imports it-self through several imports
@@ -83,14 +131,13 @@ string importingFilePath) {
 	return iter != importChain.end();
 }
 
-void popNLastElements(vector<Literal> &program, int n) {
+void popNLastLiterals(int n) {
 	for (int i = 0; i < n; i ++) {
 		program.pop_back();
 	}
 }
 
-bool expandImportInstruction(vector<string> &importChain,
-vector<Literal> &program) {
+bool expandImportInstruction(vector<string> &importChain) {
 	string importingFilePath; // file to import
 	importingFilePath = program[program.size()-2].getValue();
 	if (checkRecursiveImport(importChain, importingFilePath)) {
@@ -103,12 +150,12 @@ vector<Literal> &program) {
 		cout << importingFilePath << endl;
 		return false;
 	}
-	popNLastElements(program,3); // delete import instruction
-	return readSourceFile(importChain, importingFilePath, program);
+	popNLastLiterals(3); // delete import instruction
+	return readSourceFile(importChain, importingFilePath);
 }
 
 // check if program ends by import instruction
-bool endsByImportInstruction(const vector<Literal> &program) {
+bool endsByImportInstruction() {
 	// import instruction consists of
 	// WORD(import) STRING(srcFilePath) SIGN(;)
 	int size = program.size();
@@ -136,8 +183,7 @@ void closeFileAndPopFromImportChain(FILE *fp, vector<string> &importChain){
 // reads program farther from source file
 // importChain is order of nested imports, includes the root source file
 // returns true if success
-bool readSourceFile(vector<string> &importChain, string sourceFilePath,
-vector<Literal> &program) {
+bool readSourceFile(vector<string> &importChain, string sourceFilePath) {
 
 	FILE *fp;
 	fp = fopen(sourceFilePath.c_str(), "rb");
@@ -181,19 +227,10 @@ vector<Literal> &program) {
 			}
 			literal.makeEmpty();           // initiate next literal
 			literal.addNextSymbol(byte);   // by symbol
-			// collect functions
-			if (program.size() > 1 &&
-			program[program.size() - 2] == Literal("function", WORD_LITERAL)) {
-				Literal functionLiteral = program[program.size()-1];
-				int literalPointer = program.size() - 1;
-				if (!addFunction(functionLiteral, literalPointer)) {
-					return false;
-				}
-			}
 			// handle import instruction if presents
-			if (endsByImportInstruction(program)) {
+			if (endsByImportInstruction()) {
 				bool importedSuccessfully =
-				expandImportInstruction(importChain, program);
+				expandImportInstruction(importChain);
 				if (!importedSuccessfully) {
 					// expanding import failed
 					closeFileAndPopFromImportChain(fp, importChain);
@@ -210,11 +247,25 @@ vector<Literal> &program) {
 
 }
 
-// it's just shell for readSourceFile function to create variable
-// importChain for passing to the first argument of reference type
-bool readProgram(string sourceFilePath, vector<Literal> &program) {
+// gets program from sourceFilePath and imported ones
+// collects information about function declarations in program
+bool readProgram(string sourceFilePath) {
+
 	vector<string> importChain;
 	// chain of nested file imports for recursive imports tracing
 	// root source file considered to be the first member of the chain
-	return readSourceFile(importChain, sourceFilePath, program);
+	program.clear();
+	if (!readSourceFile(importChain, sourceFilePath)) {
+		return false;
+	}
+
+	int failureIndex; // literal index where function preparation failed
+	if (!prepareFunctions(failureIndex)) {
+		cout << "Functions preparation failed at literal index "
+		<< failureIndex << endl;
+		return false;
+	}
+
+	return true;
+
 }

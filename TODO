@@ -3,7 +3,9 @@ Now-------------------------------------------
 take out function search to second program read iteration
 take out expression functions to separate source file
 execeuteBlock divide to functions
+add EndOfProgram literal
 hard refactoring
+expression returns not number value but {objectReference,objectValue}
 
 Future----------------------------------------
 

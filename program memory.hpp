@@ -16,12 +16,18 @@ value of variable is getting in the same way: variables[name].top().
 #include <string>
 #include <stack>
 #include "program function.hpp"
+#include "literal.hpp"
 
 using namespace std;
 
+vector<Literal> program;
 map<string,FunctionDescription> functions;
-
 map<string,stack<int>> variables;
+
+bool doesFunctionExist(string functionName) {
+	// was it declared
+	return functions.find(functionName) != functions.end();
+}
 
 bool doesVariableExist(string variableName) {
 	// was it declared at least one time?

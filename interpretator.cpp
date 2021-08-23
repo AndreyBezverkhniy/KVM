@@ -12,7 +12,6 @@ reads whole program and executes, if it all is possible.
 using namespace std;
 
 int main(int argc, char* argv[]) {
-
 	// utility recieves 1 argument - source file path
 	if (argc != 2) {
 		cout << "Usage: kvm source-file-path" << endl;
@@ -20,30 +19,11 @@ int main(int argc, char* argv[]) {
 	}
 	string sourceFilePath = argv[1];
 
-	// reading program
-	vector<Literal> program;
-	if (!readProgram(sourceFilePath, program)) {
+	if (!readProgram(sourceFilePath)) {
 		return 0; // reading failed
 	}
-
-	if (!prepareFunctions(program)) {
-		return 0; // preparing failed
-	}
-
-	printProgram(program);
-
-	//printFunctions(program);
-
-	// execution
-	cout << endl << "EXECUTION" << endl << endl;
-	bool returned;
-	int returnValue;
-	bool success = execute(program, returnValue, returned);
-	cout << endl;
-	if (returned) {
-		cout << "return " << returnValue << endl;
-	}
-	cout << "EXECUTION " << (success ? "FINISHED" : "FAILED") << endl;
+	printProgram();
+	execute();
 
 	return 0;
 }

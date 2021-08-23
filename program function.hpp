@@ -6,10 +6,10 @@
 using namespace std;
 
 struct FunctionDescription {
-    int bodyPointer;
+    int bodyIntex;
     vector<string> arguments;
     FunctionDescription() = default;
-    FunctionDescription(int _bodyPointer) {
-        bodyPointer = _bodyPointer;
+    FunctionDescription(int _bodyIntex) {
+        bodyIntex = _bodyIntex;
     }
 };

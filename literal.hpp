@@ -27,7 +27,7 @@ class Literal{
 		makeEmpty();
 	}
 
-	Literal(string _value, char _type) {
+	Literal(string _value, char _type=STRING_LITERAL) {
 		value = _value;
 		type = _type;
 		// user literal instance considered to be complited

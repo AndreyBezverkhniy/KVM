@@ -8,14 +8,13 @@
 #include "literal.hpp"
 #include "program memory.hpp"
 #include "program function.hpp"
+#include "program read.hpp"
 
 using namespace std;
 
-bool calculateExpression(vector<Literal> &program, int &literalPointer,
-int &result);
+bool calculateExpression(int &literalIntex, int &result);
 
-bool executeBlock(vector<Literal> &program, int &literalPointer,
-int &returnValue, bool &returned);
+bool executeBlock(int &literalIntex, int &returnValue, bool &returned);
 
 // chech if word represents unsigned int number
 bool isNumber(string word) {
@@ -39,53 +38,52 @@ int toNumber(string word) {
 	return result;
 }
 
-bool parseFunctionValue(vector<Literal> &program, int &literalPointer,
-int &result) {
-	string functionName = program[literalPointer].getValue();
+bool parseFunctionValue(int &literalIntex, int &result) {
+	string functionName = program[literalIntex].getValue();
 	FunctionDescription &description = functions[functionName];
-	literalPointer++; // functionName
-	if (program[literalPointer] != Literal("(",SIGN_LITERAL)) {
+	literalIntex++; // functionName
+	if (program[literalIntex] != Literal("(",SIGN_LITERAL)) {
 		cout << "Expected '(' after function call: " << functionName << endl;
 		return false;
 	}
-	literalPointer++; // (
+	literalIntex++; // (
 	int argumentNumber = 0;
 	vector<int> argumentsPassed;
 	while (argumentNumber < description.arguments.size()) {
 		if (argumentNumber > 0) {
-			if (program[literalPointer] != Literal(",",SIGN_LITERAL)) {
+			if (program[literalIntex] != Literal(",",SIGN_LITERAL)) {
 				cout << "Expected ',' between arguments in call of function: "
 				<< functionName << endl;
 				return false;
 			}
-			literalPointer++; // ,
+			literalIntex++; // ,
 		}
 		int argumentPassed;
-		if (!calculateExpression(program, literalPointer, argumentPassed)) {
+		if (!calculateExpression(literalIntex, argumentPassed)) {
 			return false;
 		}
 		argumentsPassed.push_back(argumentPassed);
 		argumentNumber++;
 	}
-	if (program[literalPointer] != Literal(")",SIGN_LITERAL)) {
+	if (program[literalIntex] != Literal(")",SIGN_LITERAL)) {
 		cout << "Expected ')' after function call: " << functionName << endl;
 		return false;
 	}
-	literalPointer++; // )
+	literalIntex++; // )
 	for (int argumentIndex = 0; argumentIndex < argumentsPassed.size();
 	argumentIndex++) {
 		string argumentName = description.arguments[argumentIndex];
 		declareVariable(argumentName);
 		assignVariable(argumentName,argumentsPassed[argumentIndex]);
 	}
-	int savedPointer = literalPointer;
-	literalPointer = description.bodyPointer;
+	int savedIntex = literalIntex;
+	literalIntex = description.bodyIntex;
 	result = 0; // by default
 	bool garbage;
-	if (!executeBlock(program,literalPointer,result,garbage)) {
+	if (!executeBlock(literalIntex,result,garbage)) {
 		return false;
 	}
-	literalPointer = savedPointer;
+	literalIntex = savedIntex;
 	for (auto argumentName : description.arguments) {
 		deleteVariable(argumentName);
 	}
@@ -94,55 +92,55 @@ int &result) {
 
 // handles numbers and variables
 // saves result to corresponding argument-variable
-bool parseLiteralValue(vector<Literal> &program, int &literalPointer,
+bool parseLiteralValue(int &literalIntex,
 int &result) {
-	string word = program[literalPointer].getValue();
+	string word = program[literalIntex].getValue();
 	if (isNumber(word)) {
 		result = toNumber(word);
-		literalPointer++; // number
+		literalIntex++; // number
 		return true;
 	}
 	if (word == "CON") { // reserved name for console working
 		cout << "IN> ";
 		cin >> result;
-		literalPointer++; // CON
+		literalIntex++; // CON
 		return true;
 	}
 	if (functions.find(word) != functions.end()) {
-		return parseFunctionValue(program, literalPointer, result);
+		return parseFunctionValue(literalIntex, result);
 	}
 	if (!doesVariableExist(word)) {
 		cout << "Variable " << word << " was not declared" << endl;
 		return false;
 	}
 	result = getVariableValue(word);
-	literalPointer++; // variable
+	literalIntex++; // variable
 	return true;
 }
 
-bool parseOperand(vector<Literal> &program, int &literalPointer, int &operand) {
-	if (program[literalPointer].getType() == WORD_LITERAL) {
+bool parseOperand(int &literalIntex, int &operand) {
+	if (program[literalIntex].getType() == WORD_LITERAL) {
 		// number or variable
-		if (!parseLiteralValue(program, literalPointer, operand)) {
+		if (!parseLiteralValue(literalIntex, operand)) {
 			return false;
 		}
 		return true;
-	} else if (program[literalPointer] == Literal("(",SIGN_LITERAL)) {
+	} else if (program[literalIntex] == Literal("(",SIGN_LITERAL)) {
 		// calculating expression in brackets to just number operand
-		literalPointer++; // opening '('
+		literalIntex++; // opening '('
 		int expressionValue;
-		if (!calculateExpression(program, literalPointer, expressionValue)) {
+		if (!calculateExpression(literalIntex, expressionValue)) {
 			return false;
 		}
-		if (program[literalPointer] != Literal(")", SIGN_LITERAL)) {
+		if (program[literalIntex] != Literal(")", SIGN_LITERAL)) {
 			cout << "Not complited patherness sequence" << endl;
 			return false;
 		}
-		literalPointer++; // closing ')'
+		literalIntex++; // closing ')'
 		operand = expressionValue;
 		return true;
 	}
-	cout << "Wrong operand: " << program[literalPointer].getValue() << endl;
+	cout << "Wrong operand: " << program[literalIntex].getValue() << endl;
 	return false;
 }
 
@@ -167,9 +165,7 @@ int getOperatorPriority(string math_operator) {
 }
 
 bool calculate(int operand1, int operand2, string math_operator, int &result) {
-	if (false) {
-		//just to align elseif
-	} else if (math_operator == "||") {
+	if (math_operator == "||") {
 		result = operand1 || operand2;
 	} else if (math_operator == "&&") {
 		result = operand1 && operand2;
@@ -201,12 +197,12 @@ bool calculate(int operand1, int operand2, string math_operator, int &result) {
 	return true;
 }
 
-bool parseOperator(vector<Literal> &program, int &literalPointer, string &math_operator) {
-	if (program[literalPointer].getType() == SIGN_LITERAL){
-		string sign = program[literalPointer].getValue();
+bool parseOperator(int &literalIntex, string &math_operator) {
+	if (program[literalIntex].getType() == SIGN_LITERAL){
+		string sign = program[literalIntex].getValue();
 		if (getOperatorPriority(sign) != 0) {
 			math_operator = sign;
-			literalPointer++;
+			literalIntex++;
 			return true;
 		}
 	}
@@ -215,7 +211,7 @@ bool parseOperator(vector<Literal> &program, int &literalPointer, string &math_o
 
 // calculates expressions in brackets, then separates simplified expression to
 // operators (ints) and operands
-bool parseExpression(vector<Literal> &program, int &literalPointer,
+bool parseExpression(int &literalIntex,
 vector<int> &operands, vector<string> &operators) {
 	// expression contain math signs, correct bracket sequences, numbers,
 	// variables. ends by ';', ')', ',' signs and if vector ends
@@ -224,22 +220,22 @@ vector<int> &operands, vector<string> &operators) {
 		string math_operator;
 		// if operand is bracket with expression inside, it calculates and
 		// result is used as operand
-		if (!parseOperand(program, literalPointer, operand)) {
+		if (!parseOperand(literalIntex, operand)) {
 			return false;
 		}
-		if (!parseOperator(program, literalPointer, math_operator)) {
+		if (!parseOperator(literalIntex, math_operator)) {
 			// check end of expression
-			if (literalPointer == program.size()
-			|| program[literalPointer].getValue() == ";"
-			|| program[literalPointer].getValue() == ")"
-			|| program[literalPointer].getValue() == ",") {
+			if (literalIntex == program.size()
+			|| program[literalIntex].getValue() == ";"
+			|| program[literalIntex].getValue() == ")"
+			|| program[literalIntex].getValue() == ",") {
 				operands.push_back(operand);
 				operators.push_back(";"); // considered as lowest priority
 				// empty operator
 				break; // expression parsed successfully
 			}
 			// invalid operator
-			cout << "Incorrect operator: " << program[literalPointer].getValue() << endl;
+			cout << "Incorrect operator: " << program[literalIntex].getValue() << endl;
 			return false;
 		}
 		operands.push_back(operand);
@@ -291,13 +287,12 @@ const vector<string> &operators, int &result) {
 // gets values of expressions in brackets
 // then impliments two-stack-algorithm to math expression without brackets
 // saves result to corresponding argument-variable
-bool calculateExpression(vector<Literal> &program, int &literalPointer,
-int &result) {
+bool calculateExpression(int &literalIntex, int &result) {
 	// preparing expression for algorithm: separating operands from operators
 	// and calculating expresions in brackets
 	vector<int> operands;
 	vector<string> operators;
-	if (!parseExpression(program,literalPointer,operands,operators)) {
+	if (!parseExpression(literalIntex,operands,operators)) {
 		return false;
 	}
 	if (operands.size() == 1) {
@@ -312,8 +307,8 @@ int &result) {
 }
 
 // handles assignment instruction
-bool handleAssignInstruction(vector<Literal> &program, int &literalPointer) {
-	string variableName = program[literalPointer].getValue();
+bool handleAssignInstruction(int &literalIntex) {
+	string variableName = program[literalIntex].getValue();
 	if (isNumber(variableName)) {
 		cout << "Can not assign new value to a number: " << variableName
 		<< endl;
@@ -323,21 +318,21 @@ bool handleAssignInstruction(vector<Literal> &program, int &literalPointer) {
 		cout << "LVariable " << variableName << " was not declared" << endl;
 		return false;
 	}
-	if (program[literalPointer + 1] != Literal("=",SIGN_LITERAL)) {
+	if (program[literalIntex + 1] != Literal("=",SIGN_LITERAL)) {
 		cout << "Assignment pattern expects operator '=' after variable name"
 		<< endl;
 		return false;
 	}
-	literalPointer += 2; // "name ="
+	literalIntex += 2; // "name ="
 	int result;
-	if (!calculateExpression(program, literalPointer, result)) {
+	if (!calculateExpression(literalIntex, result)) {
 		return false;
 	}
-	if (program[literalPointer] != Literal(";",SIGN_LITERAL)) {
+	if (program[literalIntex] != Literal(";",SIGN_LITERAL)) {
 		cout << "Template define expects ';' at the end" << endl;
 		return false;
 	}
-	literalPointer += 1; // ";"
+	literalIntex += 1; // ";"
 	if (variableName == "CON") { // reserved name for console working
 		cout << "OUT> " << result << endl;
 		return true;
@@ -347,126 +342,110 @@ bool handleAssignInstruction(vector<Literal> &program, int &literalPointer) {
 }
 
 // handles variable declaration instruction
-bool handleVarInstruction(vector<Literal> &program, int &literalPointer, vector<string> &variableNames) {
-	literalPointer++; // WORD(var)
+bool handleVarInstruction(int &literalIntex, vector<string> &variableNames) {
+	literalIntex++; // WORD(var)
 	for (;;) {
-		if (program[literalPointer].getType() != WORD_LITERAL) {
+		if (program[literalIntex].getType() != WORD_LITERAL) {
 			cout << "Template var meets incorrect format of variable name" << endl;
 			return false;
 		}
-		string name = program[literalPointer].getValue();
+		string name = program[literalIntex].getValue();
 		variableNames.push_back(name);
 		declareVariable(name);
-		literalPointer++; // WORD(name)
-		if (program[literalPointer] == Literal("=",SIGN_LITERAL)) {
-			literalPointer++; // SIGN(=)
+		literalIntex++; // WORD(name)
+		if (program[literalIntex] == Literal("=",SIGN_LITERAL)) {
+			literalIntex++; // SIGN(=)
 			int value;
-			calculateExpression(program, literalPointer, value);
+			calculateExpression(literalIntex, value);
 			assignVariable(name, value);
 		}
-		if (program[literalPointer] == Literal(";",SIGN_LITERAL)) {
-			literalPointer++; // SIGN(;)
+		if (program[literalIntex] == Literal(";",SIGN_LITERAL)) {
+			literalIntex++; // SIGN(;)
 			break;
 		}
-		if (program[literalPointer] != Literal(",",SIGN_LITERAL)) {
+		if (program[literalIntex] != Literal(",",SIGN_LITERAL)) {
 			cout << "Variable declaration pattern expects "
 			<< "';' or ',' after name " << name << endl;
 			return false;
 		}
-		literalPointer++; // SIGN(,)
+		literalIntex++; // SIGN(,)
 	}
 	return true;
 }
 
-void skipCurrentBlock(vector<Literal> &program, int &literalPointer) {
-	int blockDeep = 1; // block deep level
-	while (literalPointer < program.size()) {
-		if (program[literalPointer] == Literal("{", SIGN_LITERAL)) {
-			blockDeep++;
-		}
-		if (program[literalPointer] == Literal("}", SIGN_LITERAL)) {
-			blockDeep--;
-		}
-		if (blockDeep == 0) {
+bool findFromPosition(int &literalIntex, Literal literal) {
+	while (literalIntex < program.size()) {
+		if (program[literalIntex] == literal) {
 			break;
 		}
-		literalPointer++;
+		literalIntex++;
 	}
-}
-
-bool findFromPosition(vector<Literal> &program, int &literalPointer, Literal literal) {
-	while (literalPointer < program.size()) {
-		if (program[literalPointer] == literal) {
-			break;
-		}
-		literalPointer++;
-	}
-	return (literalPointer < program.size());
+	return (literalIntex < program.size());
 }
 
 // handles if instruction
-bool handleIfInstruction(vector<Literal> &program, int &literalPointer,
+bool handleIfInstruction(int &literalIntex,
 int &condition, int &returnValue, bool &returned) {
-	if (program[literalPointer+1] != Literal("(",SIGN_LITERAL)) {
+	if (program[literalIntex+1] != Literal("(",SIGN_LITERAL)) {
 		cout << "Expects '(' after if/while" << endl;
 		return false;
 	}
-	literalPointer += 2; // WORD(if) SIGN('(')
-	if (!calculateExpression(program,literalPointer,condition)) {
+	literalIntex += 2; // WORD(if) SIGN('(')
+	if (!calculateExpression(literalIntex,condition)) {
 		return false;
 	}
-	if (program[literalPointer] != Literal(")",SIGN_LITERAL)) {
+	if (program[literalIntex] != Literal(")",SIGN_LITERAL)) {
 		cout << "Expects ')' after if/while(condition" << endl;
 		return false;
 	}
-	if (program[literalPointer+1] != Literal("{",SIGN_LITERAL)) {
+	if (program[literalIntex+1] != Literal("{",SIGN_LITERAL)) {
 		cout << "Expects '{' after if/while(condition)" << endl;
 		return false;
 	}
-	literalPointer += 2; // SIGN(')') SIGN('{')
+	literalIntex += 2; // SIGN(')') SIGN('{')
 	if (condition) {
-		if (!executeBlock(program, literalPointer, returnValue, returned)) {
+		if (!executeBlock(literalIntex, returnValue, returned)) {
 			return false;
 		}
 	} else {
-		skipCurrentBlock(program, literalPointer);
+		skipCurrentBlock(literalIntex);
 	}
-	if (program[literalPointer] != Literal("}",SIGN_LITERAL)) {
+	if (program[literalIntex] != Literal("}",SIGN_LITERAL)) {
 		cout << "Expects '}' after block end" << endl;
 		return false;
 	}
-	literalPointer ++; // SIGN('}')
+	literalIntex ++; // SIGN('}')
 	return true;
 }
 
-// starts program execution from literalPointer
+// starts program execution from literalIntex
 // returns true if success
-bool executeBlock(vector<Literal> &program, int &literalPointer, 
+bool executeBlock(int &literalIntex, 
 int &returnValue, bool &returned) {
 	returned = false;
 	set<string> scopeVariables; // variables created in block witch scope
 	// of the block
-	while (literalPointer < program.size()
-	&& program[literalPointer] != Literal("}", SIGN_LITERAL)) {
-		if (program[literalPointer] == Literal("{", SIGN_LITERAL)) {
+	while (literalIntex < program.size()
+	&& program[literalIntex] != Literal("}", SIGN_LITERAL)) {
+		if (program[literalIntex] == Literal("{", SIGN_LITERAL)) {
 			// {...}
-			literalPointer++; // opening '}'
-			if (!executeBlock(program, literalPointer, returnValue,
+			literalIntex++; // opening '}'
+			if (!executeBlock(literalIntex, returnValue,
 			returned)) {
 				return false;
 			}
-			if (program[literalPointer] != Literal("}", SIGN_LITERAL)) {
+			if (program[literalIntex] != Literal("}", SIGN_LITERAL)) {
 				cout << "Block end character '}' expected" << endl;
 				return false;
 			}
-			literalPointer++; // closing '}'
+			literalIntex++; // closing '}'
 			if (returned) {
-				skipCurrentBlock(program, literalPointer);
+				skipCurrentBlock(literalIntex);
 			}
-		} else 	if (program[literalPointer] == Literal("var",WORD_LITERAL)) {
+		} else 	if (program[literalIntex] == Literal("var",WORD_LITERAL)) {
 			// var name;
 			vector<string> variableNames;
-			if (!handleVarInstruction(program, literalPointer, variableNames)) {
+			if (!handleVarInstruction(literalIntex, variableNames)) {
 				return false;
 			}
 			for (auto name : variableNames) {
@@ -482,64 +461,63 @@ int &returnValue, bool &returned) {
 				}
 				scopeVariables.insert(name);
 			}
-		} else 	if (program[literalPointer] == Literal("return",WORD_LITERAL)) {
+		} else 	if (program[literalIntex] == Literal("return",WORD_LITERAL)) {
 			// return <expression>;
-			literalPointer++; // return
-			if (!calculateExpression(program, literalPointer, returnValue)) {
+			literalIntex++; // return
+			if (!calculateExpression(literalIntex, returnValue)) {
 				return false;
 			}
-			if (program[literalPointer] != Literal(";", SIGN_LITERAL)) {
+			if (program[literalIntex] != Literal(";", SIGN_LITERAL)) {
 				cout << "Expects ';' after return <expression>" << endl;
 				return false;
 			}
-			literalPointer++; // ';'
-			skipCurrentBlock(program,literalPointer);
+			literalIntex++; // ';'
+			skipCurrentBlock(literalIntex);
 			returned = true;
-		} else 	if (program[literalPointer] == Literal("function",WORD_LITERAL)) {
+		} else 	if (program[literalIntex] == Literal("function",WORD_LITERAL)) {
 			// function fname(<arguments>) {...}
-			if (!findFromPosition(program, literalPointer,
-			Literal("{",SIGN_LITERAL))) {
+			if (!findFromPosition(literalIntex,Literal("{",SIGN_LITERAL))) {
 				return false;
 			}
-			literalPointer++; // '{'
-			skipCurrentBlock(program, literalPointer);
-			if (program[literalPointer] != Literal("}",SIGN_LITERAL)) {
+			literalIntex++; // '{'
+			skipCurrentBlock(literalIntex);
+			if (program[literalIntex] != Literal("}",SIGN_LITERAL)) {
 				cout << "Function body expect '}' at the end" << endl;
 				return false;
 			}
-			literalPointer++; // '}'
-		} else 	if (program[literalPointer] == Literal("if",WORD_LITERAL)) {
+			literalIntex++; // '}'
+		} else 	if (program[literalIntex] == Literal("if",WORD_LITERAL)) {
 			// if (<expression>) {...}
 			int condition;
-			if (!handleIfInstruction(program, literalPointer, condition,
+			if (!handleIfInstruction(literalIntex, condition,
 			returnValue, returned)) {
 				return false;
 			}
 			if (returned) {
-				skipCurrentBlock(program, literalPointer);
+				skipCurrentBlock(literalIntex);
 			}
-		} else 	if (program[literalPointer] == Literal("while",WORD_LITERAL)) {
+		} else 	if (program[literalIntex] == Literal("while",WORD_LITERAL)) {
 			// while (<expression>) {...}
 			int condition;
-			int circlePointer = literalPointer;
+			int circleIntex = literalIntex;
 			do {
-				literalPointer = circlePointer;
-				if (!handleIfInstruction(program, literalPointer, condition,
+				literalIntex = circleIntex;
+				if (!handleIfInstruction(literalIntex, condition,
 				returnValue, returned)) {
 					return false;
 				}
 				if (returned) {
-					skipCurrentBlock(program, literalPointer);
+					skipCurrentBlock(literalIntex);
 					break;
 				}
 			} while (condition);
-		} else if (program[literalPointer].getType() != WORD_LITERAL) {
+		} else if (program[literalIntex].getType() != WORD_LITERAL) {
 			cout << "Unexpected non-word literal: "
-			<< program[literalPointer].getValue() << endl;
+			<< program[literalIntex].getValue() << endl;
 			return false;
 		} else {
 			// name=<expression>;
-			if (!handleAssignInstruction(program, literalPointer)) {
+			if (!handleAssignInstruction(literalIntex)) {
 				return false;
 			}
 		}
@@ -551,12 +529,20 @@ int &returnValue, bool &returned) {
 }
 
 // it's just shell for executeBlock function to execute whole program as block
-bool execute(vector<Literal> &program,  int &returnValue, bool &returned) {
-	int literalPointer = 0;
-	bool success = executeBlock(program, literalPointer, returnValue,
-	returned);
-	if (!success) {
-		cout << "Error: literalPointer=" << literalPointer << endl;
+bool execute() {
+	cout << endl << "EXECUTION" << endl << endl;
+	int literalIntex = 0;
+	int returnValue;
+	bool returned;
+	bool success = executeBlock(literalIntex, returnValue, returned);
+	cout << endl;
+	if (returned) {
+		cout << "return " << returnValue << endl;
+	}
+	if (success) {
+		cout << "EXECUTION " << "FINISHED" << endl;
+	} else {
+		cout << "EXECUTION " << "FINISHED at: literalIntex=" << literalIntex << endl;
 	}
 	return success;
 }

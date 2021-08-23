@@ -15,12 +15,14 @@ void printIndent(int indent) {
 	}
 }
 
-void printProgram(const vector<Literal> &program, bool highlighting = false) {
+void printFunctions();
+
+void printProgram(bool highlighting = false) {
 	int indent = 0;
 	bool instructionStarts = true;
 	for (int i = 0; i < program.size(); i++ ) {
 		if (instructionStarts) {
-			if (program[i] == Literal("}", SIGN_LITERAL)) {
+			if (program[i] == Literal("}")) {
 				printIndent(indent - 1);
 			} else {
 				printIndent(indent);
@@ -28,7 +30,7 @@ void printProgram(const vector<Literal> &program, bool highlighting = false) {
 			instructionStarts = false;
 		}
 		/*for (auto functionDescription: functions) {
-			if (functionDescription.second.bodyPointer == i) {
+			if (functionDescription.second.bodyIntex == i) {
 				cout << "funciton{" << functionDescription.first << "}";
 			}
 		} //*/
@@ -60,22 +62,25 @@ void printProgram(const vector<Literal> &program, bool highlighting = false) {
 		}
 	}
 	cout << endl;
+	printFunctions();
 }
 
-void printFunctions(const vector<Literal> &program) {
-	for (auto function : functions) {
-		cout << "function " << function.first << " at "
-		<< function.second.bodyPointer << " :" << endl;
-		const auto &arguments = function.second.arguments;
+void printFunctions() {
+	for (auto NameDescription : functions) {
+		string functionName = NameDescription.first;
+		FunctionDescription functionDescription = NameDescription.second;
+		cout << "function " << functionName << " at "
+		<< functionDescription.bodyIntex << " :" << endl;
+		const auto arguments = functionDescription.arguments;
 		for (int i=0; i < arguments.size(); i++) {
 			cout << "arg" << i << "=" << arguments[i] << " ";
 		}
 		cout << endl;
-		int bodyPointer = function.second.bodyPointer;
+		int bodyIntex = functionDescription.bodyIntex;
 		for (int i = 0; i < 4; i++) {
-			cout << program[bodyPointer+i].getValue() << " ";
+			cout << program[bodyIntex+i].getValue() << " ";
 		}
 		cout << endl;
-		cout << "FEnd" << endl;
+		cout << "F-End" << endl;
 	}
 }
