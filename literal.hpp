@@ -12,13 +12,13 @@ const char STRING_LITERAL = 3; // "..."
 const char SIGN_LITERAL = 4;
 const char INLINE_COMMENT_LITERAL = 5; // //...\n
 const char MULTILINE_COMMENT_LITERAL = 6; // /* ...*/
-const char EOF_LITERAL = 7; // for detecting end of program without check of
-// vector size. artificial constructing only
+const char EOF_LITERAL = 7; // added for detecting end of program without
+// check of vector size. artificial constructing only
 
 // literal can be build character by character
-// start state is "in progress", that changes to "complited" or "failed"
+// start state is "in progress", that changes to "completed" or "failed"
 const char IN_PROGRESS_LITERAL_STATE = 0;
-const char COMPLITED_LITERAL_STATE = 1;
+const char COMPLETED_LITERAL_STATE = 1;
 const char FAILED_LITERAL_STATE = 2;
 
 class Literal{
@@ -29,17 +29,19 @@ class Literal{
 		makeEmpty();
 	}
 
-	Literal(string _value, char _type=STRING_LITERAL) {
-		value = _value;
-		type = _type;
-		// user literal instance considered to be complited
-		state = COMPLITED_LITERAL_STATE;
+	Literal(string _value) {
+		makeEmpty();
+		for (char symbol : _value) {
+			addNextSymbol(symbol);
+		}
+		makeCompleted();
 	}
 
-	void makeEOF() {
-		 type = EOF_LITERAL;
-		value = "";
-		state = COMPLITED_LITERAL_STATE;
+	Literal(string _value, int _type) {
+		// user specified literal
+		value = _value;
+		type = _type;
+		state = COMPLETED_LITERAL_STATE;
 	}
 
 	void makeEmpty() {
@@ -65,8 +67,8 @@ class Literal{
 		return state;
 	}
 
-	bool isComplited() const {
-		return state == COMPLITED_LITERAL_STATE;
+	bool isCompleted() const {
+		return state == COMPLETED_LITERAL_STATE;
 	}
 
 	bool isFailed() const {
@@ -79,7 +81,7 @@ class Literal{
 
 	bool addNextSymbol(char character) {
 		if (state != IN_PROGRESS_LITERAL_STATE) {
-			// No way to expand complited or failed literal
+			// No way to expand completed or failed literal
 			return false;
 		}
 		switch (type) {
@@ -101,25 +103,25 @@ class Literal{
 		return false;
 	}
 
-	void makeComplited() {
+	void makeCompleted() {
 		if (state != IN_PROGRESS_LITERAL_STATE) {
 			  return;
 		}
 		switch (type) {
 		case EMPTY_LITERAL:
-			return makeComplitedEmpty();
+			return makeCompletedEmpty();
 		case SPACES_LITERAL:
-			return makeComplitedSpaces();
+			return makeCompletedSpaces();
 		case WORD_LITERAL:
-			return makeComplitedWord();
+			return makeCompletedWord();
 		case STRING_LITERAL:
-			return makeComplitedString();
+			return makeCompletedString();
 		case SIGN_LITERAL:
-			return makeComplitedSign();
+			return makeCompletedSign();
 		case INLINE_COMMENT_LITERAL:
-			return makeComplitedInlineComment();
+			return makeCompletedInlineComment();
 		case MULTILINE_COMMENT_LITERAL:
-			return makeComplitedMultilineComment();
+			return makeCompletedMultilineComment();
 		};
 	}
 
@@ -127,6 +129,9 @@ class Literal{
 		switch (type) {
 		case EMPTY_LITERAL:
 			return "EMPTY";
+			break;
+		case SPACES_LITERAL:
+			return "SPACES";
 			break;
 		case WORD_LITERAL:
 			return "WORD";
@@ -137,14 +142,21 @@ class Literal{
 		case SIGN_LITERAL:
 			return "SIGN";
 			break;
+		case INLINE_COMMENT_LITERAL:
+			return "INLINE_COMMENT";
+			break;
+		case MULTILINE_COMMENT_LITERAL:
+			return "MULTILINE_COMMENT";
+			break;
+		case EOF_LITERAL:
+			return "EOF";
+			break;
 		}
 	}
 
 	friend bool operator==(Literal l,Literal r) {
-		// value univocal defines type
 		// state does not matter
-		// comparation of content only
-		return l.value == r.value;
+		return l.type == r.type && l.value == r.value;
 	}
 
 	friend bool operator!=(Literal l,Literal r) {
@@ -184,7 +196,7 @@ class Literal{
 			value += character;
 			return true;
 		}
-		state = COMPLITED_LITERAL_STATE; // spaces ends
+		state = COMPLETED_LITERAL_STATE; // spaces ends
 		return false;
 	}
 
@@ -196,13 +208,13 @@ class Literal{
 			value += character;
 			return true;
 		}
-		state = COMPLITED_LITERAL_STATE; // word ends
+		state = COMPLETED_LITERAL_STATE; // word ends
 		return false;
 	}
 
 	bool addSymbolToString(char character) {
 		if (character == '"') {
-			state = COMPLITED_LITERAL_STATE; // string ends
+			state = COMPLETED_LITERAL_STATE; // string ends
 		} else {
 			value += character;
 		}
@@ -224,16 +236,16 @@ class Literal{
 		&& character == '=') || (value == "|" && character == '|') ||
 		(value == "&" && character == '&') ) {
 			value += character;
-			state = COMPLITED_LITERAL_STATE;
+			state = COMPLETED_LITERAL_STATE;
 			return true;
 		}
-		state = COMPLITED_LITERAL_STATE;
+		state = COMPLETED_LITERAL_STATE;
 		return false;
 	}
 
 	bool addSymbolToInlineComment(char character) {
 		if (character == '\n') {
-			state = COMPLITED_LITERAL_STATE;
+			state = COMPLETED_LITERAL_STATE;
 			return false;
 		}
 		value += character;
@@ -244,42 +256,42 @@ class Literal{
 		if (character == '/' && value.size() > 0
 		&& value[value.size()-1] == '*') {
 			value.pop_back(); // delete '*' character
-			state = COMPLITED_LITERAL_STATE;
+			state = COMPLETED_LITERAL_STATE;
 		} else {
 			value += character;
 		}
 		return true;
 	}
 
-	void makeComplitedEmpty() {
-		// can't make empty a complited literal
-		return;
+	void makeCompletedEmpty() {
+		// can't make empty a completed literal
+		state = FAILED_LITERAL_STATE;
 	}
 
-	void makeComplitedSpaces() {
-		state = COMPLITED_LITERAL_STATE; // just consider it to be
+	void makeCompletedSpaces() {
+		state = COMPLETED_LITERAL_STATE; // just consider it to be
 	}
 
-	void makeComplitedWord() {
-		state = COMPLITED_LITERAL_STATE; // just consider it to be
+	void makeCompletedWord() {
+		state = COMPLETED_LITERAL_STATE; // just consider it to be
 	}
 
-	void makeComplitedString() {
-		// state complited occurs explicitely when '"' is added
+	void makeCompletedString() {
+		// state completed occurs explicitely when '"' is added
 		// otherwise string is not ended by '"' that means fail
 		state = FAILED_LITERAL_STATE;
 	}
 
-	void makeComplitedSign() {
-		state = COMPLITED_LITERAL_STATE; // just consider it to be
+	void makeCompletedSign() {
+		state = COMPLETED_LITERAL_STATE; // just consider it to be
 	}
 
-	void makeComplitedInlineComment() {
-		state = COMPLITED_LITERAL_STATE; // just consider it to be
+	void makeCompletedInlineComment() {
+		state = COMPLETED_LITERAL_STATE; // just consider it to be
 	}
 
-	void makeComplitedMultilineComment() {
-		// state complited occurs explicitely when "*/" is added
+	void makeCompletedMultilineComment() {
+		// state completed occurs explicitely when "*/" is added
 		// otherwise multiline comment is not ended by "*/" that means fail
 		state = FAILED_LITERAL_STATE;
 	}

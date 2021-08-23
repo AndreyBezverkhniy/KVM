@@ -5,9 +5,10 @@
 #include <string>
 #include <algorithm>
 #include <map>
-#include "program memory.hpp"
+#include "memory.hpp"
 #include "literal.hpp"
-#include "program function.hpp"
+#include "function.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -18,14 +19,13 @@ template<class T> bool hasVectorAnElement(vector<T> &array, T element) {
 void skipCurrentBlock(int &literalIntex) {
 	int blockDeep = 1; // deep of nesting blocks
 	while (program[literalIntex] != literalEOF) {
-		if (program[literalIntex] == Literal("{", SIGN_LITERAL)) {
+		if (program[literalIntex] == Literal("{")) {
 			blockDeep++;
-		}
-		if (program[literalIntex] == Literal("}", SIGN_LITERAL)) {
+		} else if (program[literalIntex] == Literal("}")) {
 			blockDeep--;
 		}
 		if (blockDeep == 0) {
-			// whole block (with nested ones) is skiped
+			// whole block (with nested ones) is skipped
 			break;
 		}
 		literalIntex++;
@@ -34,9 +34,12 @@ void skipCurrentBlock(int &literalIntex) {
 
 bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
 	
-	if (program[literalIntex] != Literal(")", SIGN_LITERAL)) {
+	// check arguments presence
+	if (program[literalIntex] != Literal(")")) {
+
 		string argumentName;
 		for (;;) {
+
 			if (program[literalIntex].getType() != WORD_LITERAL) {
 				cout << argumentName << " is not an agrument name" << endl;
 				return false;
@@ -49,12 +52,15 @@ bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
 			}
 			argumentList.push_back(argumentName);
 			literalIntex++; // argumentName
-			if (program[literalIntex] != Literal(",", SIGN_LITERAL)) {
+
+			if (!parseExactLiteral(literalIntex, ",", false)) { // ','
 				break; // no more arguments
 			}
-			literalIntex++; // ','
+
 		}
+
 	}
+
 	return true;
 
 }
@@ -62,16 +68,16 @@ bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
 // second iteration of program read
 // collect information about functions declared
 bool prepareFunctions(int &failureIntex) {
+
 	int &literalIntex=failureIntex;
 	literalIntex=0;
+
 	while (program[literalIntex] != literalEOF) {
 
-		if (program[literalIntex] != Literal("function")) {
-			// search function declaration
-			literalIntex++;
-			continue;
+		// function
+		while (!parseExactLiteral(literalIntex, "function", false)) {
+			literalIntex++; // farther search for function declaration
 		}
-		literalIntex++; // function
 
 		string functionName = program[literalIntex].getValue();
 		if (program[literalIntex].getType() != WORD_LITERAL) {
@@ -84,51 +90,41 @@ bool prepareFunctions(int &failureIntex) {
 		}
 		literalIntex++; // functionName
 
-		if (program[literalIntex] != Literal("(")) {
-			cout << "Expected '(' after function name" << endl;
+		if (!parseExactLiteral(literalIntex, "(")) { // '('
 			return false;
 		}
-		literalIntex++; // '('
 
+		// arguments
 		FunctionDescription &functionDescription = functions[functionName];
-
 		parseArgumentList(literalIntex,functionDescription.arguments);
 
-		if (program[literalIntex] != Literal(")", SIGN_LITERAL)) {
-			cout << "Expected ')' after function name(<arguments" << endl;
+		if (!parseExactLiteral(literalIntex, ")")) { // ')'
 			return false;
 		}
-		literalIntex++; // ')'
 
-		if (program[literalIntex] != Literal("{", SIGN_LITERAL)) {
-			cout << "Expected '{' after function name(<arguments>)" << endl;
+		if (!parseExactLiteral(literalIntex, "{")) { // '{'
 			return false;
 		}
-		literalIntex++; // '{'
 
 		// save function start point
 		functionDescription.bodyIntex = literalIntex;
 		skipCurrentBlock(literalIntex); // skip function body
 
-		if (program[literalIntex] != Literal("}", SIGN_LITERAL)) {
-			cout << "Expected '}' at the end of function " << functionName
-			<< endl;
+		if (!parseExactLiteral(literalIntex, "}")) { // '}'
 			return false;
 		}
-		literalIntex++; // '}'
+		
 	}
-	return true;
-}
 
-bool readSourceFile(vector<string> &importChain, string sourceFilePath);
+	return true;
+
+}
 
 // returns true if importingFilePath is in import chain,
 // i.e. imports it-self through several imports
 bool checkRecursiveImport(vector<string> &importChain,
 string importingFilePath) {
-	auto iter =
-	std::find(importChain.begin(), importChain.end(), importingFilePath);
-	return iter != importChain.end();
+	return hasVectorAnElement(importChain, importingFilePath);
 }
 
 void popNLastLiterals(int n) {
@@ -137,24 +133,35 @@ void popNLastLiterals(int n) {
 	}
 }
 
+bool readSourceFile(vector<string> &importChain, string sourceFilePath);
+
+// considered that complete import instruction is at the end of
+// loaded program piece
 bool expandImportInstruction(vector<string> &importChain) {
+
 	string importingFilePath; // file to import
 	importingFilePath = program[program.size()-2].getValue();
+
+	// recursive import forbidden
 	if (checkRecursiveImport(importChain, importingFilePath)) {
 		cout << "Recursive import of " << importingFilePath << endl;
-		for (auto iter =
+		auto iter =
 		std::find(importChain.begin(), importChain.end(), importingFilePath);
-		iter != importChain.end(); iter++) {
+		while (iter != importChain.end()) {
 			cout << *iter << " >> " << endl;
+			iter++;
 		}
 		cout << importingFilePath << endl;
 		return false;
 	}
-	popNLastLiterals(3); // delete import instruction
+
+	popNLastLiterals(3); // delete import instruction: 1)import 2)src 3)';'
+
 	return readSourceFile(importChain, importingFilePath);
+
 }
 
-// check if program ends by import instruction
+// check if loaded piece of program ends by import instruction
 bool endsByImportInstruction() {
 	// import instruction consists of
 	// WORD(import) STRING(srcFilePath) SIGN(;)
@@ -162,9 +169,9 @@ bool endsByImportInstruction() {
 	if (size < 3) {
 		return false;
 	}
-	return (program[size - 3] == Literal("import", WORD_LITERAL) &&
+	return (program[size - 3] == Literal("import") &&
 	program[size - 2].getType() == STRING_LITERAL &&
-	program[size - 1] == Literal(";", SIGN_LITERAL));
+	program[size - 1] == Literal(";"));
 }
 
 void calculateNextCursorPosition(int &line, int &column, char character) {
@@ -202,14 +209,17 @@ bool readSourceFile(vector<string> &importChain, string sourceFilePath) {
 
 	// main circle of file reading
 	do {
+
 		byte = fgetc(fp);
 		bool isSymbolAddedToLiteral;
 		if (byte == EOF) {
-			literal.makeComplited(); // try to end last literal
-			isSymbolAddedToLiteral = false; // can't add EOF to literal
+			literal.makeCompleted(); // try to end last literal
+			isSymbolAddedToLiteral = false; // ignore EOF character, file may
+			// be imported
 		} else {
 			isSymbolAddedToLiteral = literal.addNextSymbol(byte);
 		}
+
 		if (literal.isFailed()) {
 			// literal pattern ruined
 			cout << "Invalid literal at " << sourceFilePath << ": "
@@ -217,29 +227,36 @@ bool readSourceFile(vector<string> &importChain, string sourceFilePath) {
 			closeFileAndPopFromImportChain(fp,importChain);
 			return false;
 		}
-		if (!isSymbolAddedToLiteral && literal.isComplited()) {
-			// the case when symbol means current literal has been complited
+
+		if (literal.isCompleted()) {
 			if (literal.getType() != EMPTY_LITERAL
 			&& literal.getType() != SPACES_LITERAL
 			&& literal.getType() != INLINE_COMMENT_LITERAL
 			&& literal.getType() != MULTILINE_COMMENT_LITERAL) {
-				program.push_back(literal); // save finished literal
-			}
-			literal.makeEmpty();           // initiate next literal
-			literal.addNextSymbol(byte);   // by symbol
-			// handle import instruction if presents
-			if (endsByImportInstruction()) {
-				bool importedSuccessfully =
-				expandImportInstruction(importChain);
-				if (!importedSuccessfully) {
-					// expanding import failed
-					closeFileAndPopFromImportChain(fp, importChain);
-					return false;
+				program.push_back(literal); // save completed literal
+				// handle import instruction if presents
+				if (endsByImportInstruction()) {
+					bool importedSuccessfully =
+					expandImportInstruction(importChain);
+					if (!importedSuccessfully) {
+						closeFileAndPopFromImportChain(fp, importChain);
+						return false;
+					}
 				}
 			}
+			literal.makeEmpty();
 		}
+
+		if(!isSymbolAddedToLiteral) {
+			// when symbol starts next literal, attempt to add symbol to
+			// current literal fails and make this literal completed or failed
+			// we have to add symbol to next literal if completed
+			literal.addNextSymbol(byte);
+		}
+
 		// update cursor position
 		calculateNextCursorPosition(line, column, byte);
+
 	} while (byte != EOF);
 
 	closeFileAndPopFromImportChain(fp,importChain);
@@ -252,17 +269,19 @@ bool readSourceFile(vector<string> &importChain, string sourceFilePath) {
 bool readProgram(string sourceFilePath) {
 
 	vector<string> importChain;
-	// chain of nested file imports for recursive imports tracing
-	// root source file considered to be the first member of the chain
+	// chain of nested file imports for recursive imports tracing.
+	// root source file considered to be the first member of the chain.
 	program.clear();
 	if (!readSourceFile(importChain, sourceFilePath)) {
 		return false;
 	}
-	program.push_back(MakeLiteralEOF());
+	program.push_back(literalEOF);
+	// literalEOF prevent error "out of range"
+	// in checks like program[index] == notEOFliteral
 
 	int failureIndex; // literal index where function preparation failed
 	if (!prepareFunctions(failureIndex)) {
-		cout << "Functions preparation failed at literal index "
+		cout << "Functions preparation failed at literal index: "
 		<< failureIndex << endl;
 		return false;
 	}

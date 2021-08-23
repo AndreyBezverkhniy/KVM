@@ -1,20 +1,15 @@
 Now-------------------------------------------
 
-add .gitignore
+{hpp} divide to {hpp+cpp}
 
-hard refactoring:
-rename source files without prefix "program "
-execute -> executeProgram
-
-EOF literal value = "EOFLITERAL"
+Pre-Release----------------------------------------
 
 expression returns not number value but {objectReference,objectValue}
-
-Future----------------------------------------
-
 add operator=
 exchange assign to expression instruction
 add unar operators +,-,! 
 add inbuilt console work functions
 add documentation
+
+Release---------------------------------------
 

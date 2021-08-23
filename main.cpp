@@ -7,7 +7,9 @@ reads whole program and executes, if it all is possible.
 #include <iostream>
 #include <map>
 #include <string>
-#include "program.hpp"
+#include "read_program.hpp"
+#include "print_program.hpp"
+#include "execute_program.hpp"
 
 using namespace std;
 

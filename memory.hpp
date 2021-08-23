@@ -15,7 +15,7 @@ value of variable is getting in the same way: variables[name].top().
 #include <map>
 #include <string>
 #include <stack>
-#include "program function.hpp"
+#include "function.hpp"
 #include "literal.hpp"
 
 using namespace std;
@@ -34,8 +34,16 @@ bool doesVariableExist(string variableName) {
 	return variables[variableName].size() > 0;
 }
 
+// declare one variable declaration
 void declareVariable(string variableName) {
 	variables[variableName].push(0);
+}
+
+// declare multiple variable declaration
+void declareVariables(vector<string> &variableNames) {
+	for (string variableName : variableNames) {
+		declareVariable(variableName);
+	}
 }
 
 // deletes one variable declaration
@@ -43,9 +51,26 @@ void deleteVariable(string variableName) {
 	variables[variableName].pop();
 }
 
+// deletes multiple variable declaration
+void deleteVariables(vector<string> &variableNames) {
+	for (string variableName : variableNames) {
+		deleteVariable(variableName);
+	}
+}
+
+// handle one assignment
 void assignVariable(string variableName, int newValue) {
 	int &variable = variables[variableName].top();
 	variable = newValue;
+}
+
+// handle multiple assignments
+void assignVariables(vector<string> &variableNames, vector<int> &newValues) {
+	for (int i=0; i < variableNames.size(); i++) {
+		string &variableName = variableNames[i];
+		int &newValue = newValues[i];
+		assignVariable(variableName, newValue);
+	}
 }
 
 int getVariableValue(string variableName) {

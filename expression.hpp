@@ -5,9 +5,11 @@
 #include <vector>
 #include <stack>
 #include "literal.hpp"
-#include "program memory.hpp"
-#include "program function.hpp"
-#include "program execute.hpp"
+#include "memory.hpp"
+#include "function.hpp"
+#include "execute_program.hpp"
+#include "utils.hpp"
+
 
 using namespace std;
 
@@ -38,58 +40,66 @@ int toNumber(string word) {
 }
 
 bool parseFunctionValue(int &literalIntex, int &result) {
+
 	string functionName = program[literalIntex].getValue();
 	FunctionDescription &description = functions[functionName];
 	literalIntex++; // functionName
-	if (program[literalIntex] != Literal("(",SIGN_LITERAL)) {
-		cout << "Expected '(' after function call: " << functionName << endl;
+
+	if (!parseExactLiteral(literalIntex, "(")) { // '('
 		return false;
 	}
-	literalIntex++; // (
+
+	// arguments
 	int argumentNumber = 0;
-	vector<int> argumentsPassed;
+	vector<int> valuesPassed;
 	while (argumentNumber < description.arguments.size()) {
+
 		if (argumentNumber > 0) {
-			if (program[literalIntex] != Literal(",",SIGN_LITERAL)) {
-				cout << "Expected ',' between arguments in call of function: "
-				<< functionName << endl;
+			if (!parseExactLiteral(literalIntex, ",")) { // ','
 				return false;
 			}
-			literalIntex++; // ,
 		}
-		int argumentPassed;
-		if (!calculateExpression(literalIntex, argumentPassed)) {
+
+		// argument
+		int valuePassed;
+		if (!calculateExpression(literalIntex, valuePassed)) {
 			return false;
 		}
-		argumentsPassed.push_back(argumentPassed);
+		valuesPassed.push_back(valuePassed);
 		argumentNumber++;
+
 	}
-	if (program[literalIntex] != Literal(")",SIGN_LITERAL)) {
-		cout << "Expected ')' after function call: " << functionName << endl;
+
+	if (!parseExactLiteral(literalIntex, ")")) { // ')'
 		return false;
 	}
-	literalIntex++; // )
-	for (int argumentIndex = 0; argumentIndex < argumentsPassed.size();
-	argumentIndex++) {
-		string argumentName = description.arguments[argumentIndex];
-		declareVariable(argumentName);
-		assignVariable(argumentName,argumentsPassed[argumentIndex]);
-	}
+
+	// declare function scope variables - arguments
+	declareVariables(description.arguments);
+	assignVariables(description.arguments, valuesPassed);
+
+	// go to function body to execute
 	int savedIntex = literalIntex;
 	literalIntex = description.bodyIntex;
+
+	// execute function
 	result = 0; // by default
 	bool garbage;
 	if (!executeBlock(literalIntex,result,garbage)) {
 		return false;
 	}
+
+	// return back
 	literalIntex = savedIntex;
-	for (auto argumentName : description.arguments) {
-		deleteVariable(argumentName);
-	}
+
+	// delete function scope variables - arguments
+	deleteVariables(description.arguments);
+
 	return true;
+	
 }
 
-// handles numbers and variables
+// parse numbers, variables and function calls
 // saves result to corresponding argument-variable
 bool parseLiteralValue(int &literalIntex,
 int &result) {
@@ -105,7 +115,7 @@ int &result) {
 		literalIntex++; // CON
 		return true;
 	}
-	if (functions.find(word) != functions.end()) {
+	if (doesFunctionExist(word)) {
 		return parseFunctionValue(literalIntex, result);
 	}
 	if (!doesVariableExist(word)) {
@@ -113,34 +123,41 @@ int &result) {
 		return false;
 	}
 	result = getVariableValue(word);
-	literalIntex++; // variable
+	literalIntex++; // number, variable or function call
 	return true;
 }
 
+
 bool parseOperand(int &literalIntex, int &operand) {
+
+	// number, variable or function call
+	
 	if (program[literalIntex].getType() == WORD_LITERAL) {
-		// number or variable
 		if (!parseLiteralValue(literalIntex, operand)) {
 			return false;
 		}
 		return true;
-	} else if (program[literalIntex] == Literal("(",SIGN_LITERAL)) {
-		// calculating expression in brackets to just number operand
-		literalIntex++; // opening '('
-		int expressionValue;
-		if (!calculateExpression(literalIntex, expressionValue)) {
-			return false;
-		}
-		if (program[literalIntex] != Literal(")", SIGN_LITERAL)) {
-			cout << "Not complited patherness sequence" << endl;
-			return false;
-		}
-		literalIntex++; // closing ')'
-		operand = expressionValue;
-		return true;
 	}
-	cout << "Wrong operand: " << program[literalIntex].getValue() << endl;
-	return false;
+
+	// value of expression in brackets becomes operand value
+
+	if (!parseExactLiteral(literalIntex, "(")) { // '('
+		return false;
+	}
+
+	// expression
+	int expressionValue;
+	if (!calculateExpression(literalIntex, expressionValue)) {
+		return false;
+	}
+
+	if (!parseExactLiteral(literalIntex, ")")) { // ')'
+		return false;
+	}
+
+	operand = expressionValue;
+	return true;
+
 }
 
 int getOperatorPriority(string math_operator) {
@@ -160,7 +177,11 @@ int getOperatorPriority(string math_operator) {
 	if (math_operator == "*" || math_operator == "/" || math_operator == "%") {
 		return 5;
 	}
-	return 0;
+	return 0; // operator unknown
+}
+
+bool isOperator(string _operator) {
+	return getOperatorPriority(_operator) != 0;
 }
 
 bool calculate(int operand1, int operand2, string math_operator, int &result) {
@@ -191,7 +212,7 @@ bool calculate(int operand1, int operand2, string math_operator, int &result) {
 	} else if (math_operator == "%") {
 		result = operand1 % operand2;
 	} else {
-		return false;
+		return false; // operator unknown
 	}
 	return true;
 }
@@ -199,9 +220,9 @@ bool calculate(int operand1, int operand2, string math_operator, int &result) {
 bool parseOperator(int &literalIntex, string &math_operator) {
 	if (program[literalIntex].getType() == SIGN_LITERAL){
 		string sign = program[literalIntex].getValue();
-		if (getOperatorPriority(sign) != 0) {
+		if (isOperator(sign)) {
 			math_operator = sign;
-			literalIntex++;
+			literalIntex++; // operator
 			return true;
 		}
 	}
@@ -210,11 +231,13 @@ bool parseOperator(int &literalIntex, string &math_operator) {
 
 // calculates expressions in brackets, then separates simplified expression to
 // operators (ints) and operands
+// expression contain math signs, correct bracket sequences, numbers,
+// variables. ends by ';', ')', ',' signs and if vector ends
 bool parseExpression(int &literalIntex,
 vector<int> &operands, vector<string> &operators) {
-	// expression contain math signs, correct bracket sequences, numbers,
-	// variables. ends by ';', ')', ',' signs and if vector ends
+	
 	for(;;){
+
 		int operand;
 		string math_operator;
 		// if operand is bracket with expression inside, it calculates and
@@ -222,7 +245,9 @@ vector<int> &operands, vector<string> &operators) {
 		if (!parseOperand(literalIntex, operand)) {
 			return false;
 		}
+
 		if (!parseOperator(literalIntex, math_operator)) {
+
 			// check end of expression
 			if (program[literalIntex].getValue() == literalEOF
 			|| program[literalIntex].getValue() == ";"
@@ -230,17 +255,23 @@ vector<int> &operands, vector<string> &operators) {
 			|| program[literalIntex].getValue() == ",") {
 				operands.push_back(operand);
 				operators.push_back(";"); // considered as lowest priority
-				// empty operator
+				// operator "end of expression", not handling operator
 				break; // expression parsed successfully
 			}
+
 			// invalid operator
 			cout << "Incorrect operator: " << program[literalIntex].getValue() << endl;
 			return false;
+
 		}
+
 		operands.push_back(operand);
 		operators.push_back(math_operator);
+
 	}
+
 	return true;
+
 }
 
 // calculates value of math expression without brackets
@@ -251,7 +282,7 @@ const vector<string> &operators, int &result) {
 	stack<int> operandStack;
 	stack<string> operatorStack;
 	// last operand and operator in stacks are separated to variables for
-	// availability of its prenultimate ones
+	// availability of it's prenultimate ones
 	int currentOperand = operands[0];
 	string currentOperator = operators[0];
 
@@ -261,7 +292,7 @@ const vector<string> &operators, int &result) {
 		operatorStack.push(currentOperator);
 		currentOperand = operands[i];
 		currentOperator = operators[i];
-		// applying previous operators with higher priority than the last
+		// applying previous operators with not lower priority than the last
 		// one in reverse order
 		while (operatorStack.size() > 0 &&
 		getOperatorPriority(operatorStack.top())
@@ -295,7 +326,7 @@ bool calculateExpression(int &literalIntex, int &result) {
 		return false;
 	}
 	if (operands.size() == 1) {
-		// expression consists only value or varible
+		// expression equals it's only operand
 		result = operands[0];
 		return true;
 	}
