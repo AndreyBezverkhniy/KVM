@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 		return 0; // reading failed
 	}
 	printProgram();
-	execute();
+	executeProgram();
 
 	return 0;
 }
