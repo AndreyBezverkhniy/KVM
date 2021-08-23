@@ -12,6 +12,8 @@ const char STRING_LITERAL = 3; // "..."
 const char SIGN_LITERAL = 4;
 const char INLINE_COMMENT_LITERAL = 5; // //...\n
 const char MULTILINE_COMMENT_LITERAL = 6; // /* ...*/
+const char EOF_LITERAL = 7; // for detecting end of program without check of
+// vector size. artificial constructing only
 
 // literal can be build character by character
 // start state is "in progress", that changes to "complited" or "failed"
@@ -31,6 +33,12 @@ class Literal{
 		value = _value;
 		type = _type;
 		// user literal instance considered to be complited
+		state = COMPLITED_LITERAL_STATE;
+	}
+
+	void makeEOF() {
+		 type = EOF_LITERAL;
+		value = "";
 		state = COMPLITED_LITERAL_STATE;
 	}
 
@@ -277,3 +285,9 @@ class Literal{
 	}
 
 };
+
+Literal MakeLiteralEOF() {
+	return Literal("", EOF_LITERAL);
+}
+
+const Literal literalEOF = MakeLiteralEOF();

@@ -225,7 +225,7 @@ vector<int> &operands, vector<string> &operators) {
 		}
 		if (!parseOperator(literalIntex, math_operator)) {
 			// check end of expression
-			if (literalIntex == program.size()
+			if (program[literalIntex].getValue() == literalEOF
 			|| program[literalIntex].getValue() == ";"
 			|| program[literalIntex].getValue() == ")"
 			|| program[literalIntex].getValue() == ",") {
@@ -425,7 +425,7 @@ int &returnValue, bool &returned) {
 	returned = false;
 	set<string> scopeVariables; // variables created in block witch scope
 	// of the block
-	while (literalIntex < program.size()
+	while (program[literalIntex] != literalEOF
 	&& program[literalIntex] != Literal("}", SIGN_LITERAL)) {
 		if (program[literalIntex] == Literal("{", SIGN_LITERAL)) {
 			// {...}

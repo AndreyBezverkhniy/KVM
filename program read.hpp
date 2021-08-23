@@ -17,7 +17,7 @@ template<class T> bool hasVectorAnElement(vector<T> &array, T element) {
 
 void skipCurrentBlock(int &literalIntex) {
 	int blockDeep = 1; // deep of nesting blocks
-	while (literalIntex < program.size()) {
+	while (program[literalIntex] != literalEOF) {
 		if (program[literalIntex] == Literal("{", SIGN_LITERAL)) {
 			blockDeep++;
 		}
@@ -64,7 +64,7 @@ bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
 bool prepareFunctions(int &failureIntex) {
 	int &literalIntex=failureIntex;
 	literalIntex=0;
-	while (literalIntex < program.size()) {
+	while (program[literalIntex] != literalEOF) {
 
 		if (program[literalIntex] != Literal("function")) {
 			// search function declaration
@@ -258,6 +258,7 @@ bool readProgram(string sourceFilePath) {
 	if (!readSourceFile(importChain, sourceFilePath)) {
 		return false;
 	}
+	program.push_back(MakeLiteralEOF());
 
 	int failureIndex; // literal index where function preparation failed
 	if (!prepareFunctions(failureIndex)) {

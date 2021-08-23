@@ -1,11 +1,11 @@
 Now-------------------------------------------
 
-take out function search to second program read iteration
+add EndOfProgram literal
 take out expression functions to separate source file
 execeuteBlock divide to functions
-add EndOfProgram literal
 hard refactoring
 expression returns not number value but {objectReference,objectValue}
+add .gitignore
 
 Future----------------------------------------
 
