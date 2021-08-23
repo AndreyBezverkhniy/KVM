@@ -1,9 +1,9 @@
 Now-------------------------------------------
 
-add EndOfProgram literal
-take out expression functions to separate source file
 execeuteBlock divide to functions
 hard refactoring
+rename source files without prefix "program "
+execute -> executeProgram
 expression returns not number value but {objectReference,objectValue}
 add .gitignore
 
@@ -13,5 +13,5 @@ add operator=
 exchange assign to expression instruction
 add unar operators +,-,! 
 add inbuilt console work functions
-
+add documentation
 
