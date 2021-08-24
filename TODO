@@ -1,7 +1,3 @@
-Now-------------------------------------------
-
-{hpp} divide to {hpp+cpp}
-
 Pre-Release----------------------------------------
 
 expression returns not number value but {objectReference,objectValue}

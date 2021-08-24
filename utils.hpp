@@ -1,18 +1,9 @@
 #pragma once
 
+#include "literal.hpp"
+
 bool parseExactLiteral(int &literalIntex, Literal literal,
-bool printError = true) {
-	if (program[literalIntex] == literal) {
-		literalIntex++;
-	    return true;
-	}
-	if (printError) {
-		cout << "Expected " << literal.getValue() << endl;
-	}
-	return false;
-}
+bool printError = true);
 
 bool parseExactLiteral(int &literalIntex, string value,
-bool printError = true) {
-    return parseExactLiteral(literalIntex, Literal(value), printError);
-}
+bool printError = true);
