@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <algorithm>
 #include <map>
 #include "memory.hpp"
 #include "literal.hpp"
@@ -11,10 +10,6 @@
 #include "utils.hpp"
 
 using namespace std;
-
-template<class T> bool hasVectorAnElement(vector<T> &array, T element) {
-	return find(array.begin(), array.end(), element) != array.end();
-}
 
 void skipCurrentBlock(int &literalIntex) {
 	int blockDeep = 1; // deep of nesting blocks

@@ -40,7 +40,7 @@ void declareVariable(string variableName) {
 }
 
 // declare multiple variable declaration
-void declareVariables(vector<string> &variableNames) {
+void declareVariables(const vector<string> &variableNames) {
 	for (string variableName : variableNames) {
 		declareVariable(variableName);
 	}
@@ -52,7 +52,7 @@ void deleteVariable(string variableName) {
 }
 
 // deletes multiple variable declaration
-void deleteVariables(vector<string> &variableNames) {
+void deleteVariables(const vector<string> &variableNames) {
 	for (string variableName : variableNames) {
 		deleteVariable(variableName);
 	}
@@ -65,10 +65,11 @@ void assignVariable(string variableName, int newValue) {
 }
 
 // handle multiple assignments
-void assignVariables(vector<string> &variableNames, vector<int> &newValues) {
+void assignVariables(const vector<string> &variableNames,
+const vector<int> &newValues) {
 	for (int i=0; i < variableNames.size(); i++) {
-		string &variableName = variableNames[i];
-		int &newValue = newValues[i];
+		const string &variableName = variableNames[i];
+		const int &newValue = newValues[i];
 		assignVariable(variableName, newValue);
 	}
 }

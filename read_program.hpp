@@ -5,8 +5,6 @@
 
 using namespace std;
 
-template<class T> bool hasVectorAnElement(vector<T> &array, T element);
-
 void skipCurrentBlock(int &literalIntex);
 
 bool parseArgumentList(int &literalIntex, vector<string> &argumentList);

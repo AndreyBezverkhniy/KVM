@@ -1,13 +1,11 @@
+delete CON
+add inbuilt console work functions
+
 Done-----------------------------------------------
 
-expression returns not number value but {objectReference,objectValue}
-add operator=
-exchange assign to expression instruction
-
-Pre-Release----------------------------------------
-
-add unar operators +,-,!
-add inbuilt console work functions
+add (unar operators +,-,!) and (r2l calc for operator=)
+clear hpp-s
+add error descriptions
 add documentation
 
 Release--------------------------------------------

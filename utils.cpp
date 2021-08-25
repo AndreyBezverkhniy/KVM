@@ -1,6 +1,9 @@
 #include "utils.hpp"
 #include "memory.hpp"
 #include <iostream>
+#include <vector>
+
+using namespace std;
 
 bool parseExactLiteral(int &literalIntex, Literal literal,
 bool printError) {

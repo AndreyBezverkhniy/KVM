@@ -12,7 +12,7 @@ using namespace std;
 
 void printIndent(int indent) {
 	for (int i=0; i < indent; i++) {
-		cout << "  ";
+		cout << "\t";
 	}
 }
 
@@ -46,13 +46,14 @@ void printFunctions() {
 
 void printProgram(bool highlighting) {
 
-	int indent = 0;
+	int indent = 1;
 	bool instructionStarts = true; // for indent printing
 
 	for (int i = 0; i < program.size(); i++ ) {
 
 		// indents before instruction starts
 		if (instructionStarts) {
+			cout << i << ":";
 			if (program[i] == Literal("}")) {
 				printIndent(indent - 1);
 			} else {

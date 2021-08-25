@@ -10,6 +10,7 @@
 #include "execute_program.hpp"
 #include "utils.hpp"
 #include "operand_object.hpp"
+#include "inbuilt_functions.hpp"
 
 using namespace std;
 
@@ -35,10 +36,40 @@ int toNumber(string word) {
 	return result;
 }
 
-bool parseFunctionValue(int &literalIntex, OperandObject &result) {
+bool callFunction(string functionName, const vector<int> &arguments,
+OperandObject &result) {
 
-	string functionName = program[literalIntex].getValue();
 	FunctionDescription &description = functions[functionName];
+
+	// declare function scope variables - arguments
+	if (description.arguments.size() != arguments.size()) {
+		cout << "Incorrect argument amount of function "
+		<< functionName << endl;
+		return false;
+	}
+	declareVariables(description.arguments);
+	assignVariables(description.arguments, arguments);
+
+	// go to function body to execute
+	int literalIntex = description.bodyIntex;
+
+	// execute function
+	result = OperandObject("", 0); // by default
+	bool garbage;
+	if (!executeBlock(literalIntex,result.value,garbage)) {
+		return false;
+	}
+
+	// delete function scope variables - arguments
+	deleteVariables(description.arguments);
+
+	return true;
+
+}
+
+bool parseFunctionCall(int &literalIntex, string &functionName,  vector<int> &arguments) {
+
+	functionName = program[literalIntex].getValue();
 	literalIntex++; // functionName
 
 	if (!parseExactLiteral(literalIntex, "(")) { // '('
@@ -46,13 +77,13 @@ bool parseFunctionValue(int &literalIntex, OperandObject &result) {
 	}
 
 	// arguments
+	arguments.clear();
 	int argumentNumber = 0;
-	vector<int> valuesPassed;
-	while (argumentNumber < description.arguments.size()) {
+	while (!parseExactLiteral(literalIntex, ")", false)) { // ')'
 
 		if (argumentNumber > 0) {
-			if (!parseExactLiteral(literalIntex, ",")) { // ','
-				return false;
+			if (!parseExactLiteral(literalIntex, ",", false)) { // ','
+				break;
 			}
 		}
 
@@ -63,35 +94,10 @@ bool parseFunctionValue(int &literalIntex, OperandObject &result) {
 			return false;
 		}
 		valuePassed = valueObject.value;
-		valuesPassed.push_back(valuePassed);
+		arguments.push_back(valuePassed);
 		argumentNumber++;
 
 	}
-
-	if (!parseExactLiteral(literalIntex, ")")) { // ')'
-		return false;
-	}
-
-	// declare function scope variables - arguments
-	declareVariables(description.arguments);
-	assignVariables(description.arguments, valuesPassed);
-
-	// go to function body to execute
-	int savedIntex = literalIntex;
-	literalIntex = description.bodyIntex;
-
-	// execute function
-	result = OperandObject("", 0); // by default
-	bool garbage;
-	if (!executeBlock(literalIntex,result.value,garbage)) {
-		return false;
-	}
-
-	// return back
-	literalIntex = savedIntex;
-
-	// delete function scope variables - arguments
-	deleteVariables(description.arguments);
 
 	return true;
 	
@@ -106,13 +112,21 @@ bool parseLiteralValue(int &literalIntex, OperandObject &result) {
 		literalIntex++; // number
 		return true;
 	}
-	if (word == "CON") { // reserved name for console working
-		result = OperandObject("CON", 0);
-		literalIntex++; // CON
-		return true;
-	}
 	if (doesFunctionExist(word)) {
-		return parseFunctionValue(literalIntex, result);
+		vector<int> arguments;
+		string functionName;
+		if (!parseFunctionCall(literalIntex, functionName, arguments)) {
+			return false;
+		}
+		return callFunction(functionName, arguments, result);
+	}
+	if (doesInbuiltFunctionExist(word)) {
+		vector<int> arguments;
+		string functionName;
+		if (!parseFunctionCall(literalIntex, functionName, arguments)) {
+			return false;
+		}
+		return callInbuiltFunction(functionName, arguments, result);
 	}
 	if (!doesVariableExist(word)) {
 		cout << "Variable " << word << " was not declared" << endl;
@@ -185,8 +199,18 @@ bool isOperator(string _operator) {
 
 bool calculate(OperandObject operand1, OperandObject operand2,
 string math_operator, OperandObject &result) {
+
+	// if variable then get value
+	if (doesVariableExist(operand1.variableName)) {
+		operand1.value = getVariableValue(operand1.variableName);
+	}
+	if (doesVariableExist(operand2.variableName)) {
+		operand2.value = getVariableValue(operand2.variableName);
+	}
+
 	result.variableName = ""; // dy default result is
 	// stored temporary, not in variable
+
 	if (math_operator == "||") {
 		result.value = operand1.value || operand2.value;
 	} else if (math_operator == "&&") {
@@ -215,22 +239,17 @@ string math_operator, OperandObject &result) {
 		result.value = operand1.value % operand2.value;
 	} else if (math_operator == "=") {
 		result.variableName = operand1.variableName;
-		if(operand2.variableName == "CON") {
-			cout << "IN> ";
-			cin >> result.value;
-		} else {
-			result.value = operand2.value;
+		if (!doesVariableExist(result.variableName)) {
+			return false; // assignment to nowhere
 		}
-		if (result.variableName == "CON") { // reserved name for console working
-			cout << "OUT> " << result.value << endl;
-			return true;
-		} else {
-			assignVariable(result.variableName, result.value);
-		}
+		result.value = operand2.value;
+		assignVariable(result.variableName, result.value);
 	} else {
 		return false; // operator unknown
 	}
+
 	return true;
+
 }
 
 bool parseOperator(int &literalIntex, string &math_operator) {
