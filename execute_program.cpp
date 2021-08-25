@@ -11,6 +11,7 @@
 #include "read_program.hpp"
 #include "expression.hpp"
 #include "utils.hpp"
+#include "operand_object.hpp"
 
 using namespace std;
 
@@ -25,25 +26,9 @@ bool skipToLiteral(int &literalIntex, Literal literal) {
 }
 
 // handles assignment instruction
-bool handleAssignInstruction(int &literalIntex) {
+bool handleExpressionInstruction(int &literalIntex) {
 
-	string variableName = program[literalIntex].getValue();
-	if (isNumber(variableName)) {
-		cout << "Can not assign new value to a number: " << variableName
-		<< endl;
-		return false;
-	}
-	if ( !(doesVariableExist(variableName) || variableName == "CON") ) {
-		cout << "LVariable " << variableName << " was not declared" << endl;
-		return false;
-	}
-	literalIntex++; // name
-
-	if (!parseExactLiteral(literalIntex, "=")) { // '='
-		return false;
-	}
-
-	int result;
+	OperandObject result;
 	if (!calculateExpression(literalIntex, result)) { // expression
 		return false;
 	}
@@ -51,12 +36,6 @@ bool handleAssignInstruction(int &literalIntex) {
 	if (!parseExactLiteral(literalIntex, ";")) { // ';'
 		return false;
 	}
-
-	if (variableName == "CON") { // reserved name for console working
-		cout << "OUT> " << result << endl;
-		return true;
-	}
-	assignVariable(variableName, result); // usual variable assignment
 
 	return true;
 
@@ -81,9 +60,9 @@ bool handleVarInstruction(int &literalIntex, vector<string> &variableNames) {
 		// declaration-assignment
 		if (program[literalIntex] == Literal("=")) {
 			literalIntex++; // '='
-			int value;
-			calculateExpression(literalIntex, value); // expression
-			assignVariable(name, value);
+			OperandObject expression;
+			calculateExpression(literalIntex, expression); // expression
+			assignVariable(name, expression.value);
 		}
 
 		if (parseExactLiteral(literalIntex, ";", false)) { // ';'
@@ -111,9 +90,11 @@ int &condition, int &returnValue, bool &returned) {
 	}
 
 	// expression
-	if (!calculateExpression(literalIntex,condition)) {
+	OperandObject result;
+	if (!calculateExpression(literalIntex, result)) {
 		return false;
 	}
+	condition = result.value;
 
 	if (!parseExactLiteral(literalIntex, ")")) { // ')'
 		return false;
@@ -199,9 +180,11 @@ bool &returned) {
 
 	literalIntex++; // return
 
-	if (!calculateExpression(literalIntex, returnValue)) {
+	OperandObject returnObject;
+	if (!calculateExpression(literalIntex, returnObject)) {
 		return false;
 	}
+	returnValue = returnObject.value;
 
 	if (!parseExactLiteral(literalIntex, ";")) { // ';'
 		return false;
@@ -298,8 +281,8 @@ set<string> &scopeVariables) {
 		<< program[literalIntex].getValue() << endl;
 		return false;
 	} else {
-		// name=<expression>;
-		if (!handleAssignInstruction(literalIntex)) {
+		// <expression>;
+		if (!handleExpressionInstruction(literalIntex)) {
 			return false;
 		}
 	}

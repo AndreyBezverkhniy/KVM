@@ -9,7 +9,7 @@
 #include "function.hpp"
 #include "execute_program.hpp"
 #include "utils.hpp"
-
+#include "operand_object.hpp"
 
 using namespace std;
 
@@ -35,7 +35,7 @@ int toNumber(string word) {
 	return result;
 }
 
-bool parseFunctionValue(int &literalIntex, int &result) {
+bool parseFunctionValue(int &literalIntex, OperandObject &result) {
 
 	string functionName = program[literalIntex].getValue();
 	FunctionDescription &description = functions[functionName];
@@ -58,9 +58,11 @@ bool parseFunctionValue(int &literalIntex, int &result) {
 
 		// argument
 		int valuePassed;
-		if (!calculateExpression(literalIntex, valuePassed)) {
+		OperandObject valueObject;
+		if (!calculateExpression(literalIntex, valueObject)) {
 			return false;
 		}
+		valuePassed = valueObject.value;
 		valuesPassed.push_back(valuePassed);
 		argumentNumber++;
 
@@ -79,9 +81,9 @@ bool parseFunctionValue(int &literalIntex, int &result) {
 	literalIntex = description.bodyIntex;
 
 	// execute function
-	result = 0; // by default
+	result = OperandObject("", 0); // by default
 	bool garbage;
-	if (!executeBlock(literalIntex,result,garbage)) {
+	if (!executeBlock(literalIntex,result.value,garbage)) {
 		return false;
 	}
 
@@ -97,16 +99,15 @@ bool parseFunctionValue(int &literalIntex, int &result) {
 
 // parse numbers, variables and function calls
 // saves result to corresponding argument-variable
-bool parseLiteralValue(int &literalIntex, int &result) {
+bool parseLiteralValue(int &literalIntex, OperandObject &result) {
 	string word = program[literalIntex].getValue();
 	if (isNumber(word)) {
-		result = toNumber(word);
+		result = OperandObject("", toNumber(word));
 		literalIntex++; // number
 		return true;
 	}
 	if (word == "CON") { // reserved name for console working
-		cout << "IN> ";
-		cin >> result;
+		result = OperandObject("CON", 0);
 		literalIntex++; // CON
 		return true;
 	}
@@ -117,13 +118,13 @@ bool parseLiteralValue(int &literalIntex, int &result) {
 		cout << "Variable " << word << " was not declared" << endl;
 		return false;
 	}
-	result = getVariableValue(word);
+	result = OperandObject(word, getVariableValue(word));
 	literalIntex++; // number, variable or function call
 	return true;
 }
 
 
-bool parseOperand(int &literalIntex, int &operand) {
+bool parseOperand(int &literalIntex, OperandObject &operand) {
 
 	// number, variable or function call
 	
@@ -141,7 +142,7 @@ bool parseOperand(int &literalIntex, int &operand) {
 	}
 
 	// expression
-	int expressionValue;
+	OperandObject expressionValue;
 	if (!calculateExpression(literalIntex, expressionValue)) {
 		return false;
 	}
@@ -156,21 +157,24 @@ bool parseOperand(int &literalIntex, int &operand) {
 }
 
 int getOperatorPriority(string math_operator) {
-	if (math_operator == "||") {
+	if (math_operator == "=") {
 		return 1;
 	}
-	if (math_operator == "&&") {
+	if (math_operator == "||") {
 		return 2;
+	}
+	if (math_operator == "&&") {
+		return 3;
 	}
 	if (math_operator == "==" || math_operator == "!=" || math_operator == ">="
 	|| math_operator == "<=" || math_operator == ">" || math_operator == "<") {
-		return 3;
-	}
-	if (math_operator == "+" || math_operator == "-") {
 		return 4;
 	}
-	if (math_operator == "*" || math_operator == "/" || math_operator == "%") {
+	if (math_operator == "+" || math_operator == "-") {
 		return 5;
+	}
+	if (math_operator == "*" || math_operator == "/" || math_operator == "%") {
+		return 6;
 	}
 	return 0; // operator unknown
 }
@@ -179,33 +183,50 @@ bool isOperator(string _operator) {
 	return getOperatorPriority(_operator) != 0;
 }
 
-bool calculate(int operand1, int operand2, string math_operator, int &result) {
+bool calculate(OperandObject operand1, OperandObject operand2,
+string math_operator, OperandObject &result) {
+	result.variableName = ""; // dy default result is
+	// stored temporary, not in variable
 	if (math_operator == "||") {
-		result = operand1 || operand2;
+		result.value = operand1.value || operand2.value;
 	} else if (math_operator == "&&") {
-		result = operand1 && operand2;
+		result.value = operand1.value && operand2.value;
 	} else if (math_operator == "==") {
-		result = operand1 == operand2;
+		result.value = operand1.value == operand2.value;
 	} else if (math_operator == "!=") {
-		result = operand1 != operand2;
+		result.value = operand1.value != operand2.value;
 	} else if (math_operator == ">=") {
-		result = operand1 >= operand2;
+		result.value = operand1.value >= operand2.value;
 	} else if (math_operator == "<=") {
-		result = operand1 <= operand2;
+		result.value = operand1.value <= operand2.value;
 	} else if (math_operator == ">") {
-		result = operand1 > operand2;
+		result.value = operand1.value > operand2.value;
 	} else if (math_operator == "<") {
-		result = operand1 < operand2;
+		result.value = operand1.value < operand2.value;
 	} else if (math_operator == "+") {
-		result = operand1 + operand2;
+		result.value = operand1.value + operand2.value;
 	} else if (math_operator == "-") {
-		result = operand1 - operand2;
+		result.value = operand1.value - operand2.value;
 	} else if (math_operator == "*") {
-		result = operand1 * operand2;
+		result.value = operand1.value * operand2.value;
 	} else if (math_operator == "/") {
-		result = operand1 / operand2;
+		result.value = operand1.value / operand2.value;
 	} else if (math_operator == "%") {
-		result = operand1 % operand2;
+		result.value = operand1.value % operand2.value;
+	} else if (math_operator == "=") {
+		result.variableName = operand1.variableName;
+		if(operand2.variableName == "CON") {
+			cout << "IN> ";
+			cin >> result.value;
+		} else {
+			result.value = operand2.value;
+		}
+		if (result.variableName == "CON") { // reserved name for console working
+			cout << "OUT> " << result.value << endl;
+			return true;
+		} else {
+			assignVariable(result.variableName, result.value);
+		}
 	} else {
 		return false; // operator unknown
 	}
@@ -229,11 +250,11 @@ bool parseOperator(int &literalIntex, string &math_operator) {
 // expression contain math signs, correct bracket sequences, numbers,
 // variables. ends by ';', ')', ',' signs and if vector ends
 bool parseExpression(int &literalIntex,
-vector<int> &operands, vector<string> &operators) {
+vector<OperandObject> &operands, vector<string> &operators) {
 	
 	for(;;){
 
-		int operand;
+		OperandObject operand;
 		string math_operator;
 		// if operand is bracket with expression inside, it calculates and
 		// result is used as operand
@@ -272,13 +293,13 @@ vector<int> &operands, vector<string> &operators) {
 // calculates value of math expression without brackets
 // expression is separated to arrays of operands and operators
 // saves result to corresponding argument-variable
-bool twoStackAlgorithm(const vector<int> &operands,
-const vector<string> &operators, int &result) {
-	stack<int> operandStack;
+bool twoStackAlgorithm(const vector<OperandObject> &operands,
+const vector<string> &operators, OperandObject &result) {
+	stack<OperandObject> operandStack;
 	stack<string> operatorStack;
 	// last operand and operator in stacks are separated to variables for
 	// availability of it's prenultimate ones
-	int currentOperand = operands[0];
+	OperandObject currentOperand = operands[0];
 	string currentOperator = operators[0];
 
 	for (int i=1; i < operands.size(); i++) {
@@ -292,10 +313,10 @@ const vector<string> &operators, int &result) {
 		while (operatorStack.size() > 0 &&
 		getOperatorPriority(operatorStack.top())
 		>= getOperatorPriority(currentOperator)) {
-			int operationResult;
-			int operand1 = operandStack.top();
+			OperandObject operationResult;
+			OperandObject operand1 = operandStack.top();
 			operandStack.pop();
-			int operand2 = currentOperand;
+			OperandObject operand2 = currentOperand;
 			string math_operator = operatorStack.top();
 			operatorStack.pop();
 			if (!calculate(operand1,operand2,math_operator,operationResult)) {
@@ -312,10 +333,10 @@ const vector<string> &operators, int &result) {
 // gets values of expressions in brackets
 // then impliments two-stack-algorithm to math expression without brackets
 // saves result to corresponding argument-variable
-bool calculateExpression(int &literalIntex, int &result) {
+bool calculateExpression(int &literalIntex, OperandObject &result) {
 	// preparing expression for algorithm: separating operands from operators
 	// and calculating expresions in brackets
-	vector<int> operands;
+	vector<OperandObject> operands;
 	vector<string> operators;
 	if (!parseExpression(literalIntex,operands,operators)) {
 		return false;

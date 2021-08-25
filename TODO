@@ -1,11 +1,14 @@
-Pre-Release----------------------------------------
+Done-----------------------------------------------
 
 expression returns not number value but {objectReference,objectValue}
 add operator=
 exchange assign to expression instruction
-add unar operators +,-,! 
+
+Pre-Release----------------------------------------
+
+add unar operators +,-,!
 add inbuilt console work functions
 add documentation
 
-Release---------------------------------------
+Release--------------------------------------------
 

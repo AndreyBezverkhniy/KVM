@@ -9,7 +9,7 @@ using namespace std;
 
 bool skipToLiteral(int &literalIntex, Literal literal);
 
-bool handleAssignInstruction(int &literalIntex);
+bool handleExpressionInstruction(int &literalIntex);
 
 bool handleVarInstruction(int &literalIntex, vector<string> &variableNames);
 
