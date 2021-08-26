@@ -137,13 +137,91 @@ bool parseLiteralValue(int &literalIntex, OperandObject &result) {
 	return true;
 }
 
+bool isleftUnaryOperator(string math_operator) {
+	return math_operator == "!" || math_operator == "+" || math_operator == "-"
+	|| math_operator == "++" || math_operator == "--";
+}
 
-bool parseOperand(int &literalIntex, OperandObject &operand) {
+bool isRightUnaryOperator(string math_operator) {
+	return math_operator == "++" || math_operator == "--";
+}
+
+bool applyleftUnaryOperator(OperandObject operand, string leftUnaryOperator,
+OperandObject &result) {
+	if (leftUnaryOperator == "!") {
+		result.variableName = "";
+		result.value = !operand.value;
+	} else if (leftUnaryOperator == "+") {
+		result.variableName = "";
+		result.value = +operand.value;
+	} else if (leftUnaryOperator == "-") {
+		result.variableName = "";
+		result.value = -operand.value;
+	} else if (leftUnaryOperator == "++") {
+		if (!doesVariableExist(operand.variableName)) {
+			return false;
+		}
+		result.variableName = operand.variableName;
+		result.value = getVariableValue(operand.variableName);
+		result.value += 1;
+		assignVariable(operand.variableName, result.value);
+	} else if (leftUnaryOperator == "--") {
+		if (!doesVariableExist(operand.variableName)) {
+			return false;
+		}
+		result.variableName = operand.variableName;
+		result.value = getVariableValue(operand.variableName);
+		result.value -= 1;
+		assignVariable(operand.variableName, result.value);
+	} else {
+		return false;
+	}
+	return true;
+}
+
+bool applyRightUnarOperator(OperandObject operand, string rightUnaryOperator,
+OperandObject &result) {
+	if (rightUnaryOperator == "++") {
+		if (!doesVariableExist(operand.variableName)) {
+			return false;
+		}
+		result.value = getVariableValue(operand.variableName);
+		assignVariable(operand.variableName, result.value + 1);
+		result.variableName = "";
+	} else if (rightUnaryOperator == "--") {
+		if (!doesVariableExist(operand.variableName)) {
+			return false;
+		}
+		result.value = getVariableValue(operand.variableName);
+		assignVariable(operand.variableName, result.value - 1);
+		result.variableName = "";
+	} else {
+		return false;
+	}
+	return true;
+}
+
+bool parseOperand(int &literalIntex, OperandObject &result) {
 
 	// number, variable or function call
 	
 	if (program[literalIntex].getType() == WORD_LITERAL) {
-		if (!parseLiteralValue(literalIntex, operand)) {
+		if (!parseLiteralValue(literalIntex, result)) {
+			return false;
+		}
+		return true;
+	}
+
+	// if unar operator then calculate
+
+	string leftUnaryOperator = program[literalIntex].getValue();
+	if (isleftUnaryOperator(leftUnaryOperator)) {
+		literalIntex++;
+		OperandObject operand;
+		if (!parseOperand(literalIntex, operand)) {
+			return false;
+		}
+		if (!applyleftUnaryOperator(operand, leftUnaryOperator, result)) {
 			return false;
 		}
 		return true;
@@ -165,7 +243,7 @@ bool parseOperand(int &literalIntex, OperandObject &operand) {
 		return false;
 	}
 
-	operand = expressionValue;
+	result = expressionValue;
 	return true;
 
 }
@@ -255,7 +333,8 @@ string math_operator, OperandObject &result) {
 bool parseOperator(int &literalIntex, string &math_operator) {
 	if (program[literalIntex].getType() == SIGN_LITERAL){
 		string sign = program[literalIntex].getValue();
-		if (isOperator(sign)) {
+		if (isOperator(sign) || isRightUnaryOperator(sign)
+		|| isleftUnaryOperator(sign)) {
 			math_operator = sign;
 			literalIntex++; // operator
 			return true;
@@ -281,23 +360,32 @@ vector<OperandObject> &operands, vector<string> &operators) {
 			return false;
 		}
 
-		if (!parseOperator(literalIntex, math_operator)) {
-
-			// check end of expression
-			if (program[literalIntex].getValue() == literalEOF
-			|| program[literalIntex].getValue() == ";"
-			|| program[literalIntex].getValue() == ")"
-			|| program[literalIntex].getValue() == ",") {
-				operands.push_back(operand);
-				operators.push_back(";"); // considered as lowest priority
-				// operator "end of expression", not handling operator
-				break; // expression parsed successfully
+		for (;;) {
+			if (!parseOperator(literalIntex, math_operator)) {
+				// check end of expression
+				if (program[literalIntex].getValue() == literalEOF
+				|| program[literalIntex].getValue() == ";"
+				|| program[literalIntex].getValue() == ")"
+				|| program[literalIntex].getValue() == ",") {
+					operands.push_back(operand);
+					operators.push_back(";"); // considered as lowest priority
+					// operator "end of expression", not handling operator
+					return true; // expression parsed successfully
+				}
+				// invalid operator
+				cout << "Incorrect operator: "
+				<< program[literalIntex].getValue() << endl;
+				return false;
 			}
-
-			// invalid operator
-			cout << "Incorrect operator: " << program[literalIntex].getValue() << endl;
-			return false;
-
+			if (isRightUnaryOperator(math_operator)) {
+				OperandObject result;
+				if (!applyRightUnarOperator(operand, math_operator, result)) {
+					return false;
+				}
+				operand = result;
+				continue;
+			}
+			break;
 		}
 
 		operands.push_back(operand);
@@ -322,6 +410,9 @@ const vector<string> &operators, OperandObject &result) {
 	string currentOperator = operators[0];
 
 	for (int i=1; i < operands.size(); i++) {
+		// last operator - start point for
+		// operator= handling in right-to-left way
+		bool lastOperation = (i == operands.size() - 1);
 		// put next operand and operator to stacks
 		operandStack.push(currentOperand);
 		operatorStack.push(currentOperator);
@@ -331,7 +422,9 @@ const vector<string> &operators, OperandObject &result) {
 		// one in reverse order
 		while (operatorStack.size() > 0 &&
 		getOperatorPriority(operatorStack.top())
-		>= getOperatorPriority(currentOperator)) {
+		>= getOperatorPriority(currentOperator) &&
+		(operatorStack.top() == "=" && lastOperation // operator= is last
+		|| operatorStack.top() != "=") ) {             // calculating one
 			OperandObject operationResult;
 			OperandObject operand1 = operandStack.top();
 			operandStack.pop();
@@ -339,7 +432,8 @@ const vector<string> &operators, OperandObject &result) {
 			string math_operator = operatorStack.top();
 			operatorStack.pop();
 			if (!calculate(operand1,operand2,math_operator,operationResult)) {
-				cout << "Calculation error: " << operand1 << math_operator << operand2 << endl;
+				cout << "Calculation error: " << operand1 << math_operator
+				<< operand2 << endl;
 				return false;
 			}
 			currentOperand = operationResult;

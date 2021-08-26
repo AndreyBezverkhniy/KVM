@@ -1,12 +1,18 @@
-delete CON
-add inbuilt console work functions
+left unary operators: !,-,+,--,++
+right unary operators: --,++
+calc operator= in rigth-to-left way
 
 Done-----------------------------------------------
 
-add (unar operators +,-,!) and (r2l calc for operator=)
-clear hpp-s
 add error descriptions
+clear hpp-s
 add documentation
 
 Release--------------------------------------------
 
+add types: bool, char
+add type string
+add type: array
+add user-types support
+program args
+file i/o

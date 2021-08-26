@@ -224,7 +224,9 @@ bool Literal::addSymbolToSign(char character) {
 	}
 	if ( ((value == "=" || value == "!" || value == ">" || value == "<")
 	&& character == '=') || (value == "|" && character == '|') ||
-	(value == "&" && character == '&') ) {
+	(value == "&" && character == '&') ||
+	(value == "+" && character == '+') ||
+	(value == "-" && character == '-')) {
 		value += character;
 		state = COMPLETED_LITERAL_STATE;
 		return true;

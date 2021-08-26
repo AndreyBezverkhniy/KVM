@@ -1,0 +1,50 @@
+/*
+multiline
+comment
+*/
+// inline comment
+
+var a,b=10,c; // variable declaration
+// var b; error double declaration
+
+read(a); // reads a from console;
+write(a); // prints a to console
+
+c=5+5*(a=1)-b+10; // assign operator
+write(c); // 10
+write(a); // 1
+
+{
+	var c=20; // this is ok
+	write(c); // 20
+}
+write(c); // 10
+
+if(0){ // 0 is false
+	write(111); // not printed
+}
+if(10&&20){ // npot 0 is true
+	write(222); // 222
+}
+
+var i=5;
+while(i>=0){ // 5 4 3 2 1 0
+write(i);
+i=i-1;
+}
+
+write(pow(3,0-1),pow(3,0),pow(3,1),pow(3,2),pow(3,3),pow(3,4));
+
+f(); // 1234567
+
+import "Sample_2.ksc"; // is replacing by src file content
+
+var a;
+a=10;
+write(!a,!!a,-a,-10,--a,a,+10,++a); // 0 1 -10 -10 9 9 10 10
+a=10;
+write(a,a++,a,a--,a); // 10 10 11 11 10
+var x=1,y=2,z=3;
+x=y=z=4;
+write(x,y,z); // 4 4 4
+
