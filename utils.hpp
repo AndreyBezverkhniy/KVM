@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 
+void skipCurrentBlock(int &literalIntex);
+
 template<class T> bool hasVectorAnElement(vector<T> &array, T element) {
 	return find(array.begin(), array.end(), element) != array.end();
 }

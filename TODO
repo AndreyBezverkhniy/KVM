@@ -1,18 +1,18 @@
-left unary operators: !,-,+,--,++
-right unary operators: --,++
-calc operator= in rigth-to-left way
+fixed bug: expression starts with signs works
+cleaned unnecessary declarations in hpp-s
 
 Done-----------------------------------------------
 
 add error descriptions
-clear hpp-s
 add documentation
 
 Release--------------------------------------------
 
-add types: bool, char
-add type string
-add type: array
-add user-types support
-program args
-file i/o
+Potantial updates:
+ add types: bool, char
+ add type string
+ add type: array
+ add user-types support
+ program args
+ file i/o
+

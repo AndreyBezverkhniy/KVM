@@ -11,21 +11,7 @@
 
 using namespace std;
 
-void skipCurrentBlock(int &literalIntex) {
-	int blockDeep = 1; // deep of nesting blocks
-	while (program[literalIntex] != literalEOF) {
-		if (program[literalIntex] == Literal("{")) {
-			blockDeep++;
-		} else if (program[literalIntex] == Literal("}")) {
-			blockDeep--;
-		}
-		if (blockDeep == 0) {
-			// whole block (with nested ones) is skipped
-			break;
-		}
-		literalIntex++;
-	}
-}
+bool readSourceFile(vector<string> &importChain, string sourceFilePath);
 
 bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
 	

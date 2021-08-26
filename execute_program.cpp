@@ -8,7 +8,6 @@
 #include "literal.hpp"
 #include "memory.hpp"
 #include "function.hpp"
-#include "read_program.hpp"
 #include "expression.hpp"
 #include "utils.hpp"
 #include "operand_object.hpp"
@@ -276,10 +275,6 @@ set<string> &scopeVariables) {
 		parseIfInstruction(literalIntex, returnValue, returned);
 	} else 	if (program[literalIntex] == Literal("while")) {
 		parseWhileInstruction(literalIntex, returnValue, returned);
-	} else if (program[literalIntex].getType() != WORD_LITERAL) {
-		cout << "Unexpected non-word literal: "
-		<< program[literalIntex].getValue() << endl;
-		return false;
 	} else {
 		// <expression>;
 		if (!handleExpressionInstruction(literalIntex)) {

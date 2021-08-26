@@ -10,9 +10,5 @@ struct OperandObject{
 	int value;
 	OperandObject();
 	OperandObject(string _name, int _value);
-	friend ostream& operator<<(ostream &os, OperandObject operatorObject){
-		os << "<" << operatorObject.variableName << ","
-		<< operatorObject.value << ">";
-		return os;
-	}
+	friend ostream& operator<<(ostream &os, OperandObject operatorObject);
 };
