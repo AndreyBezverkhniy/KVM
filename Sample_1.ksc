@@ -39,7 +39,6 @@ f(); // 1234567
 
 import "Sample_2.ksc"; // is replacing by src file content
 
-var a;
 a=10;
 write(!a,!!a,-a,-10,--a,a,+10,++a); // 0 1 -10 -10 9 9 10 10
 a=10;
@@ -48,8 +47,8 @@ var x=1,y=2,z=3;
 x=y=z=4;
 write(x,y,z); // 4 4 4
 
-function f(){
+function f2(){
 write(10);
 }
--f();
+-f2();
 

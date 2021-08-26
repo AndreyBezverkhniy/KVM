@@ -263,25 +263,22 @@ bool parseWhileInstruction(int &literalIntex, int &returnValue, bool &returned) 
 bool parseInstruction(int &literalIntex, int &returnValue, bool &returned,
 set<string> &scopeVariables) {
 	if (program[literalIntex] == Literal("{")) {
-		parseBlock(literalIntex, returnValue, returned);
+		return parseBlock(literalIntex, returnValue, returned);
 	} else 	if (program[literalIntex] == Literal("var")) {
-		parseVarInstruction(literalIntex, returnValue, returned,
+		return parseVarInstruction(literalIntex, returnValue, returned,
 		scopeVariables);
 	} else 	if (program[literalIntex] == Literal("return")) {
-		parseReturnInstruction(literalIntex, returnValue, returned);
+		return parseReturnInstruction(literalIntex, returnValue, returned);
 	} else 	if (program[literalIntex] == Literal("function")) {
-		parseFunctionInstruction(literalIntex, returnValue, returned);
+		return parseFunctionInstruction(literalIntex, returnValue, returned);
 	} else 	if (program[literalIntex] == Literal("if")) {
-		parseIfInstruction(literalIntex, returnValue, returned);
+		return parseIfInstruction(literalIntex, returnValue, returned);
 	} else 	if (program[literalIntex] == Literal("while")) {
-		parseWhileInstruction(literalIntex, returnValue, returned);
+		return parseWhileInstruction(literalIntex, returnValue, returned);
 	} else {
 		// <expression>;
-		if (!handleExpressionInstruction(literalIntex)) {
-			return false;
-		}
+		return handleExpressionInstruction(literalIntex);
 	}
-	return true;
 }
 
 // starts program execution from literalIntex
