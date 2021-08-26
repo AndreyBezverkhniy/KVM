@@ -1,10 +1,11 @@
-fixed bug: expression starts with signs works
-cleaned unnecessary declarations in hpp-s
+add documentation
 
 Done-----------------------------------------------
 
+translate specification to english
+forbid variable, function names, function argument names starting with digit
 add error descriptions
-add documentation
+make test src-s for specification check
 
 Release--------------------------------------------
 
