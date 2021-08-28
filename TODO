@@ -1,19 +1,7 @@
-add documentation
-
 Done-----------------------------------------------
 
-translate specification to english
 forbid variable, function names, function argument names starting with digit
 add error descriptions
-make test src-s for specification check
 
 Release--------------------------------------------
-
-Potantial updates:
- add types: bool, char
- add type string
- add type: array
- add user-types support
- program args
- file i/o
 
