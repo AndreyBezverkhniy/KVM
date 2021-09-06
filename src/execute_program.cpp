@@ -48,11 +48,17 @@ bool handleVarInstruction(int &literalIntex, vector<string> &variableNames) {
 	for (;;) {
 
 		if (program[literalIntex].getType() != WORD_LITERAL) {
-			cout << "Template var meets incorrect format of variable name" << endl;
+			cout << "Template var meets incorrect format of variable name"
+			<< endl;
 			return false;
 		}
 		string name = program[literalIntex].getValue();
 		variableNames.push_back(name);
+		if (!isUserDefinedNamePermitted(name)) {
+			cout << "user defined name " << name << " is not permitted"
+			<< endl;
+			return false;
+		}
 		declareVariable(name);
 		literalIntex++; // name
 

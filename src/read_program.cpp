@@ -31,6 +31,11 @@ bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
 				<< argumentName << endl;
 				return false;
 			}
+			if (!isUserDefinedNamePermitted(argumentName)) {
+				cout << "user defined name " << argumentName << " is not permitted"
+				<< endl;
+				return false;
+			}
 			argumentList.push_back(argumentName);
 			literalIntex++; // argumentName
 
@@ -66,6 +71,11 @@ bool prepareFunctions(int &failureIntex) {
 			cout << functionName << " is not a function name" << endl;
 			return false;
 		}
+		if (!isUserDefinedNamePermitted(functionName)) {
+			cout << "user defined name " << functionName << " is not permitted"
+			<< endl;
+			return false;
+		}
 		if (doesFunctionExist(functionName)) {
 			cout << "Repeated declaration of function " << functionName << endl;
 			return false;
@@ -78,7 +88,9 @@ bool prepareFunctions(int &failureIntex) {
 
 		// arguments
 		FunctionDescription &functionDescription = functions[functionName];
-		parseArgumentList(literalIntex,functionDescription.arguments);
+		if (!parseArgumentList(literalIntex,functionDescription.arguments)) {
+			return false;
+		}
 
 		if (!parseExactLiteral(literalIntex, ")")) { // ')'
 			return false;

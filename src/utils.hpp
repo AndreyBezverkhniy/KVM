@@ -3,6 +3,14 @@
 #include "literal.hpp"
 #include <vector>
 #include <algorithm>
+#include <string>
+
+bool isDigit(char character);
+
+// chech if word represents unsigned int number
+bool isNumber(string word);
+
+int toNumber(string word);
 
 void skipCurrentBlock(int &literalIntex);
 
@@ -15,3 +23,5 @@ bool printError = true);
 
 bool parseExactLiteral(int &literalIntex, string value,
 bool printError = true);
+
+bool isUserDefinedNamePermitted(string name);
