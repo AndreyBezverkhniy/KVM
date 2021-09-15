@@ -8,31 +8,34 @@
 #include "literal.hpp"
 #include "memory.hpp"
 #include "function.hpp"
+#include "inbuilt_functions.hpp"
 #include "expression.hpp"
 #include "utils.hpp"
 #include "operand_object.hpp"
+#include "errors.hpp"
 
 using namespace std;
 
-bool skipToLiteral(int &literalIntex, Literal literal) {
-	while (program[literalIntex] != literalEOF) {
-		if (program[literalIntex] == literal) {
+bool skipToLiteral(int &literalIndex, Literal literal) {
+	while (program[literalIndex] != literalEOF) {
+		if (program[literalIndex] == literal) {
 			return true;
 		}
-		literalIntex++;
+		literalIndex++;
 	}
 	return false;
 }
 
 // handles assignment instruction
-bool handleExpressionInstruction(int &literalIntex) {
+bool handleExpressionInstruction(int &literalIndex) {
 
 	OperandObject result;
-	if (!calculateExpression(literalIntex, result)) { // expression
+	if (!calculateExpression(literalIndex, result)) { // expression
 		return false;
 	}
 
-	if (!parseExactLiteral(literalIntex, ";")) { // ';'
+	if (!parseExactLiteral(literalIndex, ";")) { // ';'
+		showErrorMessage(errorInstructionPattern, ";");
 		return false;
 	}
 
@@ -41,40 +44,39 @@ bool handleExpressionInstruction(int &literalIntex) {
 }
 
 // handles variable declaration instruction
-bool handleVarInstruction(int &literalIntex, vector<string> &variableNames) {
+bool handleVarInstruction(int &literalIndex, vector<string> &variableNames) {
 
-	literalIntex++; // var
+	literalIndex++; // var
 
 	for (;;) {
 
-		if (program[literalIntex].getType() != WORD_LITERAL) {
-			cout << "Template var meets incorrect format of variable name"
-			<< endl;
+		if (program[literalIndex].getType() != WORD_LITERAL) {
+			showErrorMessage(errorVarPattern, "variable name");
 			return false;
 		}
-		string name = program[literalIntex].getValue();
+		string name = program[literalIndex].getValue();
 		variableNames.push_back(name);
 		if (!isUserDefinedNamePermitted(name)) {
-			cout << "user defined name " << name << " is not permitted"
-			<< endl;
+			showErrorMessage(errorUserDefinedName, name);
 			return false;
 		}
 		declareVariable(name);
-		literalIntex++; // name
+		literalIndex++; // name
 
 		// declaration-assignment
-		if (program[literalIntex] == Literal("=")) {
-			literalIntex++; // '='
+		if (program[literalIndex] == Literal("=")) {
+			literalIndex++; // '='
 			OperandObject expression;
-			calculateExpression(literalIntex, expression); // expression
+			calculateExpression(literalIndex, expression); // expression
 			assignVariable(name, expression.value);
 		}
 
-		if (parseExactLiteral(literalIntex, ";", false)) { // ';'
+		if (parseExactLiteral(literalIndex, ";", false)) { // ';'
 			break; // no more variable declarations
 		}
 
-		if (!parseExactLiteral(literalIntex, ",")) { // ','
+		if (!parseExactLiteral(literalIndex, ",")) { // ','
+			showErrorMessage(errorVarPattern, "','");
 			return false;
 		}
 
@@ -85,40 +87,44 @@ bool handleVarInstruction(int &literalIntex, vector<string> &variableNames) {
 }
 
 // handles if instruction
-bool handleIfInstruction(int &literalIntex,
+bool handleIfInstruction(int &literalIndex,
 int &condition, int &returnValue, bool &returned) {
 
-	literalIntex++; // if
+	literalIndex++; // if
 
-	if (!parseExactLiteral(literalIntex, "(")) { // '('
+	if (!parseExactLiteral(literalIndex, "(")) { // '('
+		showErrorMessage(errorIfPattern, "'('");
 		return false;
 	}
 
 	// expression
 	OperandObject result;
-	if (!calculateExpression(literalIntex, result)) {
+	if (!calculateExpression(literalIndex, result)) {
 		return false;
 	}
 	condition = result.value;
 
-	if (!parseExactLiteral(literalIntex, ")")) { // ')'
+	if (!parseExactLiteral(literalIndex, ")")) { // ')'
+		showErrorMessage(errorIfPattern, "')'");
 		return false;
 	}
 
-	if (!parseExactLiteral(literalIntex, "{")) { // '{'
+	if (!parseExactLiteral(literalIndex, "{")) { // '{'
+		showErrorMessage(errorIfPattern, "'{'");
 		return false;
 	}
 
 	// block body
 	if (condition) {
-		if (!executeBlock(literalIntex, returnValue, returned)) {
+		if (!executeBlock(literalIndex, returnValue, returned)) {
 			return false;
 		}
 	} else {
-		skipCurrentBlock(literalIntex);
+		skipCurrentBlock(literalIndex);
 	}
 
-	if (!parseExactLiteral(literalIntex, "}")) { // '}'
+	if (!parseExactLiteral(literalIndex, "}")) { // '}'
+		showErrorMessage(errorIfPattern, "'}'");
 		return false;
 	}
 
@@ -127,24 +133,26 @@ int &condition, int &returnValue, bool &returned) {
 }
 
 // {...}
-bool parseBlock(int &literalIntex, int &returnValue, bool &returned) {
+bool parseBlock(int &literalIndex, int &returnValue, bool &returned) {
 
-	if (!parseExactLiteral(literalIntex, "{")) { // '{'
+	if (!parseExactLiteral(literalIndex, "{")) { // '{'
+		showErrorMessage(errorBlockPattern, "'{'");
 		return false;
 	}
 
 	// block body
-	if (!executeBlock(literalIntex, returnValue, returned)) {
+	if (!executeBlock(literalIndex, returnValue, returned)) {
 		return false;
 	}
 
-	if (!parseExactLiteral(literalIntex, "}")) { // '}'
+	if (!parseExactLiteral(literalIndex, "}")) { // '}'
+		showErrorMessage(errorBlockPattern, "'}'");
 		return false;
 	}
 
 	// return instruction floats up
 	if (returned) {
-		skipCurrentBlock(literalIntex);
+		skipCurrentBlock(literalIndex);
 	}
 
 	return true;
@@ -152,24 +160,22 @@ bool parseBlock(int &literalIntex, int &returnValue, bool &returned) {
 }
 
 // var <names[with-assigns]>;
-bool parseVarInstruction(int &literalIntex, int &returnValue, bool &returned,
+bool parseVarInstruction(int &literalIndex, int &returnValue, bool &returned,
 set<string> &scopeVariables) {
 
 	vector<string> variableNames;
-	if (!handleVarInstruction(literalIntex, variableNames)) {
+	if (!handleVarInstruction(literalIndex, variableNames)) {
 		return false;
 	}
 
 	// Repeated declaration check
 	for (auto name : variableNames) {
 		if (scopeVariables.find(name) != scopeVariables.end()) {
-			cout << "Repeated declaration of variable " << name
-			<< " in this scope" << endl;
+			showErrorMessage(errorRepeatedVariableDeclaration, name);
 			return false;
 		}
-		if (functions.find(name) != functions.end()) {
-			cout << "Variable copies name of existing function " << name
-			<< "(...)" << endl;
+		if (doesFunctionExist(name) || doesInbuiltFunctionExist(name)) {
+			showErrorMessage(errorFunctionOverloadByVariable, name);
 			return false;
 		}
 		scopeVariables.insert(name);
@@ -180,22 +186,23 @@ set<string> &scopeVariables) {
 }
 
 // return <expression>;
-bool parseReturnInstruction(int &literalIntex, int &returnValue,
+bool parseReturnInstruction(int &literalIndex, int &returnValue,
 bool &returned) {
 
-	literalIntex++; // return
+	literalIndex++; // return
 
 	OperandObject returnObject;
-	if (!calculateExpression(literalIntex, returnObject)) {
+	if (!calculateExpression(literalIndex, returnObject)) {
 		return false;
 	}
 	returnValue = returnObject.value;
 
-	if (!parseExactLiteral(literalIntex, ";")) { // ';'
+	if (!parseExactLiteral(literalIndex, ";")) { // ';'
+		showErrorMessage(errorReturnPattern, "';'");
 		return false;
 	}
 
-	skipCurrentBlock(literalIntex);
+	skipCurrentBlock(literalIndex);
 	returned = true;
 
 	return true;
@@ -203,16 +210,19 @@ bool &returned) {
 }
 
 // function fname(<arguments>) {...}
-bool parseFunctionInstruction(int &literalIntex, int &returnValue, bool &returned) {
+bool parseFunctionInstruction(int &literalIndex, int &returnValue,
+bool &returned) {
 
-	skipToLiteral(literalIntex,Literal("{"));
-	if (!parseExactLiteral(literalIntex, "{")) { // '{'
+	skipToLiteral(literalIndex,Literal("{"));
+	if (!parseExactLiteral(literalIndex, "{")) { // '{'
+		showErrorMessage(errorFunctionDeclarationPattern, "'{'");
 		return false;
 	}
 
-	skipCurrentBlock(literalIntex); // block body skipped
+	skipCurrentBlock(literalIndex); // block body skipped
 
-	if (!parseExactLiteral(literalIntex, "}")) { // '}'
+	if (!parseExactLiteral(literalIndex, "}")) { // '}'
+		showErrorMessage(errorFunctionDeclarationPattern, "'}'");
 		return false;
 	}
 
@@ -266,35 +276,36 @@ bool parseWhileInstruction(int &literalIntex, int &returnValue, bool &returned) 
 
 // parse one instruction
 // scopeVariables - variables declared in current (deepest) block
-bool parseInstruction(int &literalIntex, int &returnValue, bool &returned,
+bool parseInstruction(int &literalIndex, int &returnValue, bool &returned,
 set<string> &scopeVariables) {
-	if (program[literalIntex] == Literal("{")) {
-		return parseBlock(literalIntex, returnValue, returned);
-	} else 	if (program[literalIntex] == Literal("var")) {
-		return parseVarInstruction(literalIntex, returnValue, returned,
+	string literalValue = program[literalIndex].getValue();
+	if (literalValue == "{") {
+		return parseBlock(literalIndex, returnValue, returned);
+	} else 	if (literalValue == "var") {
+		return parseVarInstruction(literalIndex, returnValue, returned,
 		scopeVariables);
-	} else 	if (program[literalIntex] == Literal("return")) {
-		return parseReturnInstruction(literalIntex, returnValue, returned);
-	} else 	if (program[literalIntex] == Literal("function")) {
-		return parseFunctionInstruction(literalIntex, returnValue, returned);
-	} else 	if (program[literalIntex] == Literal("if")) {
-		return parseIfInstruction(literalIntex, returnValue, returned);
-	} else 	if (program[literalIntex] == Literal("while")) {
-		return parseWhileInstruction(literalIntex, returnValue, returned);
+	} else 	if (literalValue == "return") {
+		return parseReturnInstruction(literalIndex, returnValue, returned);
+	} else 	if (literalValue == "function") {
+		return parseFunctionInstruction(literalIndex, returnValue, returned);
+	} else 	if (literalValue == "if") {
+		return parseIfInstruction(literalIndex, returnValue, returned);
+	} else 	if (literalValue == "while") {
+		return parseWhileInstruction(literalIndex, returnValue, returned);
 	} else {
 		// <expression>;
-		return handleExpressionInstruction(literalIntex);
+		return handleExpressionInstruction(literalIndex);
 	}
 }
 
-// starts program execution from literalIntex
+// starts program execution from literalIndex
 // returns true if success
-bool executeBlock(int &literalIntex, int &returnValue, bool &returned) {
+bool executeBlock(int &literalIndex, int &returnValue, bool &returned) {
 	returned = false;
 	set<string> scopeVariables; // variables created in block scope
-	while (program[literalIntex] != literalEOF
-	&& program[literalIntex] != Literal("}")) {
-		if ( !parseInstruction(literalIntex, returnValue, returned,
+	while (program[literalIndex] != literalEOF
+	&& program[literalIndex] != Literal("}")) {
+		if ( !parseInstruction(literalIndex, returnValue, returned,
 		scopeVariables) ) {
 			return false;
 		}
@@ -308,10 +319,10 @@ bool executeBlock(int &literalIntex, int &returnValue, bool &returned) {
 // it's just shell for executeBlock function to execute whole program as block
 bool executeProgram() {
 	cout << endl << "EXECUTION" << endl << endl;
-	int literalIntex = 0;
+	int literalIndex = 0;
 	int returnValue;
 	bool returned;
-	bool success = executeBlock(literalIntex, returnValue, returned);
+	bool success = executeBlock(literalIndex, returnValue, returned);
 	cout << endl;
 	if (returned) {
 		cout << "return " << returnValue << endl;
@@ -319,7 +330,7 @@ bool executeProgram() {
 	if (success) {
 		cout << "EXECUTION " << "FINISHED" << endl;
 	} else {
-		cout << "EXECUTION " << "FINISHED at: literalIntex=" << literalIntex << endl;
+		cout << "EXECUTION " << "FAILED at: literalIndex=" << literalIndex << endl;
 	}
 	return success;
 }

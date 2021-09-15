@@ -19,9 +19,11 @@ template<class T> bool hasVectorAnElement(vector<T> &array, T element) {
 }
 
 bool parseExactLiteral(int &literalIntex, Literal literal,
-bool printError = true);
+bool printError = false);
 
 bool parseExactLiteral(int &literalIntex, string value,
-bool printError = true);
+bool printError = false);
 
 bool isUserDefinedNamePermitted(string name);
+
+void showErrorMessage(string errorMessage, string parameter = "");

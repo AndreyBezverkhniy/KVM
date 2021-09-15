@@ -67,3 +67,7 @@ bool printError) {
 bool isUserDefinedNamePermitted(string name) {
 	return !isDigit(name[0]);
 }
+
+void showErrorMessage(string errorMessage, string parameter) {
+	cout << errorMessage << ": " << parameter << endl;
+}

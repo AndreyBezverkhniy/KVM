@@ -8,38 +8,37 @@
 #include "literal.hpp"
 #include "function.hpp"
 #include "utils.hpp"
+#include "errors.hpp"
 
 using namespace std;
 
 bool readSourceFile(vector<string> &importChain, string sourceFilePath);
 
-bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
+bool parseArgumentList(int &literalIndex, vector<string> &argumentList) {
 	
 	// check arguments presence
-	if (program[literalIntex] != Literal(")")) {
+	if (program[literalIndex] != Literal(")")) {
 
 		string argumentName;
 		for (;;) {
 
-			if (program[literalIntex].getType() != WORD_LITERAL) {
-				cout << argumentName << " is not an agrument name" << endl;
+			if (program[literalIndex].getType() != WORD_LITERAL) {
+				showErrorMessage(errorIncorrectArgument, argumentName);
 				return false;
 			}
-			argumentName = program[literalIntex].getValue();
+			argumentName = program[literalIndex].getValue();
 			if (hasVectorAnElement(argumentList, argumentName)) {
-				cout << "Repeated name of function argument "
-				<< argumentName << endl;
+				showErrorMessage(errorRepeatedArgument, argumentName);
 				return false;
 			}
 			if (!isUserDefinedNamePermitted(argumentName)) {
-				cout << "user defined name " << argumentName << " is not permitted"
-				<< endl;
+				showErrorMessage(errorUserDefinedName, argumentName);
 				return false;
 			}
 			argumentList.push_back(argumentName);
-			literalIntex++; // argumentName
+			literalIndex++; // argumentName
 
-			if (!parseExactLiteral(literalIntex, ",", false)) { // ','
+			if (!parseExactLiteral(literalIndex, ",", false)) { // ','
 				break; // no more arguments
 			}
 
@@ -55,56 +54,58 @@ bool parseArgumentList(int &literalIntex, vector<string> &argumentList) {
 // collect information about functions declared
 bool prepareFunctions(int &failureIntex) {
 
-	int &literalIntex=failureIntex;
-	literalIntex=0;
+	int &literalIndex=failureIntex;
+	literalIndex=0;
 
-	while (program[literalIntex] != literalEOF) {
+	while (program[literalIndex] != literalEOF) {
 
-		if (program[literalIntex] != Literal("function")) {
-			literalIntex++; // farther search for function declaration
+		// function
+		if (program[literalIndex] != Literal("function")) {
+			literalIndex++; // farther search for function declaration
 			continue;
 		}
-		literalIntex++; // function
-
-		string functionName = program[literalIntex].getValue();
-		if (program[literalIntex].getType() != WORD_LITERAL) {
-			cout << functionName << " is not a function name" << endl;
+		literalIndex++;
+		// functionName
+		string functionName = program[literalIndex].getValue();
+		if (program[literalIndex].getType() != WORD_LITERAL) {
+			showErrorMessage(errorFunctionName, functionName);
 			return false;
 		}
 		if (!isUserDefinedNamePermitted(functionName)) {
-			cout << "user defined name " << functionName << " is not permitted"
-			<< endl;
+			showErrorMessage(errorUserDefinedName, functionName);
 			return false;
 		}
 		if (doesFunctionExist(functionName)) {
-			cout << "Repeated declaration of function " << functionName << endl;
+			showErrorMessage(errorRepeatedFunction, functionName);
 			return false;
 		}
-		literalIntex++; // functionName
-
-		if (!parseExactLiteral(literalIntex, "(")) { // '('
+		literalIndex++;
+		// '('
+		if (!parseExactLiteral(literalIndex, "(")) {
+			showErrorMessage(errorFunctionDeclarationPattern, "'('");
 			return false;
 		}
-
 		// arguments
 		FunctionDescription &functionDescription = functions[functionName];
-		if (!parseArgumentList(literalIntex,functionDescription.arguments)) {
+		if (!parseArgumentList(literalIndex,functionDescription.arguments)) {
 			return false;
 		}
-
-		if (!parseExactLiteral(literalIntex, ")")) { // ')'
+		// ')'
+		if (!parseExactLiteral(literalIndex, ")")) {
+			showErrorMessage(errorFunctionDeclarationPattern, "')'");
 			return false;
 		}
-
-		if (!parseExactLiteral(literalIntex, "{")) { // '{'
+		// '{'
+		if (!parseExactLiteral(literalIndex, "{")) {
+			showErrorMessage(errorFunctionDeclarationPattern, "'{'");
 			return false;
 		}
-
 		// save function start point
-		functionDescription.bodyIntex = literalIntex;
-		skipCurrentBlock(literalIntex); // skip function body
-
-		if (!parseExactLiteral(literalIntex, "}")) { // '}'
+		functionDescription.bodyIntex = literalIndex;
+		skipCurrentBlock(literalIndex); // skip function body
+		// '}'
+		if (!parseExactLiteral(literalIndex, "}")) {
+			showErrorMessage(errorFunctionDeclarationPattern, "'}'");
 			return false;
 		}
 		
@@ -136,7 +137,7 @@ bool expandImportInstruction(vector<string> &importChain) {
 
 	// recursive import forbidden
 	if (checkRecursiveImport(importChain, importingFilePath)) {
-		cout << "Recursive import of " << importingFilePath << endl;
+		showErrorMessage(errorRecursiveImport, importingFilePath);
 		auto iter =
 		std::find(importChain.begin(), importChain.end(), importingFilePath);
 		while (iter != importChain.end()) {
@@ -187,7 +188,7 @@ bool readSourceFile(vector<string> &importChain, string sourceFilePath) {
 	FILE *fp;
 	fp = fopen(sourceFilePath.c_str(), "rb");
 	if (!fp) {
-		cout << "Can't open soure file: " << sourceFilePath << endl;
+		showErrorMessage(errorReadFile, sourceFilePath);
 		return false;
 	}
 

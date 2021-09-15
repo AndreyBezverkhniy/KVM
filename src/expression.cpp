@@ -11,6 +11,7 @@
 #include "utils.hpp"
 #include "operand_object.hpp"
 #include "inbuilt_functions.hpp"
+#include "errors.hpp"
 
 using namespace std;
 
@@ -21,8 +22,7 @@ OperandObject &result) {
 
 	// declare function scope variables - arguments
 	if (description.arguments.size() != arguments.size()) {
-		cout << "Incorrect argument amount of function "
-		<< functionName << endl;
+		showErrorMessage(errorFunctionParameters, functionName);
 		return false;
 	}
 	declareVariables(description.arguments);
@@ -51,6 +51,7 @@ bool parseFunctionCall(int &literalIntex, string &functionName,  vector<int> &ar
 	literalIntex++; // functionName
 
 	if (!parseExactLiteral(literalIntex, "(")) { // '('
+		showErrorMessage(errorFunctionCallPattern, "'('");
 		return false;
 	}
 
@@ -59,9 +60,15 @@ bool parseFunctionCall(int &literalIntex, string &functionName,  vector<int> &ar
 	int argumentNumber = 0;
 	while (!parseExactLiteral(literalIntex, ")", false)) { // ')'
 
+		if (parseExactLiteral(literalIntex, literalEOF)) {
+			showErrorMessage(errorFunctionCallPattern, "')'");
+			return false;
+		}
+
 		if (argumentNumber > 0) {
 			if (!parseExactLiteral(literalIntex, ",", false)) { // ','
-				break;
+				showErrorMessage(errorFunctionCallPattern, "','");
+				return false;
 			}
 		}
 
@@ -107,7 +114,7 @@ bool parseLiteralValue(int &literalIntex, OperandObject &result) {
 		return callInbuiltFunction(functionName, arguments, result);
 	}
 	if (!doesVariableExist(word)) {
-		cout << "Variable " << word << " was not declared" << endl;
+		showErrorMessage(errorUnknownIdentificator, word);
 		return false;
 	}
 	result = OperandObject(word, getVariableValue(word));
@@ -137,6 +144,7 @@ OperandObject &result) {
 		result.value = -operand.value;
 	} else if (leftUnaryOperator == "++") {
 		if (!doesVariableExist(operand.variableName)) {
+			showErrorMessage(errorVariableNotExist, operand.variableName);
 			return false;
 		}
 		result.variableName = operand.variableName;
@@ -145,6 +153,7 @@ OperandObject &result) {
 		assignVariable(operand.variableName, result.value);
 	} else if (leftUnaryOperator == "--") {
 		if (!doesVariableExist(operand.variableName)) {
+			showErrorMessage(errorVariableNotExist, operand.variableName);
 			return false;
 		}
 		result.variableName = operand.variableName;
@@ -152,15 +161,17 @@ OperandObject &result) {
 		result.value -= 1;
 		assignVariable(operand.variableName, result.value);
 	} else {
+		showErrorMessage(errorUnknownLeftUnaryOperator, leftUnaryOperator);
 		return false;
 	}
 	return true;
 }
 
-bool applyRightUnarOperator(OperandObject operand, string rightUnaryOperator,
+bool applyRightUnaryOperator(OperandObject operand, string rightUnaryOperator,
 OperandObject &result) {
 	if (rightUnaryOperator == "++") {
 		if (!doesVariableExist(operand.variableName)) {
+			showErrorMessage(errorVariableNotExist, operand.variableName);
 			return false;
 		}
 		result.value = getVariableValue(operand.variableName);
@@ -168,12 +179,14 @@ OperandObject &result) {
 		result.variableName = "";
 	} else if (rightUnaryOperator == "--") {
 		if (!doesVariableExist(operand.variableName)) {
+			showErrorMessage(errorVariableNotExist, operand.variableName);
 			return false;
 		}
 		result.value = getVariableValue(operand.variableName);
 		assignVariable(operand.variableName, result.value - 1);
 		result.variableName = "";
 	} else {
+		showErrorMessage(errorUnknownRightUnaryOperator, rightUnaryOperator);
 		return false;
 	}
 	return true;
@@ -208,6 +221,7 @@ bool parseOperand(int &literalIntex, OperandObject &result) {
 	// value of expression in brackets becomes operand value
 
 	if (!parseExactLiteral(literalIntex, "(")) { // '('
+		showErrorMessage(errorBracketExpressionPattern, "'('");
 		return false;
 	}
 
@@ -218,6 +232,7 @@ bool parseOperand(int &literalIntex, OperandObject &result) {
 	}
 
 	if (!parseExactLiteral(literalIntex, ")")) { // ')'
+		showErrorMessage(errorBracketExpressionPattern, "')'");
 		return false;
 	}
 
@@ -351,13 +366,13 @@ vector<OperandObject> &operands, vector<string> &operators) {
 					return true; // expression parsed successfully
 				}
 				// invalid operator
-				cout << "Incorrect operator: "
-				<< program[literalIntex].getValue() << endl;
+				string invalidOperator = program[literalIntex].getValue();
+				showErrorMessage(errorInvalidOperator, invalidOperator);
 				return false;
 			}
 			if (isRightUnaryOperator(math_operator)) {
 				OperandObject result;
-				if (!applyRightUnarOperator(operand, math_operator, result)) {
+				if (!applyRightUnaryOperator(operand, math_operator, result)) {
 					return false;
 				}
 				operand = result;
