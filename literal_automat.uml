@@ -1,0 +1,74 @@
+@startuml
+left to right direction
+
+EMPTY : extendable
+
+EMPTY --> SPACE : space tab sr lf
+SPACE : extendable
+SPACE --> SPACE : space tab sr lf
+
+EMPTY --> WORD : alpha/digit
+WORD : extendable
+WORD --> WORD : alpha/digit
+
+state "STRING" as LSTRING
+LSTRING : not complited 1
+state "STRING" as LRSTRING
+LRSTRING : complited
+EMPTY --> LSTRING : "
+LSTRING --> LSTRING : кроме "
+LSTRING --> LRSTRING : "
+
+state "SIGN" as PLUS
+PLUS : extendable
+state "SIGN" as PLUSPLUS
+PLUSPLUS : complited
+state "SIGN" as PLUSEQUAL
+PLUSEQUAL : complited
+EMPTY --> PLUS : +
+PLUS --> PLUSPLUS : +
+PLUS --> PLUSEQUAL : =
+
+state "SIGN" as MINUS
+MINUS : extendable
+state "SIGN" as MINUSMINUS
+MINUSMINUS : complited
+state "SIGN" as MINUSEQUAL
+MINUSEQUAL : complited
+EMPTY --> MINUS : -
+MINUS --> MINUSMINUS : -
+MINUS --> MINUSEQUAL : =
+
+state "SIGN" as LSIGN
+LSIGN : extendable
+state "SIGN" as LSIGNEQUAL
+LSIGNEQUAL : complited
+EMPTY --> LSIGN : % * < > !
+LSIGN --> LSIGNEQUAL : =
+
+state "SIGN" as JUSTSIGN
+JUSTSIGN : complited
+EMPTY --> JUSTSIGN : ( ) { } , = ;
+
+state "SIGN" as SLASH
+SLASH : extendable
+state "SIGN" as SLASHEQUAL
+SLASHEQUAL : complited
+state "ONELINE COMMENT" as SLASHSLASH
+SLASHSLASH : extendable
+state "MULTILINE COMMENT" as SLASHSTAR
+SLASHSTAR : not complited 1
+state "MULTILINE COMMENT" as SLASHSTARSTAR
+SLASHSTARSTAR : not complited 2
+state "MULTILINE COMMENT" as MULTILINE
+MULTILINE : complited
+EMPTY --> SLASH : /
+SLASH --> SLASHEQUAL : =
+SLASH --> SLASHSLASH : /
+SLASHSLASH --> SLASHSLASH : кроме /
+SLASHSTAR <- SLASH  : *
+SLASHSTAR --> SLASHSTAR : кроме *
+SLASHSTAR --> SLASHSTARSTAR : *
+SLASHSTARSTAR --> SLASHSTAR : кроме /
+SLASHSTARSTAR -> MULTILINE : /
+@enduml

@@ -1,293 +1,78 @@
-#include "literal.hpp"
-
 #include <string>
 
 using namespace std;
 
-// Literal can be empty or typed
-const char EMPTY_LITERAL = 0; // with no value
-const char SPACES_LITERAL = 1; // ' ', '\t', '\n' and '\r' characters
-const char WORD_LITERAL = 2; // consists digits, alphabet characters and '_'
-const char STRING_LITERAL = 3; // "..."
-const char SIGN_LITERAL = 4;
-const char INLINE_COMMENT_LITERAL = 5; // //...\n
-const char MULTILINE_COMMENT_LITERAL = 6; // /* ...*/
-const char EOF_LITERAL = 7; // added for detecting end of program without
-// check of vector size. artificial constructing only
+typedef char LTYPE;
+typedef char LSTATE;
 
-// literal can be build character by character
-// start state is "in progress", that changes to "completed" or "failed"
-const char IN_PROGRESS_LITERAL_STATE = 0;
-const char COMPLETED_LITERAL_STATE = 1;
-const char FAILED_LITERAL_STATE = 2;
+const LSTATE STATE_COMPLITED = 0;
+const LSTATE STATE_NOT_COMPLITED = 1;
+const LSTATE STATE_EXTENDABLE = 2;
 
-Literal::Literal() {
-	makeEmpty();
-}
+const LTYPE TYPE_SPACE = 0;
+const LTYPE TYPE_SIGN = 1;
+const LTYPE TYPE_WORD = 2;
+const LTYPE TYPE_STRING = 3;
+const LTYPE TYPE_ONELINE_COMMENT = 4;
+const LTYPE TYPE_MULTILINE_COMMENT = 5;
 
-Literal::Literal(string _value) {
-	makeEmpty();
-	for (char symbol : _value) {
-		addNextSymbol(symbol);
+class Literal{
+private:
+
+	string value;
+	LTYPE type;
+	LSTATE state;
+
+public:
+
+	Literal() : state(STATE_EMPTY_LITERAL) {}
+
+	bool isEmpty() {
+		return state == STATE_EMPTY_LITERAL;
 	}
-	makeCompleted();
-}
-
-Literal::Literal(string _value, int _type) {
-	// user specified literal
-	value = _value;
-	type = _type;
-	state = COMPLETED_LITERAL_STATE;
-}
-
-void Literal::makeEmpty() {
-	value.clear();
-	type = EMPTY_LITERAL;
-	// waiting of adding characters
-	state = IN_PROGRESS_LITERAL_STATE;
-}
-
-string Literal::getValue() const {
-	return value;
-}
-
-int Literal::getType() const {
-	return type;
-}
-
-bool Literal::isEmpty() const {
-	return type == EMPTY_LITERAL;
-}
-
-int Literal::getState() const {
-	return state;
-}
-
-bool Literal::isCompleted() const {
-	return state == COMPLETED_LITERAL_STATE;
-}
-
-bool Literal::isFailed() const {
-	return state == FAILED_LITERAL_STATE;
-}
-
-bool Literal::isInProgress() const {
-	return state == IN_PROGRESS_LITERAL_STATE;
-}
-
-bool Literal::addNextSymbol(char character) {
-	if (state != IN_PROGRESS_LITERAL_STATE) {
-		// No way to expand completed or failed literal
-		return false;
+	bool isNotComplited() {
+		return state == STATE_NOT_COMPLITED;
 	}
-	switch (type) {
-	case EMPTY_LITERAL:
-		return addSymbolToEmpty(character);
-	case SPACES_LITERAL:
-		return addSymbolToSpaces(character);
-	case WORD_LITERAL:
-		return addSymbolToWord(character);
-	case STRING_LITERAL:
-		return addSymbolToString(character);
-	case SIGN_LITERAL:
-		return addSymbolToSign(character);
-	case INLINE_COMMENT_LITERAL:
-		return addSymbolToInlineComment(character);
-	case MULTILINE_COMMENT_LITERAL:
-		return addSymbolToMultilineComment(character);
-	};
-	return false;
-}
-
-void Literal::makeCompleted() {
-	if (state != IN_PROGRESS_LITERAL_STATE) {
-		  return;
+	bool isReady() {
+		return state == STATE_READY;
 	}
-	switch (type) {
-	case EMPTY_LITERAL:
-		return makeCompletedEmpty();
-	case SPACES_LITERAL:
-		return makeCompletedSpaces();
-	case WORD_LITERAL:
-		return makeCompletedWord();
-	case STRING_LITERAL:
-		return makeCompletedString();
-	case SIGN_LITERAL:
-		return makeCompletedSign();
-	case INLINE_COMMENT_LITERAL:
-		return makeCompletedInlineComment();
-	case MULTILINE_COMMENT_LITERAL:
-		return makeCompletedMultilineComment();
-	};
-}
-
-string Literal::getTypeName() const {
-	switch (type) {
-	case EMPTY_LITERAL:
-		return "EMPTY";
-		break;
-	case SPACES_LITERAL:
-		return "SPACES";
-		break;
-	case WORD_LITERAL:
-		return "WORD";
-		break;
-	case STRING_LITERAL:
-		return "STRING";
-		break;
-	case SIGN_LITERAL:
-		return "SIGN";
-		break;
-	case INLINE_COMMENT_LITERAL:
-		return "INLINE_COMMENT";
-		break;
-	case MULTILINE_COMMENT_LITERAL:
-		return "MULTILINE_COMMENT";
-		break;
-	case EOF_LITERAL:
-		return "EOF";
-		break;
+	LSTATE getState() {
+		return state;
 	}
-}
 
-bool operator==(Literal l,Literal r) {
-	// state does not matter
-	return l.type == r.type && l.value == r.value;
-}
-
-bool operator!=(Literal l,Literal r) {
-	return !(l == r);
-}
-
-bool Literal::addSymbolToEmpty(char character) {
-	if (character == ' ' || character == '\t' || character == '\r'
-	|| character == '\n') {
-		type = SPACES_LITERAL;
-		value = character;
-	} else if (character >= '0' && character <= '9'
-	|| character >= 'a' && character <= 'z'
-	|| character >= 'A' && character <= 'Z'
-	|| character == '_') {
-		type = WORD_LITERAL;
-		value = character;
-	} else if (character == '"') {
-		type = STRING_LITERAL;
-		value = "";
-	} else {
-		type = SIGN_LITERAL; // all other symbols start signs
-		value = character;
+	bool isSpace() {
+		return type == TYPE_SPACE;
 	}
-	return true;
-}
-
-bool Literal::addSymbolToSpaces(char character) {
-	if (character == ' ' || character == '\t' || character == '\r'
-	|| character == '\n') {
-		value += character;
-		return true;
+	bool isSign() {
+		return type == TYPE_SIGN;
 	}
-	state = COMPLETED_LITERAL_STATE; // spaces ends
-	return false;
-}
-
-bool Literal::addSymbolToWord(char character) {
-	if (character >= '0' && character <= '9'
-	|| character >= 'a' && character <= 'z'
-	|| character >= 'A' && character <= 'Z'
-	|| character == '_') {
-		value += character;
-		return true;
+	bool isWord() {
+		return type == TYPE_WORD;
 	}
-	state = COMPLETED_LITERAL_STATE; // word ends
-	return false;
-}
-
-bool Literal::addSymbolToString(char character) {
-	if (character == '"') {
-		state = COMPLETED_LITERAL_STATE; // string ends
-	} else {
-		value += character;
+	bool isString() {
+		return type == TYPE_STRING;
 	}
-	return true;
-}
-
-bool Literal::addSymbolToSign(char character) {
-	if (value == "/" && character == '/') {
-		value.clear();
-		type = INLINE_COMMENT_LITERAL;
-		return true;
+	bool isOnelineComment() {
+		return type == TYPE_ONELINE_COMMENT;
 	}
-	if (value == "/" && character == '*') {
-		value.clear();
-		type = MULTILINE_COMMENT_LITERAL;
-		return true;
+	bool isMultilineComment() {
+		return TYPE_MULTILINE_COMMENT;
 	}
-	if ( ((value == "=" || value == "!" || value == ">" || value == "<")
-	&& character == '=') || (value == "|" && character == '|') ||
-	(value == "&" && character == '&') ||
-	(value == "+" && character == '+') ||
-	(value == "-" && character == '-')) {
-		value += character;
-		state = COMPLETED_LITERAL_STATE;
-		return true;
+	LTYPE getType() {
+		return type;
 	}
-	state = COMPLETED_LITERAL_STATE;
-	return false;
-}
 
-bool Literal::addSymbolToInlineComment(char character) {
-	if (character == '\n') {
-		state = COMPLETED_LITERAL_STATE;
-		return false;
+	const string& getValue() {
+		return value;
 	}
-	value += character;
-	return true;
-}
-	
-bool Literal::addSymbolToMultilineComment(char character) {
-	if (character == '/' && value.size() > 0
-	&& value[value.size()-1] == '*') {
-		value.pop_back(); // delete '*' character
-		state = COMPLETED_LITERAL_STATE;
-	} else {
-		value += character;
+
+	friend bool operator==(Literal l, Literal r) {
+		return l.type == r.type && l.value == r.value;
 	}
-	return true;
-}
 
-void Literal::makeCompletedEmpty() {
-	// can't make empty a completed literal
-	state = FAILED_LITERAL_STATE;
-}
+	LSTATE addCharacter(char ch) {
 
-void Literal::makeCompletedSpaces() {
-	state = COMPLETED_LITERAL_STATE; // just consider it to be
-}
+		return state;
+	}
 
-void Literal::makeCompletedWord() {
-	state = COMPLETED_LITERAL_STATE; // just consider it to be
-}
-
-void Literal::makeCompletedString() {
-	// state completed occurs explicitely when '"' is added
-	// otherwise string is not ended by '"' that means fail
-	state = FAILED_LITERAL_STATE;
-}
-
-void Literal::makeCompletedSign() {
-	state = COMPLETED_LITERAL_STATE; // just consider it to be
-}
-
-void Literal::makeCompletedInlineComment() {
-	state = COMPLETED_LITERAL_STATE; // just consider it to be
-}
-
-void Literal::makeCompletedMultilineComment() {
-	// state completed occurs explicitely when "*/" is added
-	// otherwise multiline comment is not ended by "*/" that means fail
-	state = FAILED_LITERAL_STATE;
-}
-
-Literal MakeLiteralEOF() {
-	return Literal("", EOF_LITERAL);
-}
+};
