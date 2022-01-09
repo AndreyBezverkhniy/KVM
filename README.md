@@ -54,7 +54,7 @@
 
 ![alt text](img/function_declaration.png)
 
-![alt text](img/expresion.png)
+![alt text](img/expression.png)
 
 ![alt text](img/operand.png)
 
