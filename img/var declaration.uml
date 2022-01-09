@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+title var declaration
+
+circle "begin" as BEGIN
+circle "end" as END
+rectangle var
+rectangle "," as comma
+rectangle "=" as equal
+rectangle ";" as semicolon
+storage expression
+storage identifier
+circle " " as join
+
+BEGIN->var
+var->identifier
+identifier-->join
+semicolon<-join
+END<-semicolon
+identifier-->equal
+equal-->expression
+expression-->join
+comma<--join
+identifier<--comma
+@enduml

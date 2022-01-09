@@ -1,0 +1,17 @@
+@startuml
+left to right direction
+title block
+
+circle "begin" as BEGIN
+circle "end" as END
+storage instruction
+rectangle "{" as L
+rectangle "}" as R
+
+BEGIN-->L
+L-->instruction
+instruction-->R
+R-->END
+instruction<--instruction
+L-->R
+@enduml

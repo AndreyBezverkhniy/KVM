@@ -3,21 +3,35 @@ left to right direction
 
 EMPTY : extendable
 
-EMPTY --> SPACE : space tab sr lf
+EMPTY --> SPACE : space tab /n
 SPACE : extendable
-SPACE --> SPACE : space tab sr lf
+SPACE --> SPACE : space tab /n
 
 EMPTY --> WORD : alpha/digit
 WORD : extendable
 WORD --> WORD : alpha/digit
 
 state "STRING" as LSTRING
-LSTRING : not complited 1
+LSTRING : not complited
 state "STRING" as LRSTRING
 LRSTRING : complited
 EMPTY --> LSTRING : "
 LSTRING --> LSTRING : кроме "
 LSTRING --> LRSTRING : "
+
+state "SIGN" as AND
+AND : not complited
+state "SIGN" as ANDAND
+ANDAND : complited
+EMPTY --> AND : &
+AND --> ANDAND : &
+
+state "SIGN" as OR
+OR : not complited
+state "SIGN" as OROR
+OROR : complited
+EMPTY -->OR : |
+OR --> OROR : |
 
 state "SIGN" as PLUS
 PLUS : extendable
@@ -57,15 +71,15 @@ SLASHEQUAL : complited
 state "ONELINE COMMENT" as SLASHSLASH
 SLASHSLASH : extendable
 state "MULTILINE COMMENT" as SLASHSTAR
-SLASHSTAR : not complited 1
+SLASHSTAR : not complited
 state "MULTILINE COMMENT" as SLASHSTARSTAR
-SLASHSTARSTAR : not complited 2
+SLASHSTARSTAR : not complited
 state "MULTILINE COMMENT" as MULTILINE
 MULTILINE : complited
 EMPTY --> SLASH : /
 SLASH --> SLASHEQUAL : =
 SLASH --> SLASHSLASH : /
-SLASHSLASH --> SLASHSLASH : кроме /
+SLASHSLASH --> SLASHSLASH : кроме /n
 SLASHSTAR <- SLASH  : *
 SLASHSTAR --> SLASHSTAR : кроме *
 SLASHSTAR --> SLASHSTARSTAR : *

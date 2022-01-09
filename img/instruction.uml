@@ -1,0 +1,32 @@
+@startuml
+left to right direction
+title instruction
+
+circle "begin" as BEGIN
+circle "end" as END
+storage "var declaration" as VAR
+storage expression
+storage block
+storage if
+storage while
+storage "function declaration" as FUNC
+storage return
+storage import
+
+BEGIN-->VAR
+VAR-->END
+BEGIN-->expression
+expression-->END
+BEGIN-->block
+block-->END
+BEGIN-->if
+if-->END
+BEGIN-->while
+while-->END
+BEGIN-->FUNC
+FUNC-->END
+BEGIN-->return
+return-->END
+BEGIN-->import
+import-->END
+@enduml

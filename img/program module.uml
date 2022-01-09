@@ -1,0 +1,13 @@
+@startuml
+left to right direction
+title Модуль программы
+
+circle "begin" as BEGIN
+circle "end" as END
+storage instruction
+
+BEGIN-->instruction
+instruction-->END
+instruction<--instruction
+BEGIN-->END
+@enduml
