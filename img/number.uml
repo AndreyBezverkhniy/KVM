@@ -1,0 +1,15 @@
+@startuml
+left to right direction
+title number
+
+circle "begin" as BEGIN
+circle "end" as END
+rectangle "digit excluding 0" as first
+rectangle "digit" as second
+
+BEGIN-->first
+first-->END
+first-->second
+second-->END
+second-->second
+@enduml

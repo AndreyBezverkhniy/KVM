@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+title operand
+
+circle "begin" as BEGIN
+circle "end" as END
+storage "left unary" as lunar
+storage element
+storage "right unary" as runar
+
+BEGIN-->element
+element-->END
+BEGIN-->lunar
+lunar-->element
+lunar-->lunar
+element-->runar
+runar-->END
+runar-->runar
+@enduml

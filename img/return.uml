@@ -1,0 +1,16 @@
+@startuml
+left to right direction
+title return
+
+circle "begin" as BEGIN
+circle "end" as END
+rectangle return
+storage expression
+rectangle ";" as semicolon
+
+BEGIN-->return
+return-->semicolon
+semicolon-->END
+return-->expression
+expression-->semicolon
+@enduml

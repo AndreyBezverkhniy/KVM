@@ -36,15 +36,45 @@
 
 ## ЯЗЫКОВЫЕ КОНСТРУКЦИИ
 
-![alt text](img/program module.png)
+![alt text](img/program_module.png)
 
 ![alt text](img/instruction.png)
 
-![alt text](img/var declaration.png)
+![alt text](img/var_declaration.png)
 
 ![alt text](img/block.png)
 
+![alt text](img/if.png)
 
+![alt text](img/while.png)
+
+![alt text](img/return.png)
+
+![alt text](img/import.png)
+
+![alt text](img/function_declaration.png)
+
+![alt text](img/expresion.png)
+
+![alt text](img/operand.png)
+
+![alt text](img/element.png)
+
+![alt text](img/variable_name.png)
+
+![alt text](img/function_call.png)
+
+![alt text](img/function_name.png)
+
+![alt text](img/number.png)
+
+![alt text](img/identifier.png)
+
+bin - бинарный оператор: + - * / % = < > == != <= >= += -= *= /= %= && ||
+
+left unary - левый унарный оператор: ! ++ -- + -
+
+right unary - правый унарный оператор: ++ -- + -
 
 ## МОДУЛЬНАЯ РЕАЛИЗАЦИЯ
 

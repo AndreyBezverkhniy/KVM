@@ -1,0 +1,17 @@
+@startuml
+left to right direction
+title element
+
+circle "begin" as BEGIN
+circle "end" as END
+storage number
+storage "variable name" as varname
+storage "function call" as fcall
+
+BEGIN-->number
+BEGIN-->varname
+BEGIN-->fcall
+number-->END
+varname-->END
+fcall-->END
+@enduml

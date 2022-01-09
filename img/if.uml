@@ -1,17 +1,24 @@
 @startuml
 left to right direction
-title block
+title if
 
 circle "begin" as BEGIN
 circle "end" as END
-storage instruction
-rectangle "{" as L
-rectangle "}" as R
+rectangle if
+rectangle "(" as L
+storage expression
+rectangle ")" as R
+storage "instruction" as instruction1
+rectangle else
+storage "instruction" as instruction2
 
-BEGIN-->L
-L-->instruction
-instruction-->R
-R-->END
-instruction<--instruction
-L-->R
+BEGIN-->if
+L<-if
+L-->expression
+expression-->R
+R->instruction1
+instruction1-->END
+instruction1->else
+else-->instruction2
+END<-instruction2
 @enduml

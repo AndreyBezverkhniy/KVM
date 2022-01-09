@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+title function declaration
+
+circle "begin" as BEGIN
+circle "end" as END
+rectangle function
+storage "identifier" as identifier1
+rectangle "(" as L
+storage "identifier" as identifier2
+rectangle "," as comma
+rectangle ")" as R
+storage block
+
+
+BEGIN->function
+function-->identifier1
+L<-identifier1
+L-->R
+L-->identifier2
+identifier2-->R
+comma<-identifier2
+comma->identifier2
+R->block
+block-->END
+@enduml

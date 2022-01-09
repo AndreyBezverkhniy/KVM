@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+title variable name
+
+circle "begin" as BEGIN
+circle "end" as END
+storage identifier
+
+BEGIN-->identifier
+identifier-->END
+@enduml

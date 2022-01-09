@@ -1,0 +1,15 @@
+@startuml
+left to right direction
+title import
+
+circle "begin" as BEGIN
+circle "end" as END
+rectangle import
+rectangle "STRING: source file path" as path
+rectangle ";" as semicolon
+
+BEGIN-->import
+import-->path
+path-->semicolon
+semicolon-->END
+@enduml

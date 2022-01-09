@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+title while
+
+circle "begin" as BEGIN
+circle "end" as END
+rectangle while
+rectangle "(" as L
+storage expression
+rectangle ")" as R
+storage instruction
+
+BEGIN->while
+while-->L
+L-->expression
+expression-->R
+R-->instruction
+END<-instruction
+@enduml

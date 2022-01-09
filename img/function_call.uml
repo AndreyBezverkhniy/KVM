@@ -1,0 +1,21 @@
+@startuml
+left to right direction
+title function call
+
+circle "begin" as BEGIN
+circle "end" as END
+storage "function name" as fname
+rectangle "(" as L
+rectangle ")" as R
+storage expression
+rectangle "," as comma
+
+BEGIN->fname
+fname-->L
+L-->R
+R-->END
+L-->expression
+expression-->R
+expression->comma
+expression<-comma
+@enduml

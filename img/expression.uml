@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+title expression
+
+circle "begin" as BEGIN
+circle "end" as END
+circle " " as join
+circle " " as split
+storage operand
+rectangle "(" as L
+storage expression
+rectangle ")" as R
+storage bin
+
+BEGIN->join
+join-->operand
+operand-->split
+END<-split
+join-->L
+L-->expression
+expression-->R
+R-->split
+join<--bin
+bin<--split
+@enduml
