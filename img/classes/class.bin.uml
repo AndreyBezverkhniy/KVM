@@ -1,0 +1,13 @@
+@startuml
+left to right direction
+title class.Bin
+
+file Bin
+file "Operand (left)" as Operand1
+file "Operand (right)" as Operand2
+rectangle "binary operator [sign]" as Operator
+
+Bin-->Operand1
+Bin-->Operand2
+Bin-->Operator
+@enduml

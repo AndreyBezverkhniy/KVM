@@ -1,0 +1,13 @@
+@startuml
+left to right direction
+title class.Expression
+
+file Expression
+file Operand
+file Bin
+interface switch
+
+Expression-->switch
+switch-->Operand
+switch-->Bin
+@enduml

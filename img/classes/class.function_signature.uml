@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+title class.FunctionSignature
+
+file FunctionSignature
+rectangle "name [string]" as name
+rectangle "argn [int]" as argn
+
+FunctionSignature-->name
+FunctionSignature-->argn
+@enduml

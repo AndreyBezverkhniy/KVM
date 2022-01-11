@@ -1,0 +1,15 @@
+@startuml
+left to right direction
+title class.Operand
+
+file Operand
+file "LeftUnary" as LUnary
+file "RightUnary" as RUnary
+file Element
+interface switch
+
+Operand-->switch
+switch-->LUnary
+switch-->RUnary
+switch-->Element
+@enduml

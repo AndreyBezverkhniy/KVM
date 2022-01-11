@@ -1,0 +1,9 @@
+@startuml
+left to right direction
+title class.VariableName
+
+file VariableName
+rectangle "name [string]" as name
+
+VariableName-->name
+@enduml

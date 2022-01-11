@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+title class.While
+
+file While
+file "condition [Expression]" as Expression
+file Instruction
+
+While-->Expression
+While-->Instruction
+@enduml

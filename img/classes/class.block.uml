@@ -1,0 +1,9 @@
+@startuml
+left to right direction
+title class.Block
+
+file Block
+rectangle "List of instructions" as list
+
+Block-->list
+@enduml

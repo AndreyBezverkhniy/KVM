@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+title class.FunctionCall
+
+file FunctionCall
+file FunctionSignature
+rectangle "Array of arguments" as args
+
+FunctionCall-->FunctionSignature
+FunctionCall-->args
+@enduml

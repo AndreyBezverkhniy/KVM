@@ -1,0 +1,9 @@
+@startuml
+left to right direction
+title class.Modules
+
+file Modules
+rectangle "map<string:path,Module>" as map
+
+Modules-->map
+@enduml

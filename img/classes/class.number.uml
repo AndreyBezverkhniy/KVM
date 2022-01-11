@@ -1,0 +1,9 @@
+@startuml
+left to right direction
+title class.Number
+
+file Number
+rectangle "value [int]" as value
+
+Number-->value
+@enduml

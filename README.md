@@ -32,43 +32,43 @@
 
 Новый символ продолжает лексему из текущего состояния автомата. Если из текущего состояния нет перехода по принятому символу, то текущая лексема обрубается, а этот символ начинает новую лексему. Если лексему обрубили в состоянии, отличном от complited или extendable, то обнаружена синтаксическая ошибка в тексте. Если из стартового состояния автомата нет перехода по символу, то обнаружена синтаксическая ошибка в тексте.
 
-![alt text](img/automat.png)
+![alt text](img/lexeme/automat.png)
 
 ## ЯЗЫКОВЫЕ КОНСТРУКЦИИ
 
-![alt text](img/program_module.png)
+![alt text](img/constructions/program_module.png)
 
-![alt text](img/instruction.png)
+![alt text](img/constructions/instruction.png)
 
-![alt text](img/var_declaration.png)
+![alt text](img/constructions/var_declaration.png)
 
-![alt text](img/block.png)
+![alt text](img/constructions/block.png)
 
-![alt text](img/if.png)
+![alt text](img/constructions/if.png)
 
-![alt text](img/while.png)
+![alt text](img/constructions/while.png)
 
-![alt text](img/return.png)
+![alt text](img/constructions/return.png)
 
-![alt text](img/import.png)
+![alt text](img/constructions/import.png)
 
-![alt text](img/function_declaration.png)
+![alt text](img/constructions/function_declaration.png)
 
-![alt text](img/expression.png)
+![alt text](img/constructions/expression.png)
 
-![alt text](img/operand.png)
+![alt text](img/constructions/operand.png)
 
-![alt text](img/element.png)
+![alt text](img/constructions/element.png)
 
-![alt text](img/variable_name.png)
+![alt text](img/constructions/variable_name.png)
 
-![alt text](img/function_call.png)
+![alt text](img/constructions/function_call.png)
 
-![alt text](img/function_name.png)
+![alt text](img/constructions/function_name.png)
 
-![alt text](img/number.png)
+![alt text](img/constructions/number.png)
 
-![alt text](img/identifier.png)
+![alt text](img/constructions/identifier.png)
 
 bin - бинарный оператор: + - * / % = < > == != <= >= += -= *= /= %= && ||
 
@@ -173,7 +173,71 @@ right unary - правый унарный оператор: ++ -- + -
 
 ## ВНУТРЕННЯЯ СТРУКТУРА ИСПОЛНЯЕМОЙ ПРОГРАММЫ
 
+Каждый модуль программы загружается как одельный объект, который сохраняется в ассоциативный массив с ключом, который является строкой - путём к модулю (в том виде, в котором он указан в директиве import, либо в котором послан аргументом командной строки для основного модуля).
 
+![alt text](img/classes/class.modules.png)
+
+Код модуля не обязан выделяться фигурными скобками в блок, он автоматически целиком рассматривается как блок самого верхнего уровня - корневой блок.
+
+![alt text](img/classes/class.module.png)
+
+Классы инструкций наследуются от одного интерфейса Instruction.
+
+![alt text](img/classes/class.block.png)
+
+При объявлении начальное значение либо задаётся присваиваемым выражением, либо определяется равным 0 по умолчанию.
+
+![alt text](img/classes/class.variable_declaration.png)
+
+В условном операторе часть else опциональна.
+
+![alt text](img/classes/class.if.png)
+
+![alt text](img/classes/class.while.png)
+
+Возвращаемое значение определяется выражением, либо приравнивается 0 по умолчанию.
+
+![alt text](img/classes/class.return.png)
+
+Выражение ссылается либо на операнд, либо на бинарный оператор.
+
+![alt text](img/classes/class.expression.png)
+
+На этом классы инструкций закончиваются. Далее идут вспомогательные классы для выражений.
+
+Бинарный оператор ссылается на два своих операнда и определяет бинарную операцию, применяемую к ним.
+
+![alt text](img/classes/class.bin.png)
+
+Операнд является либо элементом, либо сначала ссылается на цепочку унарных операторов.
+
+![alt text](img/classes/class.operand.png)
+
+![alt text](img/classes/class.left-right_unary.png)
+
+Элемент - это "элементарный операнд", который может быть одним из 4-х типов.
+
+![alt text](img/classes/class.element.png)
+
+![alt text](img/classes/class.number.png)
+
+![alt text](img/classes/class.variable_name.png)
+
+![alt text](img/classes/class.function_call.png)
+
+Перегрузка функций запрещена, проверка на несовпадение сигнатур производится по именам функций и количеству принимаемых ими аргументов. При совпадении обоих этих параметров обнаруживается перегрузка, запрещённая языком.
+
+![alt text](img/classes/class.function_signature.png)
+
+Объявления функций не входят в объект модуля, а сохраняются отдельно в ассоциативном массиве функций. В нём хранятся функции всех модулей.
+
+![alt text](img/classes/class.functions.png)
+
+Каждый уровень вложенности блока связан с контекстом, в котором хранится информация об объявленных на этом уровне вложенности блока переменных. Повторное объявление переменной запрещено, если в контексте этого блока переменная с таким именем уже объявлена. Однако не запрещено повторять имена переменных, объявленных в блоках уровнями выше текущего. Доступ к переменным по имени в контекстах производится по порядку повышения уровня вложенности, испольуется первое встреченное не пути объявление переменной. Для этого в контексте храится ссылка на контекст родительского блока. У корневого контекста ссылка никуда не ссылается.
+
+![alt text](img/classes/class.context.png)
+
+По такой древовидной структуре модуля происходит рекурсивное выполнение блоков инструкций и вычисление выражений. Перед выполнением программа приводится к этому виду.
 
 ## РАЗБОР ВЫРАЖЕНИЙ
 

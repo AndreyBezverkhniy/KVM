@@ -1,0 +1,9 @@
+@startuml
+left to right direction
+title class.Return
+
+file Return
+file "value [Number]" as value
+
+Return-->value
+@enduml

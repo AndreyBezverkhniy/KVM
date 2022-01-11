@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+title class.LeftUnary/RightUnary
+
+file "LeftUnary/RightUnary" as Unary
+file Operand
+rectangle "unary operator (sign)" as operator
+
+Unary-->Operand
+Unary-->operator
+@enduml

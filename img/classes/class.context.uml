@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+title class.Context
+
+file Context
+rectangle "ref ancestor (if exist) [Context]" as prev
+rectangle "map<VariableName,Number>" as map
+
+Context-->prev
+Context-->map
+@enduml
