@@ -7,10 +7,17 @@ circle "end" as END
 storage number
 storage "variable name" as varname
 storage "function call" as fcall
+rectangle "(" as L
+rectangle ")" as R
+storage expression
 
 BEGIN-->number
 BEGIN-->varname
 BEGIN-->fcall
+L<-BEGIN
+L-->expression
+expression-->R
+R->END
 number-->END
 varname-->END
 fcall-->END
