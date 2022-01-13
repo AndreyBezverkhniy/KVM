@@ -1,0 +1,19 @@
+@startuml
+title OperatorOrder(bin1,bin2)
+start
+if (priority(bin1)>priority(bin2)) then (да)
+  :return bin1<bin2;
+  stop
+elseif (priority(bin1)<priority(bin2)) then (да)
+  :return bin1>bin2;
+  stop
+else
+if (isLeftAssociative(bin1)) then (да)
+  :return bin1<bin2;
+  stop
+else
+  :return bin1>bin2;
+  stop
+endif
+endif
+@enduml
