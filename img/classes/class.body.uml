@@ -1,0 +1,9 @@
+@startuml
+left to right direction
+title class.Body
+
+file Body
+rectangle "List of instructions" as list
+
+Body-->list
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+left to right direction
+title plobal piece
+
+circle "begin" as BEGIN
+circle "end" as END
+storage "global var" as globalVar
+storage "function declaration" as FUNC
+storage import
+
+BEGIN-->globalVar
+globalVar-->END
+BEGIN-->FUNC
+FUNC-->END
+BEGIN-->import
+import-->END
+@enduml

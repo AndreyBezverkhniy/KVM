@@ -4,10 +4,9 @@ title Модуль программы
 
 circle "begin" as BEGIN
 circle "end" as END
-storage instruction
+storage GlobalPiece
 
-BEGIN-->instruction
-instruction-->END
-instruction<--instruction
-BEGIN-->END
+BEGIN-->GlobalPiece
+GlobalPiece-->END
+GlobalPiece<--GlobalPiece
 @enduml

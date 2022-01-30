@@ -1,9 +1,0 @@
-@startuml
-left to right direction
-title class.Module
-
-file Module
-file Block
-
-Module-->Block
-@enduml

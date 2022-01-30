@@ -9,9 +9,7 @@ storage expression
 storage block
 storage if
 storage while
-storage "function declaration" as FUNC
 storage return
-storage import
 
 BEGIN-->VAR
 VAR-->END
@@ -23,10 +21,6 @@ BEGIN-->if
 if-->END
 BEGIN-->while
 while-->END
-BEGIN-->FUNC
-FUNC-->END
 BEGIN-->return
 return-->END
-BEGIN-->import
-import-->END
 @enduml
