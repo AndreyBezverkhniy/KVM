@@ -5,11 +5,9 @@ title class.If
 file If
 file "condition [Expression]" as Expression
 file "Instruction (if true)" as Instruction1
-rectangle "else presence [bool]" as else
-file "Instruction (if false)" as Instruction2
+file "Instruction (if false) (if exist)" as Instruction2
 
 If-->Expression
 If-->Instruction1
-If-->else
 If-->Instruction2
 @enduml

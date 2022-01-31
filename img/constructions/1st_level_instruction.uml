@@ -1,10 +1,10 @@
 @startuml
 left to right direction
-title plobal piece
+title 1st level instruction
 
 circle "begin" as BEGIN
 circle "end" as END
-storage "global var" as globalVar
+storage "global declaration" as globalVar
 storage "function declaration" as FUNC
 storage import
 

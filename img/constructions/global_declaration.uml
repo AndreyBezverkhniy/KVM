@@ -1,6 +1,6 @@
 @startuml
 left to right direction
-title global var declaration
+title global declaration
 
 circle "begin" as BEGIN
 circle "end" as END

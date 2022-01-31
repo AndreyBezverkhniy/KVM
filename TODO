@@ -1,7 +1,3 @@
-Spec: constructions: 1st level instruction/instruction
-Spec: constructions: global var -> global declaration
-Spec: class: if else.instruction [if exist]
-Spec: class: super classes: expression bin operand element
 (Узлы дерева программы
 (Сохранение дерева //работа с потоками
 (Загрузка дерева

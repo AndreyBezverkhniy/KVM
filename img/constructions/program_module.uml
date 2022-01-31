@@ -4,9 +4,9 @@ title Модуль программы
 
 circle "begin" as BEGIN
 circle "end" as END
-storage GlobalPiece
+storage "1st level instruction" as FirstLevelInstruction
 
-BEGIN-->GlobalPiece
-GlobalPiece-->END
-GlobalPiece<--GlobalPiece
+BEGIN-->FirstLevelInstruction
+FirstLevelInstruction-->END
+FirstLevelInstruction<--FirstLevelInstruction
 @enduml

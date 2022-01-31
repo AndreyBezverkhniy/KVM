@@ -38,9 +38,9 @@
 
 ![alt text](img/constructions/program_module.png)
 
-![alt text](img/constructions/global_piece.png)
+![alt text](img/constructions/1st_level_instruction.png)
 
-![alt text](img/constructions/global_var_declaration.png)
+![alt text](img/constructions/global_declaration.png)
 
 ![alt text](img/constructions/import.png)
 
@@ -301,9 +301,7 @@ read() не принимает аргументов, в консоли выво�
 
 ![alt text](img/classes/class.return.png)
 
-Выражение ссылается либо на операнд, либо на бинарный оператор.
-
-![alt text](img/classes/class.expression.png)
+Expression - суперкласс для выражений. От него наследуются Bin и Operand.
 
 ### Элементы выражений
 
@@ -311,9 +309,7 @@ read() не принимает аргументов, в консоли выво�
 
 ![alt text](img/classes/class.bin.png)
 
-Операнд является либо элементом, либо сначала ссылается на цепочку унарных операторов.
-
-![alt text](img/classes/class.operand.png)
+Operand - суперкласс для операндов. От него наследуются LeftUnary, RightUnary и Element.
 
 ![alt text](img/classes/class.left-right_unary.png)
 
