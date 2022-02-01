@@ -9,7 +9,13 @@ int main(int argc, char* argv[]) {
 	program1.global.SetKeyValue("var1",96);
 	program1.global.SetKeyValue("var2",-148);
 	program1.functions[FunctionSignature("func1",1)]=Body();
-	program1.functions[FunctionSignature("func2",2)]=Body();
+	Body body;
+	shared_ptr<Var> var=make_shared<Var>();
+	var->declarations.push_back(pair<string,int>("v1",13));
+	var->declarations.push_back(pair<string,int>("v2",24));
+	shared_ptr<Instruction> instruction=dynamic_pointer_cast<Instruction>(var);
+	body.instructions.push_back(instruction);
+	program1.functions[FunctionSignature("func2",2)]=body;
 	program1.Save(cout);
 	cout<<endl;
 	program1.Save("program.prog");

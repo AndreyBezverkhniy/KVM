@@ -6,5 +6,6 @@ class Var : public Instruction{
 public:
 	vector<pair<string,int>> declarations;
 	Var();
-	
+	bool SaveInner(ostream &os) const;
+	bool LoadInner(istream &is);
 };
