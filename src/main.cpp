@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 	Program program2;
 	program2.Load("program.prog");
 	program2.Save(cout);
-	//cout<<endl;
-	cout<<endl<<"OK"<<endl;
+	cout<<endl;
+	cout<<"OK"<<endl;
 	return 0;
 }
