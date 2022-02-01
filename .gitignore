@@ -1,3 +1,5 @@
 kvm
 *.ksc
+build/**
+.vscode/**
 
