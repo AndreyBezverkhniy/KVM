@@ -1,8 +1,9 @@
 #include "program.h"
 #include <fstream>
+#include "utils.h"
 
 Program::Program(){}
-bool Program::Save(string path){
+bool Program::Save(string path) const {
 	ofstream fout;
 	fout.open(path,ios_base::binary);
 	if(!fout.is_open()){
@@ -24,9 +25,41 @@ bool Program::Load(string path){
 	fin.close();
 	return success;
 }
-bool Program::Save(ostream &os){
-	return global.Save(os);
+bool Program::Save(ostream &os) const {
+	if(!global.Save(os)){
+		return false;
+	}
+	if(!USave(os,(int)functions.size())){
+		return false;
+	}
+	for(auto pair:functions){
+		if(!pair.first.Save(os)){
+			return false;
+		}
+		if(!pair.second.Save(os)){
+			return false;
+		}
+	}
+	return true;
 }
 bool Program::Load(istream &is){
-	return global.Load(is);
+	if(!global.Load(is)){
+		return false;
+	}
+	int size;
+	if(!ULoad(is,size)){
+		return false;
+	}
+	FunctionSignature key;
+	Body value;
+	for(int i=0;i<size;i++){
+		if(!key.Load(is)){
+			return false;
+		}
+		if(!value.Load(is)){
+			return false;
+		}
+		functions[key]=value;
+	}
+	return true;
 }

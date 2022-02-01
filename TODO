@@ -2,15 +2,15 @@
 (Сохранение дерева //работа с потоками
 (Загрузка дерева
 (Выполнение дерева программы
-	Program
 	Instruction супер-класс
+		Body
 		Var
 		Expression
 			Bin
 			Operand
-			Left Unary
-			Right Unary
-			Element
+				Left Unary
+				Right Unary
+				Element
 			Number
 			Variable Name
 			Function Call

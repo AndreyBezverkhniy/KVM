@@ -8,6 +8,8 @@ add_executable(kvm src/main.cpp
 src/program.cpp
 src/context.cpp
 src/utils.cpp
+src/function_signature.cpp
+src/body.cpp
 )
 
 target_include_directories(kvm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

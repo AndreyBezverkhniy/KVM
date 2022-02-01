@@ -33,5 +33,5 @@ bool ULoad(istream &is,string &str){
 	delete[] arr;
 	char ch;
 	ULoad(is,ch);
-	return ch=='.' && !is.good();
+	return ch=='.' && is.good();
 }

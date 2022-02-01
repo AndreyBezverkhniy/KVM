@@ -9,19 +9,33 @@ bool Context::DeleteKey(string key){
 }
 bool Context::Load(istream &is){
     int size;
-    ULoad(is,size);
+    if(!ULoad(is,size)){
+        return false;
+    }
     string key;
     int value;
     for(int i=0;i<size;i++){
-        ULoad(is,key);
-        ULoad(is,value);
+        if(!ULoad(is,key)){
+            return false;
+        }
+        if(!ULoad(is,value)){
+            return false;
+        }
         SetKeyValue(key,value);
     }
+    return true;
 }
-bool Context::Save(ostream &os){
-    USave(os,(int)variables.size());
-    for(auto pair:variables){
-        USave(os,pair.first);
-        USave(os,pair.second);
+bool Context::Save(ostream &os) const {
+    if(!USave(os,(int)variables.size())){
+        return false;
     }
+    for(auto pair:variables){
+        if(!USave(os,pair.first)){
+            return false;
+        }
+        if(!USave(os,pair.second)){
+            return false;
+        }
+    }
+    return true;
 }
