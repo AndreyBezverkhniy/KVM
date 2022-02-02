@@ -20,7 +20,7 @@ bool Instruction::Save(ostream &os) const {
 	if(!USave(os,GetInstructionType())){
 		return false;
 	}
-	if(!SaveInner(os)){
+	if(!dynamic_cast<const Expression*>(this)->Save(os)){
 		return false;
 	}
 	return true;
@@ -37,7 +37,7 @@ bool Instruction::Load(istream &is,shared_ptr<Instruction> &instruction_ptr){
 		instruction_ptr=var_ptr;
 	} else if(instructionType==EXPRESSION_TYPE){
 		shared_ptr<Expression> expression_ptr=make_shared<Expression>();
-		success=expression_ptr->LoadInner(is);
+		success=Expression::Load(is,expression_ptr);
 		instruction_ptr=expression_ptr;
 	} else {
 		success=false;

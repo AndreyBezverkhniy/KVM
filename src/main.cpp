@@ -2,13 +2,14 @@
 #include "program.h"
 #include "var_declaration.h"
 #include "expression.h"
+#include "operand.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	Program program1;
 	Body body;
-	shared_ptr<Expression> expression=make_shared<Expression>();
+	shared_ptr<Operand> expression=make_shared<Operand>();
 	shared_ptr<Instruction> instruction=dynamic_pointer_cast<Instruction>(expression);
 	body.instructions.push_back(instruction);
 	program1.functions[FunctionSignature("func",2)]=body;
