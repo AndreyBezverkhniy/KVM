@@ -2,6 +2,7 @@
 #include "instruction.h"
 
 #define OPERAND_TYPE string("operand")
+#define BIN_OPERATOR_TYPE string("bin")
 
 class Expression : public Instruction{
 public:

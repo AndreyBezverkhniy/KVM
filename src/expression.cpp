@@ -1,11 +1,15 @@
 #include <memory>
 #include "expression.h"
 #include "operand.h"
+#include "bin_operator.h"
 #include "utils.h"
 
 string Expression::GetExpressionType() const {
 	if(dynamic_cast<const Operand*>(this)){
 		return OPERAND_TYPE;
+	}
+	if(dynamic_cast<const BinOperator*>(this)){
+		return BIN_OPERATOR_TYPE;
 	}
 	return "expression_type_error";
 }
@@ -31,6 +35,10 @@ bool Expression::Load(istream &is,shared_ptr<Expression> &expression_ptr){
 		shared_ptr<Operand> operand_ptr=make_shared<Operand>();
 		success=operand_ptr->LoadInner(is);
 		expression_ptr=operand_ptr;
+	} else if(expressionType==BIN_OPERATOR_TYPE){
+		shared_ptr<BinOperator> bin_operator_ptr=make_shared<BinOperator>();
+		success=bin_operator_ptr->LoadInner(is);
+		expression_ptr=bin_operator_ptr;
 	} else {
 		success=false;
 	}
