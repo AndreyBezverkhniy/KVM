@@ -1,21 +1,17 @@
 #include <iostream>
 #include "program.h"
 #include "var_declaration.h"
+#include "expression.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	Program program1;
-	program1.global.SetKeyValue("var1",96);
-	program1.global.SetKeyValue("var2",-148);
-	program1.functions[FunctionSignature("func1",1)]=Body();
 	Body body;
-	shared_ptr<Var> var=make_shared<Var>();
-	var->declarations.push_back(pair<string,int>("v1",13));
-	var->declarations.push_back(pair<string,int>("v2",24));
-	shared_ptr<Instruction> instruction=dynamic_pointer_cast<Instruction>(var);
+	shared_ptr<Expression> expression=make_shared<Expression>();
+	shared_ptr<Instruction> instruction=dynamic_pointer_cast<Instruction>(expression);
 	body.instructions.push_back(instruction);
-	program1.functions[FunctionSignature("func2",2)]=body;
+	program1.functions[FunctionSignature("func",2)]=body;
 	program1.Save(cout);
 	cout<<endl;
 	program1.Save("program.prog");

@@ -1,11 +1,15 @@
 #include <memory>
 #include "instruction.h"
 #include "var_declaration.h"
+#include "expression.h"
 #include "utils.h"
 
 string Instruction::GetInstructionType() const {
 	if(dynamic_cast<const Var*>(this)){
 		return VAR_TYPE;
+	}
+	if(dynamic_cast<const Expression*>(this)){
+		return EXPRESSION_TYPE;
 	}
 	return "instruction_type_error";
 }
@@ -13,7 +17,7 @@ bool Instruction::SaveInner(ostream &os) const {
 	return false;
 }
 bool Instruction::Save(ostream &os) const {
-	if(!USave(os,VAR_TYPE)){//GetInstructionType())){
+	if(!USave(os,GetInstructionType())){
 		return false;
 	}
 	if(!SaveInner(os)){
@@ -31,6 +35,10 @@ bool Instruction::Load(istream &is,shared_ptr<Instruction> &instruction_ptr){
 		shared_ptr<Var> var_ptr=make_shared<Var>();
 		success=var_ptr->LoadInner(is);
 		instruction_ptr=var_ptr;
+	} else if(instructionType==EXPRESSION_TYPE){
+		shared_ptr<Expression> expression_ptr=make_shared<Expression>();
+		success=expression_ptr->LoadInner(is);
+		instruction_ptr=expression_ptr;
 	} else {
 		success=false;
 	}

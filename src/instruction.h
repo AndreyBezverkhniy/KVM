@@ -6,6 +6,7 @@
 using namespace std;
 
 #define VAR_TYPE string("var")
+#define EXPRESSION_TYPE string("expression")
 
 class Instruction{
 public:

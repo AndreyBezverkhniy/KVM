@@ -1,25 +1,20 @@
 (Узлы дерева программы
 (Сохранение дерева //работа с потоками
 (Загрузка дерева
-(Выполнение дерева программы
-	Instruction супер-класс
-		Body
-		Var
 		Expression
 			Bin
 			Operand
 				Left Unary
 				Right Unary
 				Element
-			Number
-			Variable Name
-			Function Call
+					Number
+					Variable Name
+					Function Call
+		Return
 		Block
 		If
 		While
-		Function Declaration
-		Return
-		Import
+(Выполнение дерева программы
 Загрузка программы
 	Literal
 	Разбор
