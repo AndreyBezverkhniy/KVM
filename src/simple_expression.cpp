@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "number.h"
 #include "variable_name.h"
+#include "function_call.h"
 
 string SimpleExpression::GetSimpleExpressionType() const {
 	if(dynamic_cast<const Number*>(this)){
@@ -9,6 +10,9 @@ string SimpleExpression::GetSimpleExpressionType() const {
 	}
 	if(dynamic_cast<const VariableName*>(this)){
 		return VARIABLE_NAME_TYPE;
+	}
+	if(dynamic_cast<const FunctionCall*>(this)){
+		return FUNCTION_CALL_TYPE;
 	}
 	return "simple_expression_type_error";
 }
@@ -38,6 +42,10 @@ bool SimpleExpression::Load(istream &is,shared_ptr<SimpleExpression> &simple_exp
 		shared_ptr<VariableName> variable_name_ptr=make_shared<VariableName>();
 		success=variable_name_ptr->LoadInner(is);
 		simple_expression_ptr=variable_name_ptr;
+	} else if(simpleExpressionType==FUNCTION_CALL_TYPE){
+		shared_ptr<FunctionCall> function_call_ptr=make_shared<FunctionCall>();
+		success=function_call_ptr->LoadInner(is);
+		simple_expression_ptr=function_call_ptr;
 	} else {
 		success=false;
 	}

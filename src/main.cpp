@@ -9,14 +9,18 @@
 #include "right_unary_operator.h"
 #include "number.h"
 #include "variable_name.h"
+#include "function_call.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	Program program1;
 	Body body;
-	shared_ptr<VariableName> instruction=make_shared<VariableName>();
-	instruction->SetName("vname1");
+	shared_ptr<VariableName> argument=make_shared<VariableName>();
+	argument->SetName("vname1");
+	shared_ptr<FunctionCall> instruction=make_shared<FunctionCall>();
+	instruction->arguments.push_back(argument);
+	instruction->SetFunctionSignature(FunctionSignature("funcy",1));
 	body.instructions.push_back(instruction);
 	program1.functions[FunctionSignature("func",0)]=body;
 	program1.Save(cout);

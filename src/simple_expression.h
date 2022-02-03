@@ -3,6 +3,7 @@
 
 #define NUMBER_TYPE string("number")
 #define VARIABLE_NAME_TYPE string("varname")
+#define FUNCTION_CALL_TYPE string("fcall")
 
 class SimpleExpression : public Operand{
 public:

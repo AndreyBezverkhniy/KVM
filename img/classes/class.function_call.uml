@@ -4,7 +4,7 @@ title class.FunctionCall
 
 file FunctionCall
 file FunctionSignature
-rectangle "Array of arguments" as args
+rectangle "arguments [Array of Expressions]" as args
 
 FunctionCall-->FunctionSignature
 FunctionCall-->args
