@@ -23,8 +23,18 @@ bool Operand::Save(ostream &os) const {
 	if(!USave(os,GetOperandType())){
 		return false;
 	}
-	if(!SaveInner(os)){
-		return false;
+	if(auto ptr=dynamic_cast<const LeftUnaryOperator*>(this)){
+		if(!ptr->SaveInner(os)){
+			return false;
+		}
+	} else 	if(auto ptr=dynamic_cast<const RightUnaryOperator*>(this)){
+		if(!ptr->SaveInner(os)){
+			return false;
+		}
+	} else 	if(auto ptr=dynamic_cast<const SimpleExpression*>(this)){
+		if(!ptr->Save(os)){
+			return false;
+		}
 	}
 	return true;
 }
@@ -36,7 +46,7 @@ bool Operand::Load(istream &is,shared_ptr<Operand> &operand_ptr){
 	bool success=true;
 	if(operandType==SIMPLE_EXPRESSION_TYPE){
 		shared_ptr<SimpleExpression> simple_expression_ptr=make_shared<SimpleExpression>();
-		success=simple_expression_ptr->LoadInner(is);
+		success=SimpleExpression::Load(is,simple_expression_ptr);
 		operand_ptr=simple_expression_ptr;
 	} else	if(operandType==LEFT_UNARY_OPERATOR_TYPE){
 		shared_ptr<LeftUnaryOperator> left_unary_operator_ptr=make_shared<LeftUnaryOperator>();

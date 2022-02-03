@@ -17,6 +17,7 @@ src/operand.cpp
 src/bin_operator.cpp
 src/simple_expression.cpp
 src/unary_operator.cpp
+src/number.cpp
 )
 
 target_include_directories(kvm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
