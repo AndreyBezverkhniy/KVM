@@ -18,10 +18,10 @@ bool BinOperator::SaveInner(ostream &os) const {
 	if(!USave(os,operation)){
 		return false;
 	}
-	if(!left->SaveInner(os)){
+	if(!left->Save(os)){
 		return false;
 	}
-	if(!right->SaveInner(os)){
+	if(!right->Save(os)){
 		return false;
 	}
 	return true;
@@ -32,10 +32,10 @@ bool BinOperator::LoadInner(istream &is){
 	if(!ULoad(is,operation)){
 		return false;
 	}
-	if(!left->LoadInner(is)){
+	if(!Operand::Load(is,left)){
 		return false;
 	}
-	if(!right->LoadInner(is)){
+	if(!Operand::Load(is,right)){
 		return false;
 	}
 	return true;

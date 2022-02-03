@@ -4,19 +4,15 @@
 #include "expression.h"
 #include "bin_operator.h"
 #include "operand.h"
+#include "element.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	Program program1;
 	Body body;
-	shared_ptr<Operand> operand=make_shared<Operand>();
-	shared_ptr<BinOperator> binOperator=make_shared<BinOperator>();
-	binOperator->SetLeft(operand);
-	binOperator->SetRight(operand);
-	binOperator->SetOperation(BIN_PLUS);
-	shared_ptr<Instruction> instruction=dynamic_pointer_cast<Instruction>(binOperator);
-	body.instructions.push_back(instruction);
+	shared_ptr<Element> element=make_shared<Element>();
+	body.instructions.push_back(element);
 	program1.functions[FunctionSignature("func",0)]=body;
 	program1.Save(cout);
 	cout<<endl;

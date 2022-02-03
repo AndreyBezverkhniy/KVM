@@ -20,8 +20,14 @@ bool Expression::Save(ostream &os) const {
 	if(!USave(os,GetExpressionType())){
 		return false;
 	}
-	if(!SaveInner(os)){
-		return false;
+	if(auto ptr=dynamic_cast<const Operand*>(this)){
+		if(!ptr->Save(os)){
+			return false;
+		}
+	} else 	if(auto ptr=dynamic_cast<const BinOperator*>(this)){
+		if(!ptr->SaveInner(os)){
+			return false;
+		}
 	}
 	return true;
 }
@@ -33,7 +39,7 @@ bool Expression::Load(istream &is,shared_ptr<Expression> &expression_ptr){
 	bool success=true;
 	if(expressionType==OPERAND_TYPE){
 		shared_ptr<Operand> operand_ptr=make_shared<Operand>();
-		success=operand_ptr->LoadInner(is);
+		success=Operand::Load(is,operand_ptr);
 		expression_ptr=operand_ptr;
 	} else if(expressionType==BIN_OPERATOR_TYPE){
 		shared_ptr<BinOperator> bin_operator_ptr=make_shared<BinOperator>();

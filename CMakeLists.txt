@@ -15,6 +15,7 @@ src/var_declaration.cpp
 src/expression.cpp
 src/operand.cpp
 src/bin_operator.cpp
+src/element.cpp
 )
 
 target_include_directories(kvm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

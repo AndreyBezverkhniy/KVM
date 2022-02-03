@@ -20,8 +20,14 @@ bool Instruction::Save(ostream &os) const {
 	if(!USave(os,GetInstructionType())){
 		return false;
 	}
-	if(!dynamic_cast<const Expression*>(this)->Save(os)){
-		return false;
+	if(auto ptr=dynamic_cast<const Var*>(this)){
+		if(!ptr->SaveInner(os)){
+			return false;
+		}
+	} else if(auto ptr=dynamic_cast<const Expression*>(this)){
+		if(!ptr->Save(os)){
+			return false;
+		}
 	}
 	return true;
 }

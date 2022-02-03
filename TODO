@@ -1,8 +1,6 @@
 (Узлы дерева программы
 (Сохранение дерева //работа с потоками
 (Загрузка дерева
-		Expression
-			Bin
 			Operand
 				Left Unary
 				Right Unary
