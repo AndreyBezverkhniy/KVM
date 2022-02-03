@@ -3,7 +3,7 @@ left to right direction
 title class.Program
 
 file Program
-rectangle "map<FunctionSignature,Body>" as functions
+rectangle "map<FunctionSignature,Block>" as functions
 file "Global Context" as globalContext
 
 Program-->functions
