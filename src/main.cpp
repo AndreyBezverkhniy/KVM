@@ -11,17 +11,23 @@
 #include "variable_name.h"
 #include "function_call.h"
 #include "return.h"
+#include "while.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	Program program1;
 	Body body;
-	shared_ptr<VariableName> argument=make_shared<VariableName>();
-	argument->SetName("vname1");
+	shared_ptr<VariableName> expression=make_shared<VariableName>();
+	expression->SetName("vname1");
+	shared_ptr<VariableName> condition=make_shared<VariableName>();
+	condition->SetName("vname2");
 	shared_ptr<Return> instruction=make_shared<Return>();
-	instruction->SetExpression(argument);
-	body.instructions.push_back(instruction);
+	instruction->SetExpression(expression);
+	shared_ptr<While> whileI=make_shared<While>();
+	whileI->SetCondition(condition);
+	whileI->SetInstruction(instruction);
+	body.instructions.push_back(whileI);
 	program1.functions[FunctionSignature("func",0)]=body;
 	program1.Save(cout);
 	cout<<endl;

@@ -8,6 +8,7 @@ using namespace std;
 #define VAR_TYPE string("var")
 #define EXPRESSION_TYPE string("expression")
 #define RETURN_TYPE string("return")
+#define WHILE_TYPE string("while")
 
 class Instruction{
 public:

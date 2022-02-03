@@ -1,10 +1,8 @@
 (Узлы дерева программы
 (Сохранение дерева //работа с потоками
 (Загрузка дерева
-		Return
 		Block
 		If
-		While
 virtual super::SaveInner {return false}
 main?
 Выполнение дерева программы

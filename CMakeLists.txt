@@ -21,6 +21,7 @@ src/number.cpp
 src/variable_name.cpp
 src/function_call.cpp
 src/return.cpp
+src/while.cpp
 )
 
 target_include_directories(kvm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
