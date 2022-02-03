@@ -2,6 +2,7 @@
 #include "expression.h"
 
 #define ELEMENT_TYPE string("element")
+#define LEFT_UNARY_OPERATOR_TYPE string("lunar")
 
 class Operand : public Expression{
 public:

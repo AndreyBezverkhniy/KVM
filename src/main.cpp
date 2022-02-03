@@ -5,14 +5,17 @@
 #include "bin_operator.h"
 #include "operand.h"
 #include "element.h"
+#include "left_unary_operator.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	Program program1;
 	Body body;
-	shared_ptr<Element> element=make_shared<Element>();
-	body.instructions.push_back(element);
+	shared_ptr<LeftUnaryOperator> instruction=make_shared<LeftUnaryOperator>();
+	instruction->SetOperand(make_shared<Element>());
+	instruction->SetOperation(LEFT_UNARY_PLUS);
+	body.instructions.push_back(instruction);
 	program1.functions[FunctionSignature("func",0)]=body;
 	program1.Save(cout);
 	cout<<endl;

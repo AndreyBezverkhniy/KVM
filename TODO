@@ -12,6 +12,7 @@
 		Block
 		If
 		While
+virtual super::SaveInner {return false}
 (Выполнение дерева программы
 Загрузка программы
 	Literal
