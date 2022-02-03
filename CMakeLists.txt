@@ -9,7 +9,7 @@ src/program.cpp
 src/context.cpp
 src/utils.cpp
 src/function_signature.cpp
-src/body.cpp
+src/block.cpp
 src/instruction.cpp
 src/var_declaration.cpp
 src/expression.cpp

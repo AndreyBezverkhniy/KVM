@@ -1,8 +1,8 @@
-#include "body.h"
+#include "block.h"
 #include "utils.h"
 
-Body::Body(){}
-bool Body::Save(ostream &os) const {
+Block::Block(){}
+bool Block::SaveInner(ostream &os) const {
 	int size=(int)instructions.size();
 	if(!USave(os,size)){
 		return false;
@@ -14,7 +14,7 @@ bool Body::Save(ostream &os) const {
 	}
 	return true;
 }
-bool Body::Load(istream &is){
+bool Block::LoadInner(istream &is){
 	int size;
 	if(!ULoad(is,size)){
 		return false;

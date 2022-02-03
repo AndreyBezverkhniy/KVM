@@ -3,14 +3,14 @@
 #include <map>
 #include "context.h"
 #include "function_signature.h"
-#include "body.h"
+#include "block.h"
 
 using namespace std;
 
 class Program{
 public:
 	Context global;
-	map<FunctionSignature,Body> functions;
+	map<FunctionSignature,Block> functions;
 	Program();
 	bool Save(string path) const;
 	bool Save(ostream &os) const;

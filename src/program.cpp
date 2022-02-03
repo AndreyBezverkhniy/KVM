@@ -36,7 +36,7 @@ bool Program::Save(ostream &os) const {
 		if(!pair.first.Save(os)){
 			return false;
 		}
-		if(!pair.second.Save(os)){
+		if(!pair.second.SaveInner(os)){
 			return false;
 		}
 	}
@@ -51,12 +51,12 @@ bool Program::Load(istream &is){
 		return false;
 	}
 	FunctionSignature key;
-	Body value;
+	Block value;
 	for(int i=0;i<size;i++){
 		if(!key.Load(is)){
 			return false;
 		}
-		if(!value.Load(is)){
+		if(!value.LoadInner(is)){
 			return false;
 		}
 		functions[key]=value;

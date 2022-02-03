@@ -10,6 +10,7 @@ using namespace std;
 #define RETURN_TYPE string("return")
 #define WHILE_TYPE string("while")
 #define IF_TYPE string("if")
+#define BLOCK_TYPE string("block")
 
 class Instruction{
 public:

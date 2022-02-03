@@ -6,6 +6,7 @@
 #include "return.h"
 #include "while.h"
 #include "if.h"
+#include "block.h"
 
 string Instruction::GetInstructionType() const {
 	if(dynamic_cast<const Var*>(this)){
@@ -22,6 +23,9 @@ string Instruction::GetInstructionType() const {
 	}
 	if(dynamic_cast<const If*>(this)){
 		return IF_TYPE;
+	}
+	if(dynamic_cast<const Block*>(this)){
+		return BLOCK_TYPE;
 	}
 	return "instruction_type_error";
 }
@@ -49,6 +53,10 @@ bool Instruction::Save(ostream &os) const {
 			return false;
 		}
 	} else 	if(auto ptr=dynamic_cast<const If*>(this)){
+		if(!ptr->SaveInner(os)){
+			return false;
+		}
+	} else 	if(auto ptr=dynamic_cast<const Block*>(this)){
 		if(!ptr->SaveInner(os)){
 			return false;
 		}
@@ -81,6 +89,10 @@ bool Instruction::Load(istream &is,shared_ptr<Instruction> &instruction_ptr){
 		shared_ptr<If> if_ptr=make_shared<If>();
 		success=if_ptr->LoadInner(is);
 		instruction_ptr=if_ptr;
+	} else if(instructionType==BLOCK_TYPE){
+		shared_ptr<Block> block_ptr=make_shared<Block>();
+		success=block_ptr->LoadInner(is);
+		instruction_ptr=block_ptr;
 	} else {
 		success=false;
 	}

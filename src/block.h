@@ -6,10 +6,10 @@
 
 using namespace std;
 
-class Body{
+class Block : public Instruction{
 public:
 	vector<shared_ptr<Instruction>> instructions;
-	Body();
-	bool Save(ostream &os) const;
-	bool Load(istream &is);
+	Block();
+	bool SaveInner(ostream &os) const;
+	bool LoadInner(istream &is);
 };
