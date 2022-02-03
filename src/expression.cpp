@@ -13,9 +13,6 @@ string Expression::GetExpressionType() const {
 	}
 	return "expression_type_error";
 }
-bool Expression::SaveInner(ostream &os) const {
-	return false;
-}
 bool Expression::Save(ostream &os) const {
 	if(!USave(os,GetExpressionType())){
 		return false;

@@ -16,9 +16,6 @@ string Operand::GetOperandType() const {
 	}
 	return "operand_type_error";
 }
-bool Operand::SaveInner(ostream &os) const {
-	return false;
-}
 bool Operand::Save(ostream &os) const {
 	if(!USave(os,GetOperandType())){
 		return false;

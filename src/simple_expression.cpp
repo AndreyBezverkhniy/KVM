@@ -16,9 +16,6 @@ string SimpleExpression::GetSimpleExpressionType() const {
 	}
 	return "simple_expression_type_error";
 }
-bool SimpleExpression::SaveInner(ostream &os) const {
-	return false;
-}
 bool SimpleExpression::Save(ostream &os) const {
 	if(!USave(os,GetSimpleExpressionType())){
 		return false;
