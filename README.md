@@ -309,13 +309,11 @@ Expression - суперкласс для выражений. От него на�
 
 ![alt text](img/classes/class.bin.png)
 
-Operand - суперкласс для операндов. От него наследуются LeftUnary, RightUnary и Element.
+Operand - суперкласс для операндов. От него наследуются LeftUnary, RightUnary и SimpleExpression.
 
 ![alt text](img/classes/class.left-right_unary.png)
 
-Элемент - это "элементарный операнд", который может быть одним из 4-х типов.
-
-![alt text](img/classes/class.element.png)
+SimpleExpression - суперкласс для простых выражений. От него наследуются Number, VariableName и FunctionCall.
 
 ![alt text](img/classes/class.number.png)
 

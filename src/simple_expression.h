@@ -1,9 +1,9 @@
 #pragma once
 #include "operand.h"
 
-class Element : public Operand{
+class SimpleExpression : public Operand{
 public:
-	Element();
+	SimpleExpression();
 	bool SaveInner(ostream &os) const;
 	bool LoadInner(istream &is);
 };

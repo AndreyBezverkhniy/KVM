@@ -15,7 +15,7 @@ src/var_declaration.cpp
 src/expression.cpp
 src/operand.cpp
 src/bin_operator.cpp
-src/element.cpp
+src/simple_expression.cpp
 src/unary_operator.cpp
 )
 

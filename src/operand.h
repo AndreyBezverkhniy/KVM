@@ -1,7 +1,7 @@
 #pragma once
 #include "expression.h"
 
-#define ELEMENT_TYPE string("element")
+#define SIMPLE_EXPRESSION_TYPE string("simple")
 #define LEFT_UNARY_OPERATOR_TYPE string("lunar")
 #define RIGHT_UNARY_OPERATOR_TYPE string("runar")
 

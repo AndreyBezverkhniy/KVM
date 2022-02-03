@@ -1,12 +1,12 @@
 #include "operand.h"
 #include "utils.h"
-#include "element.h"
+#include "simple_expression.h"
 #include "left_unary_operator.h"
 #include "right_unary_operator.h"
 
 string Operand::GetOperandType() const {
-	if(dynamic_cast<const Element*>(this)){
-		return ELEMENT_TYPE;
+	if(dynamic_cast<const SimpleExpression*>(this)){
+		return SIMPLE_EXPRESSION_TYPE;
 	}
 	if(dynamic_cast<const LeftUnaryOperator*>(this)){
 		return LEFT_UNARY_OPERATOR_TYPE;
@@ -34,10 +34,10 @@ bool Operand::Load(istream &is,shared_ptr<Operand> &operand_ptr){
 		return false;
 	}
 	bool success=true;
-	if(operandType==ELEMENT_TYPE){
-		shared_ptr<Element> element_ptr=make_shared<Element>();
-		success=element_ptr->LoadInner(is);
-		operand_ptr=element_ptr;
+	if(operandType==SIMPLE_EXPRESSION_TYPE){
+		shared_ptr<SimpleExpression> simple_expression_ptr=make_shared<SimpleExpression>();
+		success=simple_expression_ptr->LoadInner(is);
+		operand_ptr=simple_expression_ptr;
 	} else	if(operandType==LEFT_UNARY_OPERATOR_TYPE){
 		shared_ptr<LeftUnaryOperator> left_unary_operator_ptr=make_shared<LeftUnaryOperator>();
 		success=left_unary_operator_ptr->LoadInner(is);
