@@ -10,6 +10,7 @@
 #include "number.h"
 #include "variable_name.h"
 #include "function_call.h"
+#include "return.h"
 
 using namespace std;
 
@@ -18,9 +19,8 @@ int main(int argc, char* argv[]) {
 	Body body;
 	shared_ptr<VariableName> argument=make_shared<VariableName>();
 	argument->SetName("vname1");
-	shared_ptr<FunctionCall> instruction=make_shared<FunctionCall>();
-	instruction->arguments.push_back(argument);
-	instruction->SetFunctionSignature(FunctionSignature("funcy",1));
+	shared_ptr<Return> instruction=make_shared<Return>();
+	instruction->SetExpression(argument);
 	body.instructions.push_back(instruction);
 	program1.functions[FunctionSignature("func",0)]=body;
 	program1.Save(cout);

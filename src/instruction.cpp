@@ -2,6 +2,7 @@
 #include "instruction.h"
 #include "var_declaration.h"
 #include "expression.h"
+#include "return.h"
 #include "utils.h"
 
 string Instruction::GetInstructionType() const {
@@ -10,6 +11,9 @@ string Instruction::GetInstructionType() const {
 	}
 	if(dynamic_cast<const Expression*>(this)){
 		return EXPRESSION_TYPE;
+	}
+	if(dynamic_cast<const Return*>(this)){
+		return RETURN_TYPE;
 	}
 	return "instruction_type_error";
 }
@@ -26,6 +30,10 @@ bool Instruction::Save(ostream &os) const {
 		}
 	} else if(auto ptr=dynamic_cast<const Expression*>(this)){
 		if(!ptr->Save(os)){
+			return false;
+		}
+	} else 	if(auto ptr=dynamic_cast<const Return*>(this)){
+		if(!ptr->SaveInner(os)){
 			return false;
 		}
 	}
@@ -45,6 +53,10 @@ bool Instruction::Load(istream &is,shared_ptr<Instruction> &instruction_ptr){
 		shared_ptr<Expression> expression_ptr=make_shared<Expression>();
 		success=Expression::Load(is,expression_ptr);
 		instruction_ptr=expression_ptr;
+	} else if(instructionType==RETURN_TYPE){
+		shared_ptr<Return> return_ptr=make_shared<Return>();
+		success=return_ptr->LoadInner(is);
+		instruction_ptr=return_ptr;
 	} else {
 		success=false;
 	}

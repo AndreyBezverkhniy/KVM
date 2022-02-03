@@ -1,19 +1,15 @@
 (Узлы дерева программы
 (Сохранение дерева //работа с потоками
 (Загрузка дерева
-			Operand
-				Left Unary
-				Right Unary
-				Element
-					Number
-					Variable Name
-					Function Call
 		Return
 		Block
 		If
 		While
 virtual super::SaveInner {return false}
-(Выполнение дерева программы
-Загрузка программы
+main?
+Выполнение дерева программы
+(Загрузка исходного кода
+(Выгрузка исходного кода
 	Literal
 	Разбор
+
