@@ -3,6 +3,7 @@
 
 #define ELEMENT_TYPE string("element")
 #define LEFT_UNARY_OPERATOR_TYPE string("lunar")
+#define RIGHT_UNARY_OPERATOR_TYPE string("runar")
 
 class Operand : public Expression{
 public:

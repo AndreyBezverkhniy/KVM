@@ -1,14 +1,14 @@
-#include "left_unary_operator.h"
+#include "unary_operator.h"
 #include "utils.h"
 
-LeftUnaryOperator::LeftUnaryOperator(){}
-void LeftUnaryOperator::SetOperand(shared_ptr<Operand> operand){
+UnaryOperator::UnaryOperator(){}
+void UnaryOperator::SetOperand(shared_ptr<Operand> operand){
 	this->operand=operand;
 }
-void LeftUnaryOperator::SetOperation(string operation){
+void UnaryOperator::SetOperation(string operation){
 	this->operation=operation;
 }
-bool LeftUnaryOperator::SaveInner(ostream &os) const {
+bool UnaryOperator::SaveInner(ostream &os) const {
 	if(!operand){
 		return false;
 	}
@@ -20,7 +20,7 @@ bool LeftUnaryOperator::SaveInner(ostream &os) const {
 	}
 	return true;
 }
-bool LeftUnaryOperator::LoadInner(istream &is){
+bool UnaryOperator::LoadInner(istream &is){
 	operand=make_shared<Operand>();
 	if(!ULoad(is,operation)){
 		return false;

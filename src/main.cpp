@@ -6,16 +6,21 @@
 #include "operand.h"
 #include "element.h"
 #include "left_unary_operator.h"
+#include "right_unary_operator.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	Program program1;
 	Body body;
-	shared_ptr<LeftUnaryOperator> instruction=make_shared<LeftUnaryOperator>();
-	instruction->SetOperand(make_shared<Element>());
-	instruction->SetOperation(LEFT_UNARY_PLUS);
-	body.instructions.push_back(instruction);
+	shared_ptr<LeftUnaryOperator> instruction1=make_shared<LeftUnaryOperator>();
+	instruction1->SetOperand(make_shared<Element>());
+	instruction1->SetOperation(LEFT_UNARY_NOT);
+	body.instructions.push_back(instruction1);
+	shared_ptr<RightUnaryOperator> instruction2=make_shared<RightUnaryOperator>();
+	instruction2->SetOperand(make_shared<Element>());
+	instruction2->SetOperation(RIGHT_UNARY_INC);
+	body.instructions.push_back(instruction2);
 	program1.functions[FunctionSignature("func",0)]=body;
 	program1.Save(cout);
 	cout<<endl;

@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "element.h"
 #include "left_unary_operator.h"
+#include "right_unary_operator.h"
 
 string Operand::GetOperandType() const {
 	if(dynamic_cast<const Element*>(this)){
@@ -9,6 +10,9 @@ string Operand::GetOperandType() const {
 	}
 	if(dynamic_cast<const LeftUnaryOperator*>(this)){
 		return LEFT_UNARY_OPERATOR_TYPE;
+	}
+	if(dynamic_cast<const RightUnaryOperator*>(this)){
+		return RIGHT_UNARY_OPERATOR_TYPE;
 	}
 	return "operand_type_error";
 }
@@ -35,9 +39,13 @@ bool Operand::Load(istream &is,shared_ptr<Operand> &operand_ptr){
 		success=element_ptr->LoadInner(is);
 		operand_ptr=element_ptr;
 	} else	if(operandType==LEFT_UNARY_OPERATOR_TYPE){
-		shared_ptr<LeftUnaryOperator> element_ptr=make_shared<LeftUnaryOperator>();
-		success=element_ptr->LoadInner(is);
-		operand_ptr=element_ptr;
+		shared_ptr<LeftUnaryOperator> left_unary_operator_ptr=make_shared<LeftUnaryOperator>();
+		success=left_unary_operator_ptr->LoadInner(is);
+		operand_ptr=left_unary_operator_ptr;
+	} else	if(operandType==RIGHT_UNARY_OPERATOR_TYPE){
+		shared_ptr<RightUnaryOperator> right_unary_operator=make_shared<RightUnaryOperator>();
+		success=right_unary_operator->LoadInner(is);
+		operand_ptr=right_unary_operator;
 	} else {
 		success=false;
 	}
