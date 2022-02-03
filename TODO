@@ -2,7 +2,6 @@
 (Сохранение дерева //работа с потоками
 (Загрузка дерева
 		Block
-		If
 virtual super::SaveInner {return false}
 main?
 Выполнение дерева программы

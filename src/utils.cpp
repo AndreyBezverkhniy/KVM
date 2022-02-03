@@ -1,5 +1,18 @@
 #include "utils.h"
 
+bool USave(ostream &os,bool b){
+	os.put(b?'T':'F');
+	os.put('.');
+	return os.good();
+}
+bool ULoad(istream &is,bool &b){
+	char ch;
+	is.get(ch);
+	b=(ch=='T');
+	char dot;
+	is.get(dot);
+	return (ch=='T' || ch=='F') && dot=='.' && is.good();
+}
 bool USave(ostream &os,char ch){
 	os.put(ch);
 	return os.good();

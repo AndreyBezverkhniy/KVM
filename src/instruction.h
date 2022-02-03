@@ -9,6 +9,7 @@ using namespace std;
 #define EXPRESSION_TYPE string("expression")
 #define RETURN_TYPE string("return")
 #define WHILE_TYPE string("while")
+#define IF_TYPE string("if")
 
 class Instruction{
 public:

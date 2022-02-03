@@ -4,6 +4,8 @@
 
 using namespace std;
 
+bool USave(ostream &os,bool b);
+bool ULoad(istream &is,bool &b);
 bool USave(ostream &os,char ch);
 bool ULoad(istream &is,char &ch);
 bool USave(ostream &os,int n);
