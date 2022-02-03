@@ -9,7 +9,7 @@ bool Number::SaveInner(ostream &os) const {
 	if(!USave(os,n)){
 		return false;
 	}
-return true;
+	return true;
 }
 bool Number::LoadInner(istream &is){
 	if(!ULoad(is,n)){

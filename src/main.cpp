@@ -8,14 +8,15 @@
 #include "left_unary_operator.h"
 #include "right_unary_operator.h"
 #include "number.h"
+#include "variable_name.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	Program program1;
 	Body body;
-	shared_ptr<Number> instruction=make_shared<Number>();
-	instruction->SetValue(123);
+	shared_ptr<VariableName> instruction=make_shared<VariableName>();
+	instruction->SetName("vname1");
 	body.instructions.push_back(instruction);
 	program1.functions[FunctionSignature("func",0)]=body;
 	program1.Save(cout);
