@@ -9,7 +9,7 @@ main?
 		string
 		oneline comment
 		multiline comment
-	Разбор
+	Code
 		module
 		1st level instruction
 		global
@@ -33,4 +33,19 @@ spec: function declaration body==block?
 			if
 			while
 Выполнение дерева программы
+					function call
+	instruction
+		block
+		var declaration
+		expression
+			operand
+				element
+					number
+					variable name
+				left unary
+				right unary
+			bin
+		return
+		if
+		while
 
