@@ -3,12 +3,6 @@
 #include "instruction.h"
 #include "var_declaration.h"
 #include "expression.h"
-#include "bin_operator.h"
-#include "left_unary_operator.h"
-#include "right_unary_operator.h"
-#include "number.h"
-#include "variable_name.h"
-#include "function_call.h"
 #include "return.h"
 #include "while.h"
 #include "if.h"
@@ -40,52 +34,10 @@ bool Instruction::Save(ostream &os) const {
 	if(!USave(os,GetType())){
 		return false;
 	}
-	if(auto ptr=dynamic_cast<const Var*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else if(auto ptr=dynamic_cast<const Return*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else if(auto ptr=dynamic_cast<const While*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else if(auto ptr=dynamic_cast<const If*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else if(auto ptr=dynamic_cast<const Block*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else if(auto ptr=dynamic_cast<const BinOperator*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else if(auto ptr=dynamic_cast<const LeftUnaryOperator*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else 	if(auto ptr=dynamic_cast<const RightUnaryOperator*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else 	if(auto ptr=dynamic_cast<const Number*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else 	if(auto ptr=dynamic_cast<const VariableName*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else 	if(auto ptr=dynamic_cast<const FunctionCall*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	}
-	return true;
+	return SaveInner(os);
+}
+bool Instruction::SaveInner(ostream &os) const {
+	return false;
 }
 bool Instruction::Load(istream &is,shared_ptr<Instruction> &instruction_ptr){
 	string type;

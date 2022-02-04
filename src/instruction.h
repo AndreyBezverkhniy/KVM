@@ -17,6 +17,7 @@ public:
 	virtual string GetType() const;
 	static bool IsInstruction(string type);
 	bool Save(ostream &os) const;
+	virtual bool SaveInner(ostream &os) const;
 	static bool Load(istream &is,shared_ptr<Instruction> &instruction_ptr);
 	static bool LoadTyped(string type,istream &is,shared_ptr<Instruction> &instruction_ptr);
 };
