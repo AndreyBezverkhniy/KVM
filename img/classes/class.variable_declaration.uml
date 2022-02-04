@@ -3,7 +3,7 @@ left to right direction
 title class.VariableDeclaration
 
 file "VariableDeclaration" as var
-rectangle "List of pairs<identificator,number>" as list
+rectangle "List of pairs<identificator,Expression>" as list
 
 var-->list
 @enduml

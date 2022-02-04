@@ -11,7 +11,7 @@ bool Var::SaveInner(ostream &os) const {
         if(!USave(os,pair.first)){
             return false;
         }
-        if(!USave(os,pair.second)){
+        if(!pair.second->Save(os)){
             return false;
         }
     }
@@ -23,15 +23,15 @@ bool Var::LoadInner(istream &is){
 		return false;
 	}
     string variable;
-    int value;
+    shared_ptr<Expression> value=make_shared<Expression>();
     for(int i=0;i<size;i++){
         if(!ULoad(is,variable)){
             return false;
         }
-        if(!ULoad(is,value)){
+        if(!Expression::Load(is,value)){
             return false;
         }
-        declarations.push_back(pair<string,int>(variable,value));
+        declarations.push_back(pair<string,shared_ptr<Expression>>(variable,value));
     }
 	return true;
 }

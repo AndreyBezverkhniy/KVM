@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
 
 	program.Save(cout);
 	cout<<endl;
+	cout<<endl;
 
 	program.Save("program.prog");
 
@@ -33,6 +34,7 @@ int main(int argc, char* argv[]) {
 	program.Load("program.prog");
 
 	program.Save(cout);
+	cout<<endl;
 	cout<<endl;
 
 	cout<<"OK"<<endl;
