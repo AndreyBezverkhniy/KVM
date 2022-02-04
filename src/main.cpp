@@ -18,28 +18,23 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	Program program1;
-	Block body;
-	shared_ptr<VariableName> expression1=make_shared<VariableName>();
-	expression1->SetName("vname1");
-	shared_ptr<Return> instruction1=make_shared<Return>();
-	instruction1->SetExpression(expression1);
-	shared_ptr<Number> instruction2=make_shared<Number>();
-	instruction2->SetValue(123);
-	shared_ptr<Block> block=make_shared<Block>();
-	block->instructions.push_back(instruction1);
-	block->instructions.push_back(instruction2);
-	body.instructions.push_back(block);
-	program1.functions[FunctionSignature("func",0)]=body;
-	program1.Save(cout);
-	cout<<endl;
-	program1.Save("program.prog");
-	Program program2;
-	if(!program2.Load("program.prog")){
+	Program program;
+	program=Program();
+	if(!program.Load("program0.prog")){
 		cout<<"error"<<endl;
 	}
-	program2.Save(cout);
+
+	program.Save(cout);
 	cout<<endl;
+
+	program.Save("program.prog");
+
+	program=Program();
+	program.Load("program.prog");
+
+	program.Save(cout);
+	cout<<endl;
+
 	cout<<"OK"<<endl;
 	return 0;
 }

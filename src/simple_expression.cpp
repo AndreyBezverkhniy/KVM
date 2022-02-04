@@ -4,7 +4,7 @@
 #include "variable_name.h"
 #include "function_call.h"
 
-string SimpleExpression::GetSimpleExpressionType() const {
+string SimpleExpression::GetType() const {
 	if(dynamic_cast<const Number*>(this)){
 		return NUMBER_TYPE;
 	}
@@ -16,35 +16,23 @@ string SimpleExpression::GetSimpleExpressionType() const {
 	}
 	return "simple_expression_type_error";
 }
-bool SimpleExpression::Save(ostream &os) const {
-	if(!USave(os,GetSimpleExpressionType())){
-		return false;
-	}
-	if(!SaveInner(os)){
-		return false;
-	}
-	return true;
+bool SimpleExpression::IsSimpleExpression(string type){
+	return type==NUMBER_TYPE || type==VARIABLE_NAME_TYPE || type==FUNCTION_CALL_TYPE;
 }
 bool SimpleExpression::Load(istream &is,shared_ptr<SimpleExpression> &simple_expression_ptr){
-	string simpleExpressionType;
-	if(!ULoad(is,simpleExpressionType)){
+	string type;
+	if(!ULoad(is,type)){
 		return false;
 	}
-	bool success=true;
-	if(simpleExpressionType==NUMBER_TYPE){
-		shared_ptr<Number> number_ptr=make_shared<Number>();
-		success=number_ptr->LoadInner(is);
-		simple_expression_ptr=number_ptr;
-	} else if(simpleExpressionType==VARIABLE_NAME_TYPE){
-		shared_ptr<VariableName> variable_name_ptr=make_shared<VariableName>();
-		success=variable_name_ptr->LoadInner(is);
-		simple_expression_ptr=variable_name_ptr;
-	} else if(simpleExpressionType==FUNCTION_CALL_TYPE){
-		shared_ptr<FunctionCall> function_call_ptr=make_shared<FunctionCall>();
-		success=function_call_ptr->LoadInner(is);
-		simple_expression_ptr=function_call_ptr;
-	} else {
-		success=false;
+	return LoadTyped(type,is,simple_expression_ptr);
+}
+bool SimpleExpression::LoadTyped(string type,istream &is,shared_ptr<SimpleExpression> &simple_expression_ptr){
+	if(type==NUMBER_TYPE){
+		return TypedLoadInner<Number,SimpleExpression>(is,simple_expression_ptr);
+	} else if(type==VARIABLE_NAME_TYPE){
+		return TypedLoadInner<VariableName,SimpleExpression>(is,simple_expression_ptr);
+	} else if(type==FUNCTION_CALL_TYPE){
+		return TypedLoadInner<FunctionCall,SimpleExpression>(is,simple_expression_ptr);
 	}
-	return success;
+	return false;
 }

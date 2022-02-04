@@ -1,13 +1,13 @@
 #pragma once
 #include "expression.h"
 
-#define SIMPLE_EXPRESSION_TYPE string("simple")
-#define LEFT_UNARY_OPERATOR_TYPE string("lunar")
-#define RIGHT_UNARY_OPERATOR_TYPE string("runar")
+#define LEFT_UNARY_OPERATOR_TYPE "lunar"
+#define RIGHT_UNARY_OPERATOR_TYPE "runar"
 
 class Operand : public Expression{
 public:
-    string GetOperandType() const;
-	bool Save(ostream &os) const;
+    string GetType() const override;
+	static bool IsOperand(string type);
 	static bool Load(istream &is,shared_ptr<Operand> &operand_ptr);
+	static bool LoadTyped(string type,istream &is,shared_ptr<Operand> &operand_ptr);
 };

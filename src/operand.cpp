@@ -4,10 +4,7 @@
 #include "left_unary_operator.h"
 #include "right_unary_operator.h"
 
-string Operand::GetOperandType() const {
-	if(dynamic_cast<const SimpleExpression*>(this)){
-		return SIMPLE_EXPRESSION_TYPE;
-	}
+string Operand::GetType() const {
 	if(dynamic_cast<const LeftUnaryOperator*>(this)){
 		return LEFT_UNARY_OPERATOR_TYPE;
 	}
@@ -16,45 +13,27 @@ string Operand::GetOperandType() const {
 	}
 	return "operand_type_error";
 }
-bool Operand::Save(ostream &os) const {
-	if(!USave(os,GetOperandType())){
-		return false;
-	}
-	if(auto ptr=dynamic_cast<const LeftUnaryOperator*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else 	if(auto ptr=dynamic_cast<const RightUnaryOperator*>(this)){
-		if(!ptr->SaveInner(os)){
-			return false;
-		}
-	} else 	if(auto ptr=dynamic_cast<const SimpleExpression*>(this)){
-		if(!ptr->Save(os)){
-			return false;
-		}
-	}
-	return true;
+bool Operand::IsOperand(string type){
+	return type==LEFT_UNARY_OPERATOR_TYPE || type==RIGHT_UNARY_OPERATOR_TYPE ||
+	SimpleExpression::IsSimpleExpression(type);
 }
 bool Operand::Load(istream &is,shared_ptr<Operand> &operand_ptr){
-	string operandType;
-	if(!ULoad(is,operandType)){
+	string type;
+	if(!ULoad(is,type)){
 		return false;
 	}
-	bool success=true;
-	if(operandType==SIMPLE_EXPRESSION_TYPE){
+	return LoadTyped(type,is,operand_ptr);
+}
+bool Operand::LoadTyped(string type,istream &is,shared_ptr<Operand> &operand_ptr){
+	if(type==LEFT_UNARY_OPERATOR_TYPE){
+		return TypedLoadInner<LeftUnaryOperator,Operand>(is,operand_ptr);
+	} else if(type==RIGHT_UNARY_OPERATOR_TYPE){
+		return TypedLoadInner<RightUnaryOperator,Operand>(is,operand_ptr);
+	} else if(SimpleExpression::IsSimpleExpression(type)){
 		shared_ptr<SimpleExpression> simple_expression_ptr=make_shared<SimpleExpression>();
-		success=SimpleExpression::Load(is,simple_expression_ptr);
+		bool success=SimpleExpression::LoadTyped(type,is,simple_expression_ptr);
 		operand_ptr=simple_expression_ptr;
-	} else	if(operandType==LEFT_UNARY_OPERATOR_TYPE){
-		shared_ptr<LeftUnaryOperator> left_unary_operator_ptr=make_shared<LeftUnaryOperator>();
-		success=left_unary_operator_ptr->LoadInner(is);
-		operand_ptr=left_unary_operator_ptr;
-	} else	if(operandType==RIGHT_UNARY_OPERATOR_TYPE){
-		shared_ptr<RightUnaryOperator> right_unary_operator=make_shared<RightUnaryOperator>();
-		success=right_unary_operator->LoadInner(is);
-		operand_ptr=right_unary_operator;
-	} else {
-		success=false;
+		return success;
 	}
-	return success;
+	return false;
 }
