@@ -1,9 +1,36 @@
-(Узлы дерева программы
-(Сохранение дерева //работа с потоками
-(Загрузка дерева
 main?
 (Загрузка исходного кода
 (Выгрузка исходного кода
 	Literal
+		empty
+		space
+		sign
+		word
+		string
+		oneline comment
+		multiline comment
 	Разбор
+		module
+		1st level instruction
+		global
+		import
+spec: function declaration body==block?
+		function declaration
+		block
+		instruction
+			block
+			var declaration
+			expression
+				bin
+				operand
+					left unary
+					right unary
+					element
+						number
+						variable name
+						function call
+			return
+			if
+			while
 Выполнение дерева программы
+
