@@ -14,29 +14,21 @@
 #include "while.h"
 #include "if.h"
 #include "block.h"
+#include "code.h"
+#include <sstream>
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	Program program;
-	program=Program();
-	if(!program.Load("program0.prog")){
-		cout<<"error"<<endl;
+	string text="\"str\"";
+	istringstream is(text);
+	vector<Literal> vec;
+	int res=ReadFile(is,vec);
+	cout<<res<<" ";
+	for(auto e:vec){
+		cout<<e.ToString();
 	}
-
-	program.Save(cout);
 	cout<<endl;
-	cout<<endl;
-
-	program.Save("program.prog");
-
-	program=Program();
-	program.Load("program.prog");
-
-	program.Save(cout);
-	cout<<endl;
-	cout<<endl;
-
 	cout<<"OK"<<endl;
 	return 0;
 }

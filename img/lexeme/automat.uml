@@ -57,12 +57,12 @@ state "SIGN" as LSIGN
 LSIGN : extendable
 state "SIGN" as LSIGNEQUAL
 LSIGNEQUAL : complited
-EMPTY --> LSIGN : % * < > !
+EMPTY --> LSIGN : % * < > = !
 LSIGN --> LSIGNEQUAL : =
 
 state "SIGN" as JUSTSIGN
 JUSTSIGN : complited
-EMPTY --> JUSTSIGN : ( ) { } , = ;
+EMPTY --> JUSTSIGN : ( ) { } , ;
 
 state "SIGN" as SLASH
 SLASH : extendable

@@ -1,15 +1,7 @@
-main?
 (Загрузка исходного кода
 (Выгрузка исходного кода
-	Literal
-		empty
-		space
-		sign
-		word
-		string
-		oneline comment
-		multiline comment
 	Code
+spec: main?
 		module
 		1st level instruction
 		global
@@ -48,4 +40,3 @@ spec: function declaration body==block?
 		return
 		if
 		while
-

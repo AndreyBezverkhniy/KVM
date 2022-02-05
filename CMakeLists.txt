@@ -23,6 +23,8 @@ src/function_call.cpp
 src/return.cpp
 src/while.cpp
 src/if.cpp
+src/code.cpp
+src/literal.cpp
 )
 
 target_include_directories(kvm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
