@@ -1,7 +1,6 @@
 (Загрузка исходного кода
 (Выгрузка исходного кода
 	Code
-spec: main?
 		module
 		1st level instruction
 		global
