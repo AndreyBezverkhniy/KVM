@@ -25,6 +25,7 @@ src/while.cpp
 src/if.cpp
 src/code.cpp
 src/literal.cpp
+src/code_1st_level_instruction.cpp
 )
 
 target_include_directories(kvm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

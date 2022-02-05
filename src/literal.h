@@ -45,9 +45,13 @@ public:
 	string str;
 	LiteralType type;
 	Literal();
+	Literal(string str);
+	Literal(char* str);
 	void Clean();
 	bool AddChar(char ch);
 	bool IsEmpty() const;
 	bool IsReady() const;
 	string ToString() const;
+	friend bool operator==(Literal l,Literal r);
+	friend bool operator!=(Literal l,Literal r);
 };

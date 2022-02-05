@@ -3,6 +3,12 @@
 Literal::Literal() {
 	Clean();
 }
+Literal::Literal(string str){
+	this->str=str;
+}
+Literal::Literal(char* str){
+	this->str=string(str);
+}
 void Literal::Clean(){
 	type=LiteralType::EMPTY;
 	str="";
@@ -253,4 +259,10 @@ string Literal::ToString() const {
 			result+="ERROR";
 	}
 	return result+":{"+str+"}";
+}
+bool operator==(Literal l,Literal r){
+	return l.str==r.str;
+}
+bool operator!=(Literal l,Literal r){
+	return !(l==r);
 }

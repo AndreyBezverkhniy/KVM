@@ -20,15 +20,13 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	string text="\"str\"";
+	string text="import \"s1.ksc\";";
 	istringstream is(text);
-	vector<Literal> vec;
-	int res=ReadFile(is,vec);
-	cout<<res<<" ";
-	for(auto e:vec){
-		cout<<e.ToString();
+	Program program;
+	if(!ReadProgram(is,program)){
+		cout<<endl<<"ReadProgram Failed"<<endl;
 	}
-	cout<<endl;
+	program.Save(cout);
 	cout<<"OK"<<endl;
 	return 0;
 }

@@ -1,10 +1,8 @@
 (Загрузка исходного кода
 (Выгрузка исходного кода
 	Code
-		module
 		1st level instruction
-		global
-		import
+			global
 spec: function declaration body==block?
 		function declaration
 		block
