@@ -1,8 +1,5 @@
 (Загрузка исходного кода
 (Выгрузка исходного кода
-+spec: global -number?
-+spec: numbers
-+spec: function declaration body==block?
 	Code
 		1st level instruction
 		function declaration

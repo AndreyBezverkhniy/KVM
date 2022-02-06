@@ -121,7 +121,11 @@ bool Literal::AddChar(char ch){
 		}
 		case SLASH_SLASH_X:
 		{
-			str+=ch;
+			if (ch!='\n') {
+				str+=ch;
+			} else {
+				return false;
+			}
 			return true;
 		}
 		case SPACERS:
