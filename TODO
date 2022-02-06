@@ -2,7 +2,6 @@
 (Выгрузка исходного кода
 	Code
 		instruction
-			var declaration
 			expression
 				bin
 				operand

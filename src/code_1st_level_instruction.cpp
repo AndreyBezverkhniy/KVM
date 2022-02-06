@@ -70,10 +70,8 @@ bool ReadFunctionDeclaration(const vector<Literal> &vec,int &index,Program &prog
 		return false;
 	}
 	FunctionSignature signature;
-	string fname=vec[new_index++].str;
-	cout<<"fname="<<fname<<endl;
-	signature.func_name=fname;
-	if(!IsIdentifier(fname)){
+	signature.func_name=vec[new_index++].str;
+	if(!IsIdentifier(signature.func_name)){
 		return false;
 	}
 	if(vec[new_index++].str!="("){
@@ -86,7 +84,6 @@ bool ReadFunctionDeclaration(const vector<Literal> &vec,int &index,Program &prog
 			if(!IsIdentifier(identifier)){
 				return false;
 			}
-			cout<<"argument="<<identifier<<endl;
 			signature.arguments.push_back(identifier);
 			new_index++;
 			if(vec[new_index].str!=","){

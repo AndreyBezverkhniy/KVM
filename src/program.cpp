@@ -51,15 +51,16 @@ bool Program::Load(istream &is){
 		return false;
 	}
 	FunctionSignature key;
-	Block value;
+	shared_ptr<Block> value;
 	for(int i=0;i<size;i++){
 		if(!key.Load(is)){
 			return false;
 		}
-		if(!value.LoadInner(is)){
+		value=make_shared<Block>();
+		if(!value->LoadInner(is)){
 			return false;
 		}
-		functions[key]=value;
+		functions[key]=*value;
 	}
 	return true;
 }

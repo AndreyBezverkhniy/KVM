@@ -28,6 +28,12 @@ int main(int argc, char* argv[]) {
 		cout<<endl<<"ReadProgram Failed"<<endl;
 	}
 	program.Save(cout);
+	cout<<"/1"<<endl;
+	program.Save("program.prog");
+	Program program2;
+	program2.Load("program.prog");
+	program2.Save(cout);
+	cout<<"/2"<<endl;
 	cout<<"OK"<<endl;
 	return 0;
 }

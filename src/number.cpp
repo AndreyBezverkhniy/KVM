@@ -2,6 +2,9 @@
 #include "utils.h"
 
 Number::Number(){}
+Number::Number(int n){
+	this->n=n;
+}
 void Number::SetValue(int n){
 	this->n=n;
 }
