@@ -10,7 +10,7 @@ rectangle "(" as L
 storage "identifier" as identifier2
 rectangle "," as comma
 rectangle ")" as R
-storage body
+storage block
 
 
 BEGIN->function
@@ -21,6 +21,6 @@ L-->identifier2
 identifier2-->R
 comma<-identifier2
 comma->identifier2
-R->body
-body-->END
+R->block
+block-->END
 @enduml

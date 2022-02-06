@@ -6,10 +6,13 @@ circle "begin" as BEGIN
 circle "end" as END
 rectangle "digit excluding 0" as first
 rectangle "digit" as second
+rectangle 0
 
 BEGIN-->first
 first-->END
 first-->second
 second-->END
 second-->second
+BEGIN-->0
+0-->END
 @enduml

@@ -46,8 +46,6 @@
 
 ![alt text](img/constructions/function_declaration.png)
 
-![alt text](img/constructions/body.png)
-
 ![alt text](img/constructions/instruction.png)
 
 ![alt text](img/constructions/var_declaration.png)

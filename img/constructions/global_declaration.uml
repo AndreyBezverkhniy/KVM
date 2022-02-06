@@ -7,6 +7,7 @@ circle "end" as END
 rectangle global
 rectangle "," as comma
 rectangle "=" as equal
+rectangle "-" as minus
 rectangle ";" as semicolon
 storage number
 storage identifier
@@ -19,6 +20,8 @@ semicolon<-join
 END<-semicolon
 identifier-->equal
 equal-->number
+equal-->minus
+minus->number
 number-->join
 comma<--join
 identifier<--comma

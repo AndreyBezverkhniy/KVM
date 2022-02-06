@@ -1,9 +1,8 @@
 (Загрузка исходного кода
 (Выгрузка исходного кода
-+function signature: main
-+function signature: arguments
-spec: global -number?
-spec: function declaration body==block?
++spec: global -number?
++spec: numbers
++spec: function declaration body==block?
 	Code
 		1st level instruction
 		function declaration
