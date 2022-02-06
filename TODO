@@ -1,9 +1,15 @@
 (Загрузка исходного кода
 (Выгрузка исходного кода
++spec: function signature: main
++spec: function signature: arguments
++spec: function call: separate context for arguments
+function signature: main
+function signature: arguments
+function call: separate context for arguments
+spec: global -number?
+spec: function declaration body==block?
 	Code
 		1st level instruction
-		global
-spec: function declaration body==block?
 		function declaration
 		block
 		instruction

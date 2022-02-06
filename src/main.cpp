@@ -20,7 +20,8 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	string text="import \"s1.ksc\";";
+	string text="import \"s1.ksc\";	\
+	";
 	istringstream is(text);
 	Program program;
 	if(!ReadProgram(is,program)){
