@@ -20,8 +20,9 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	string text="import \"s1.ksc\";	\
-	";
+	string text=	"function func(){ \
+						1+22*333-4444; \
+					}";
 	istringstream is(text);
 	Program program;
 	if(!ReadProgram(is,program)){

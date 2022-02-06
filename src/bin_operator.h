@@ -25,11 +25,11 @@
 
 class BinOperator : public Expression{
 public:
-    shared_ptr<Operand> left, right;
+    shared_ptr<Expression> left, right;
     string operation;
 	BinOperator();
-    void SetLeft(shared_ptr<Operand> left);
-    void SetRight(shared_ptr<Operand> right);
+    void SetLeft(shared_ptr<Expression> left);
+    void SetRight(shared_ptr<Expression> right);
     void SetOperation(string operation);
 	bool SaveInner(ostream &os) const;
 	bool LoadInner(istream &is);

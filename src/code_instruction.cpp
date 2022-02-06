@@ -13,6 +13,11 @@ bool ReadInstruction(const vector<Literal> &vec,int &index,shared_ptr<Instructio
         instruction=var;
         return true;
     }
+    shared_ptr<Expression> expression;
+    if(ReadExpressionInstruction(vec,index,expression)){
+        instruction=expression;
+        return true;
+    }
     return false;
 }
 bool ReadBlock(const vector<Literal> &vec,int &index,shared_ptr<Block> &block){
@@ -63,4 +68,15 @@ bool ReadVar(const vector<Literal> &vec,int &index,shared_ptr<Var> &var){
 	}
 	index=new_index;
 	return true;
+}
+bool ReadExpressionInstruction(const vector<Literal> &vec,int &index,shared_ptr<Expression> &expression){
+    int new_index=index;
+    if(!ReadExpression(vec,new_index,expression)){
+        return false;
+    }
+    if(vec[new_index++].str!=";"){
+        return false;
+    }
+    index=new_index;
+    return true;
 }

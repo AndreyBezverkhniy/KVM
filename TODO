@@ -1,19 +1,43 @@
 (Загрузка исходного кода
 (Выгрузка исходного кода
++priority
++associativity
++binOrder
++algo
++bin operator of expressions
 	Code
 		instruction
-			expression
-				bin
++			expression
++				bin
 				operand
 					left unary
 					right unary
 					element
-						number
++						number
 						variable name
 						function call
+						( expression )
 			return
 			if
 			while
+Выполнение дерева программы
+					function call
+	instruction
+		block
+		var declaration
+		expression
+			operand
+				element
+					number
+					variable name
+				left unary
+				right unary
+			bin
+		return
+		if
+		while
+(Обработка ошибок
+	Code
 		errors
 			literal ptr to module path string
 			literal line column
@@ -39,19 +63,3 @@
 				return
 				if
 				while
-Выполнение дерева программы
-					function call
-	instruction
-		block
-		var declaration
-		expression
-			operand
-				element
-					number
-					variable name
-				left unary
-				right unary
-			bin
-		return
-		if
-		while

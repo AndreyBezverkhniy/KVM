@@ -211,7 +211,7 @@ right unary - правый унарный оператор: ++ -- + -
 left = new stack();
 right = new stack();
 operand = ops[0];
-for (i = 1; i < n; i ++) {
+for (i = n-1; i >= 1; i --) {
     right.push(bins[i-1],ops[i]);
 }
 ```

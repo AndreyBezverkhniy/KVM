@@ -2,10 +2,10 @@
 #include "utils.h"
 
 BinOperator::BinOperator(){}
-void BinOperator::SetLeft(shared_ptr<Operand> left){
+void BinOperator::SetLeft(shared_ptr<Expression> left){
 	this->left=left;
 }
-void BinOperator::SetRight(shared_ptr<Operand> right){
+void BinOperator::SetRight(shared_ptr<Expression> right){
 	this->right=right;
 }
 void BinOperator::SetOperation(string operation){
@@ -27,15 +27,15 @@ bool BinOperator::SaveInner(ostream &os) const {
 	return true;
 }
 bool BinOperator::LoadInner(istream &is){
-	left=make_shared<Operand>();
-	right=make_shared<Operand>();
+	left=make_shared<Expression>();
+	right=make_shared<Expression>();
 	if(!ULoad(is,operation)){
 		return false;
 	}
-	if(!Operand::Load(is,left)){
+	if(!Expression::Load(is,left)){
 		return false;
 	}
-	if(!Operand::Load(is,right)){
+	if(!Expression::Load(is,right)){
 		return false;
 	}
 	return true;
