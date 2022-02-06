@@ -9,7 +9,7 @@ bool FunctionCall::SaveInner(ostream &os) const {
 	if(!signature.Save(os)){
 		return false;
 	}
-    for(int i=0;i<signature.arg_n;i++){
+    for(int i=0;i<signature.arguments.size();i++){
         if(!arguments[i]->Save(os)){
             return false;
         }
@@ -21,7 +21,7 @@ bool FunctionCall::LoadInner(istream &is){
 		return false;
 	}
 	shared_ptr<Expression> expression;
-	for(int i=0;i<signature.arg_n;i++){
+	for(int i=0;i<signature.arguments.size();i++){
 		if(!Expression::Load(is,expression)){
 			return false;
 		}
