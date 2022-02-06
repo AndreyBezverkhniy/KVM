@@ -2,7 +2,7 @@
 (Выгрузка исходного кода
 	Code
 		1st level instruction
-			global
+		global
 spec: function declaration body==block?
 		function declaration
 		block
@@ -21,6 +21,29 @@ spec: function declaration body==block?
 			return
 			if
 			while
+		errors
+			read file
+			program
+			module
+			import
+			global
+			function declaration
+			block
+			instruction
+				block
+				var declaration
+				expression
+					bin
+					operand
+						left unary
+						right unary
+						element
+							number
+							variable name
+							function call
+				return
+				if
+				while
 Выполнение дерева программы
 					function call
 	instruction

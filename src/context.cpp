@@ -1,6 +1,9 @@
 #include "context.h"
 #include "utils.h"
 
+bool Context::Have(string key) const {
+    return variables.find(key)!=variables.end();
+}
 void Context::SetKeyValue(string key,int value){
     variables[key]=value;
 }

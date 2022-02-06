@@ -22,7 +22,8 @@ bool ReadFile(istream &is,vector<Literal> &vec){
 			if(literal.IsEmpty() || !literal.IsReady()){
 				return false;
 			}
-			if(literal.type!=SPACE){
+			if(literal.type!=SPACE && literal.type!=ONELINE_COMMENT &&
+			literal.type!=MULTILINE_COMMENT){
 				vec.push_back(literal);
 			}
 			literal.Clean();
@@ -35,7 +36,8 @@ bool ReadFile(istream &is,vector<Literal> &vec){
 		if(!literal.IsReady()){
 			return false;
 		}
-		if(literal.type!=SPACE){
+		if(literal.type!=SPACE && literal.type!=ONELINE_COMMENT &&
+			literal.type!=MULTILINE_COMMENT){
 			vec.push_back(literal);
 		}
 	}

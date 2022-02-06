@@ -6,5 +6,6 @@
 #include "program.h"
 
 bool Read1stLevelInstruction(const vector<Literal> &vec,int &index,
-Program &program,set<string> modules);
-bool ReadImport(const vector<Literal> &vec,int &index,Program &program,set<string> modules);
+Program &program,set<string> &modules);
+bool ReadImport(const vector<Literal> &vec,int &index,Program &program,set<string> &modules);
+bool ReadGlobal(const vector<Literal> &vec,int &index,Program &program);

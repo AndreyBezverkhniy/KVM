@@ -48,3 +48,34 @@ bool ULoad(istream &is,string &str){
 	ULoad(is,ch);
 	return ch=='.' && is.good();
 }
+
+bool IsIdentifier(string str){
+	if(str.size()==0 || !isalpha(str[0])){
+		return false;
+	}
+	for(auto ch:str){
+		if(!isalpha(ch)&&!isdigit(ch)){
+			return false;
+		}
+	}
+	return true;
+}
+bool IsNumber(string str){
+	if(str.size()==0 || str.size()>1 && str[0]=='0'){
+		return false;
+	}
+	for(auto ch:str){
+		if(!isdigit(ch)){
+			return false;
+		}
+	}
+	return true;
+}
+int ToInt(string str){
+	int value=0;
+	for(char ch:str){
+		value*=10;
+		value+=ch-'0';
+	}
+	return value;
+}
