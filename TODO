@@ -1,10 +1,7 @@
 (Загрузка исходного кода
 (Выгрузка исходного кода
 	Code
-		1st level instruction
-		function declaration
 		instruction
-			block
 			var declaration
 			expression
 				bin
@@ -19,6 +16,8 @@
 			if
 			while
 		errors
+			literal ptr to module path string
+			literal line column
 			read file
 			program
 			module

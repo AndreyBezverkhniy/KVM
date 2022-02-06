@@ -10,8 +10,14 @@ bool FunctionSignature::Save(ostream &os) const {
 	if(!USave(os,func_name)){
 		return false;
 	}
-	if(!USave(os,(int)arguments.size())){
+	int size=arguments.size();
+	if(!USave(os,size)){
 		return false;
+	}
+	for(int i=0;i<size;i++){
+		if(!USave(os,arguments[i])){
+			return false;
+		}
 	}
 	return true;
 }
@@ -19,11 +25,16 @@ bool FunctionSignature::Load(istream &is){
 	if(!ULoad(is,func_name)){
 		return false;
 	}
-	int arg_n;
-	if(!ULoad(is,arg_n)){
+	int size;
+	if(!ULoad(is,size)){
 		return false;
 	}
-	arguments.resize(arg_n);
+	arguments.resize(size);
+	for(int i=0;i<size;i++){
+		if(!ULoad(is,arguments[i])){
+			return false;
+		}
+	}
 	return true;
 }
 bool operator<(FunctionSignature l,FunctionSignature r){
