@@ -2,7 +2,7 @@
 #include "utils.h"
 
 UnaryOperator::UnaryOperator(){}
-void UnaryOperator::SetOperand(shared_ptr<Operand> operand){
+void UnaryOperator::SetOperand(shared_ptr<Expression> operand){
 	this->operand=operand;
 }
 void UnaryOperator::SetOperation(string operation){
@@ -21,11 +21,11 @@ bool UnaryOperator::SaveInner(ostream &os) const {
 	return true;
 }
 bool UnaryOperator::LoadInner(istream &is){
-	operand=make_shared<Operand>();
+	operand=make_shared<Expression>();
 	if(!ULoad(is,operation)){
 		return false;
 	}
-	if(!Operand::Load(is,operand)){
+	if(!Expression::Load(is,operand)){
 		return false;
 	}
 	return true;

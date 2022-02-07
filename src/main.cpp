@@ -21,8 +21,9 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	string text=	"function func(){ \
-						x1+x2*(x3-x4)-x5; \
+						-!+ 4 ++--; \
 					}";
+
 	istringstream is(text);
 	Program program;
 	if(!ReadProgram(is,program)){

@@ -1,24 +1,17 @@
 (Загрузка исходного кода
-(Выгрузка исходного кода
 	Code
 		instruction
-				operand
-					simple expression
-+						variable name
-						function call
-					left unary
-					right unary
 			return
 			if
 			while
-Выполнение дерева программы
+(Выполнение дерева программы
 					function call
 	instruction
 		block
 		var declaration
 		expression
 			operand
-				element
+				simple expression
 					number
 					variable name
 				left unary
@@ -27,6 +20,12 @@
 		return
 		if
 		while
+(Доработка
+	fcall: arg_n, instead of signature
+	isOperator
+	isBin
+	isLUnar
+	isRUnar
 (Обработка ошибок
 	Code
 		errors
@@ -47,10 +46,28 @@
 					operand
 						left unary
 						right unary
-						element
+						simple expression
 							number
 							variable name
 							function call
 				return
 				if
 				while
+(Выгрузка исходного кода
+	global
+	functions
+	instruction
+		block
+		var declaration
+		expression
+			operand
+				simple expression
+					number
+					variable name
+					function call
+				left unary
+				right unary
+			bin
+		return
+		if
+		while
