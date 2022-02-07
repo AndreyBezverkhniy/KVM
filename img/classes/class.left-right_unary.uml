@@ -3,9 +3,9 @@ left to right direction
 title class.LeftUnary/RightUnary
 
 file "LeftUnary/RightUnary" as Unary
-file Operand
+file Expression
 rectangle "unary operator (sign)" as operator
 
-Unary-->Operand
+Unary-->Expression
 Unary-->operator
 @enduml

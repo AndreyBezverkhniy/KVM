@@ -1,5 +1,3 @@
-spec: bin-->expressions not operands
-spec: l/r-unary-->expression not operand
 isOperator
 isBin
 isLUnar
