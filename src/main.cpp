@@ -21,7 +21,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	string text=	"function func(){ \
-						1+2*(3-4)-5; \
+						x1+x2*(x3-x4)-x5; \
 					}";
 	istringstream is(text);
 	Program program;

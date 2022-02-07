@@ -3,9 +3,8 @@
 	Code
 		instruction
 				operand
-					element
-+						( expression )
-						variable name
+					simple expression
++						variable name
 						function call
 					left unary
 					right unary

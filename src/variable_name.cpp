@@ -2,6 +2,9 @@
 #include "utils.h"
 
 VariableName::VariableName(){}
+VariableName::VariableName(string name){
+	SetName(name);
+}
 void VariableName::SetName(string name){
 	this->name=name;
 }

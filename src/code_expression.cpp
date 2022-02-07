@@ -45,16 +45,26 @@ bool ReadBinOperator(const vector<Literal> &vec,int &index,string &bin){
 	return false;
 }
 bool ReadOperand(const vector<Literal> &vec,int &index,shared_ptr<Expression> &operand){
+	return ReadSimpleExpression(vec,index,operand);
+}
+bool ReadSimpleExpression(const vector<Literal> &vec,int &index,
+shared_ptr<Expression> &simple_expression){
 	int new_index=index;
-	shared_ptr<Number> number;
-	if(ReadNumber(vec,new_index,number)){
-		operand=number;
+	shared_ptr<Expression> parehthesized;
+	if(ReadParenthesizedExpression(vec,new_index,parehthesized)){
+		simple_expression=parehthesized;
 		index=new_index;
 		return true;
 	}
-	shared_ptr<Expression> parehthesized;
-	if(ReadParenthesizedExpression(vec,new_index,parehthesized)){
-		operand=parehthesized;
+	shared_ptr<Number> number;
+	if(ReadNumber(vec,new_index,number)){
+		simple_expression=number;
+		index=new_index;
+		return true;
+	}
+	shared_ptr<VariableName> variable;
+	if(ReadVariableName(vec,new_index,variable)){
+		simple_expression=variable;
 		index=new_index;
 		return true;
 	}
@@ -65,6 +75,14 @@ bool ReadNumber(const vector<Literal> &vec,int &index,shared_ptr<Number> &number
 		return false;
 	}
 	number=make_shared<Number>(ToInt(vec[index].str));
+	index=index+1;
+	return true;
+}
+bool ReadVariableName(const vector<Literal> &vec,int &index,shared_ptr<VariableName> &variable){
+	if(!IsIdentifier(vec[index].str)){
+		return false;
+	}
+	variable=make_shared<VariableName>(vec[index].str);
 	index=index+1;
 	return true;
 }
