@@ -4,20 +4,14 @@
 FunctionSignature::FunctionSignature(){}
 FunctionSignature::FunctionSignature(string func_name,int arg_n){
 	this->func_name=func_name;
-	this->arguments.resize(arg_n);
+	this->arg_n=arg_n;
 }
 bool FunctionSignature::Save(ostream &os) const {
 	if(!USave(os,func_name)){
 		return false;
 	}
-	int size=arguments.size();
-	if(!USave(os,size)){
+	if(!USave(os,arg_n)){
 		return false;
-	}
-	for(int i=0;i<size;i++){
-		if(!USave(os,arguments[i])){
-			return false;
-		}
 	}
 	return true;
 }
@@ -25,15 +19,8 @@ bool FunctionSignature::Load(istream &is){
 	if(!ULoad(is,func_name)){
 		return false;
 	}
-	int size;
-	if(!ULoad(is,size)){
+	if(!ULoad(is,arg_n)){
 		return false;
-	}
-	arguments.resize(size);
-	for(int i=0;i<size;i++){
-		if(!ULoad(is,arguments[i])){
-			return false;
-		}
 	}
 	return true;
 }
@@ -41,13 +28,13 @@ bool operator<(FunctionSignature l,FunctionSignature r){
 	if(l==r){ // for case of several main declarations
 		return false;
 	}
-	return l.arguments.size()<r.arguments.size() ||
-	l.arguments.size()==r.arguments.size() && l.func_name<r.func_name;
+	return l.arg_n<r.arg_n ||
+	l.arg_n==r.arg_n && l.func_name<r.func_name;
 }
 bool operator==(FunctionSignature l,FunctionSignature r){
 	if(l.func_name!=r.func_name){
 		return false;
 	}
 	return l.func_name=="main" || // for case of several main declarations
-	l.arguments.size()==r.arguments.size();
+	l.arg_n==r.arg_n;
 }

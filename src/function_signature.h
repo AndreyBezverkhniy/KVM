@@ -8,7 +8,7 @@ using namespace std;
 class FunctionSignature{
 public:
 	string func_name;
-	vector<string> arguments;
+	int arg_n;
 	FunctionSignature();
 	FunctionSignature(string func_name,int arg_n);
 	bool Save(ostream &os) const;

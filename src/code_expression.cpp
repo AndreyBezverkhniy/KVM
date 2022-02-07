@@ -165,7 +165,7 @@ bool ReadFunctionCall(const vector<Lexeme> &vec,int &index,shared_ptr<FunctionCa
 		return false;
 	}
 	ptr->signature.func_name=fname;
-	ptr->signature.arguments.resize(ptr->arguments.size());
+	ptr->signature.arg_n=ptr->arguments.size();
 	fcall=ptr;
 	index=new_index;
 	return true;

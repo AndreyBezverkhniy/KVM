@@ -1,6 +1,6 @@
-fcall: arg_n, instead of signature
-	functions=map<<fname,argn>,<arg_names,body>>
-	fcall: fname, argn, expressions
+spec/code: косяк со сравнением сигнатур по main
+(Загрузка кода
+	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
 					function call
 	instruction

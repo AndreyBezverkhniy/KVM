@@ -5,9 +5,7 @@ title class.FunctionSignature
 file FunctionSignature
 rectangle "name [string]" as name
 rectangle "argn [int]" as argn
-rectangle "argument names [vector<string>]" as args
 
 FunctionSignature-->name
 FunctionSignature-->argn
-FunctionSignature-->args
 @enduml

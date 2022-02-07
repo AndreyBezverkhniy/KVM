@@ -20,7 +20,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	string text=	"function func(){ \
+	string text=	"function func(a,b){ \
 						++0+1--; \
 					}";
 

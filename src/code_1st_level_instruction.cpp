@@ -70,6 +70,7 @@ bool ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index,Program &progr
 		return false;
 	}
 	FunctionSignature signature;
+	Body body;
 	signature.func_name=vec[new_index++].str;
 	if(!IsIdentifier(signature.func_name)){
 		return false;
@@ -84,7 +85,7 @@ bool ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index,Program &progr
 			if(!IsIdentifier(identifier)){
 				return false;
 			}
-			signature.arguments.push_back(identifier);
+			body.argument_names.push_back(identifier);
 			new_index++;
 			if(vec[new_index].str!=","){
 				break;
@@ -95,10 +96,11 @@ bool ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index,Program &progr
 	if(vec[new_index++].str!=")"){
 		return false;
 	}
+	signature.arg_n=body.argument_names.size();
 	for(auto pair:program.functions){
 		auto func_signature=pair.first;
 		if(func_signature.func_name==signature.func_name && (signature.func_name=="main" ||
-		func_signature.arguments.size()==signature.arguments.size())){
+		func_signature.arg_n==signature.arg_n)){
 			return false;
 		}
 	}
@@ -106,7 +108,8 @@ bool ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index,Program &progr
 	if(!ReadBlock(vec,new_index,block)){
 		return false;
 	}
-	program.functions[signature]=*block;
+	body.block=block;
+	program.functions[signature]=body;
 	index=new_index;
 	return true;
 }

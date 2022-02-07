@@ -3,7 +3,9 @@ left to right direction
 title class.Body
 
 file Body
-rectangle "List of instructions" as list
+rectangle "arguments [array of strings]" as arguments
+rectangle Block
 
-Body-->list
+Body-->arguments
+Body-->Block
 @enduml
