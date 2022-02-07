@@ -23,6 +23,11 @@ bool ReadInstruction(const vector<Literal> &vec,int &index,shared_ptr<Instructio
         instruction=whileI;
         return true;
     }
+    shared_ptr<If> ifI;
+    if(ReadIf(vec,index,ifI)){
+        instruction=ifI;
+        return true;
+    }
     shared_ptr<Expression> expression;
     if(ReadExpressionInstruction(vec,index,expression)){
         instruction=expression;
@@ -133,6 +138,38 @@ bool ReadWhile(const vector<Literal> &vec,int &index,shared_ptr<While> &whileI){
 	whileI=make_shared<While>();
 	whileI->condition=expression;
 	whileI->instruction=instruction;
+	index=new_index;
+	return true;
+}
+bool ReadIf(const vector<Literal> &vec,int &index,shared_ptr<If> &ifI){
+	int new_index=index;
+	if(vec[new_index++]!="if"){
+		return false;
+	}
+	if(vec[new_index++]!="("){
+		return false;
+	}
+    shared_ptr<Expression> expression;
+	if(!ReadExpression(vec,new_index,expression)){
+		return false;
+	}
+	if(vec[new_index++]!=")"){
+		return false;
+	}
+	shared_ptr<Instruction> instructionTrue,instructionFalse;
+	if(!ReadInstruction(vec,new_index,instructionTrue)){
+		return false;
+	}
+	ifI=make_shared<If>();
+	ifI->condition=expression;
+	ifI->instructionTrue=instructionTrue;
+	if(vec[new_index]=="else"){
+		new_index++;
+		if(!ReadInstruction(vec,new_index,instructionFalse)){
+			return false;
+		}
+	}
+	ifI->instructionFalse=instructionFalse;
 	index=new_index;
 	return true;
 }

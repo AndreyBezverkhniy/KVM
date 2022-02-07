@@ -6,6 +6,7 @@
 #include "var_declaration.h"
 #include "return.h"
 #include "while.h"
+#include "if.h"
 #include <memory>
 
 using namespace std;
@@ -16,3 +17,4 @@ bool ReadVar(const vector<Literal> &vec,int &index,shared_ptr<Var> &var);
 bool ReadExpressionInstruction(const vector<Literal> &vec,int &index,shared_ptr<Expression> &expression);
 bool ReadReturn(const vector<Literal> &vec,int &index,shared_ptr<Return> &ret);
 bool ReadWhile(const vector<Literal> &vec,int &index,shared_ptr<While> &whileI);
+bool ReadIf(const vector<Literal> &vec,int &index,shared_ptr<If> &ifI);
