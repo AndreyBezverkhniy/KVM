@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "literal.h"
+#include "lexeme.h"
 #include "expression.h"
 #include "bin_operator.h"
 #include "operand.h"
@@ -13,17 +13,17 @@
 
 using namespace std;
 
-bool ReadExpression(const vector<Literal> &vec,int &index,shared_ptr<Expression> &expression);
-bool ReadBinOperator(const vector<Literal> &vec,int &index,string &bin);
-bool ReadOperand(const vector<Literal> &vec,int &index,shared_ptr<Expression> &operand);
-bool ReadLeftUnaryOperator(const vector<Literal> &vec,int &index,string &lunar);
-bool ReadRightUnaryOperator(const vector<Literal> &vec,int &index,string &runar);
-bool ReadSimpleExpression(const vector<Literal> &vec,int &index,
+bool ReadExpression(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &expression);
+bool ReadBinOperator(const vector<Lexeme> &vec,int &index,string &bin);
+bool ReadOperand(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &operand);
+bool ReadLeftUnaryOperator(const vector<Lexeme> &vec,int &index,string &lunar);
+bool ReadRightUnaryOperator(const vector<Lexeme> &vec,int &index,string &runar);
+bool ReadSimpleExpression(const vector<Lexeme> &vec,int &index,
 shared_ptr<Expression> &simple_expression);
-bool ReadNumber(const vector<Literal> &vec,int &index,shared_ptr<Number> &number);
-bool ReadVariableName(const vector<Literal> &vec,int &index,shared_ptr<VariableName> &variable);
-bool ReadFunctionCall(const vector<Literal> &vec,int &index,shared_ptr<FunctionCall> &fcall);
-bool ReadParenthesizedExpression(const vector<Literal> &vec,int &index,
+bool ReadNumber(const vector<Lexeme> &vec,int &index,shared_ptr<Number> &number);
+bool ReadVariableName(const vector<Lexeme> &vec,int &index,shared_ptr<VariableName> &variable);
+bool ReadFunctionCall(const vector<Lexeme> &vec,int &index,shared_ptr<FunctionCall> &fcall);
+bool ReadParenthesizedExpression(const vector<Lexeme> &vec,int &index,
 shared_ptr<Expression> &parenthesized);
 int GetBinOperandPriority(string bin);
 bool IsRightAssociativeBinOperator(string bin);

@@ -4,7 +4,7 @@
 #include "expression.h"
 #include <algorithm>
 
-bool ReadExpression(const vector<Literal> &vec,int &index,shared_ptr<Expression> &expression){
+bool ReadExpression(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &expression){
     int new_index=index;
     vector<shared_ptr<Expression>> ops;
     vector<string> bins;
@@ -27,7 +27,7 @@ bool ReadExpression(const vector<Literal> &vec,int &index,shared_ptr<Expression>
     index=new_index;
     return true;
 }
-bool ReadBinOperator(const vector<Literal> &vec,int &index,string &bin){
+bool ReadBinOperator(const vector<Lexeme> &vec,int &index,string &bin){
 	if(!IsBinOperator(vec[index].str)){
 		return false;
 	}
@@ -35,7 +35,7 @@ bool ReadBinOperator(const vector<Literal> &vec,int &index,string &bin){
 	index++;
 	return true;
 }
-bool ReadOperand(const vector<Literal> &vec,int &index,shared_ptr<Expression> &operand){
+bool ReadOperand(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &operand){
 	int new_index=index;
 	vector<string> lunars,runars;
 	shared_ptr<Expression> simple_expression;
@@ -68,7 +68,7 @@ bool ReadOperand(const vector<Literal> &vec,int &index,shared_ptr<Expression> &o
 	index=new_index;
 	return true;
 }
-bool ReadLeftUnaryOperator(const vector<Literal> &vec,int &index,string &lunar){
+bool ReadLeftUnaryOperator(const vector<Lexeme> &vec,int &index,string &lunar){
 	if(!IsLeftUnaryOperator(vec[index].str)){
 		return false;
 	}
@@ -76,7 +76,7 @@ bool ReadLeftUnaryOperator(const vector<Literal> &vec,int &index,string &lunar){
 	index++;
 	return true;
 }
-bool ReadRightUnaryOperator(const vector<Literal> &vec,int &index,string &runar){
+bool ReadRightUnaryOperator(const vector<Lexeme> &vec,int &index,string &runar){
 	if(!IsRightUnaryOperator(vec[index].str)){
 		return false;
 	}
@@ -84,7 +84,7 @@ bool ReadRightUnaryOperator(const vector<Literal> &vec,int &index,string &runar)
 	index++;
 	return true;
 }
-bool ReadSimpleExpression(const vector<Literal> &vec,int &index,
+bool ReadSimpleExpression(const vector<Lexeme> &vec,int &index,
 shared_ptr<Expression> &simple_expression){
 	int new_index=index;
 	shared_ptr<Expression> parehthesized;
@@ -113,7 +113,7 @@ shared_ptr<Expression> &simple_expression){
 	}
 	return false;
 }
-bool ReadParenthesizedExpression(const vector<Literal> &vec,int &index,
+bool ReadParenthesizedExpression(const vector<Lexeme> &vec,int &index,
 shared_ptr<Expression> &parenthesized){
 	int new_index=index;
 	if(vec[new_index++].str!="("){
@@ -130,7 +130,7 @@ shared_ptr<Expression> &parenthesized){
 	parenthesized=expression;
 	return true;
 }
-bool ReadNumber(const vector<Literal> &vec,int &index,shared_ptr<Number> &number){
+bool ReadNumber(const vector<Lexeme> &vec,int &index,shared_ptr<Number> &number){
 	if(!IsNumber(vec[index].str)){
 		return false;
 	}
@@ -138,7 +138,7 @@ bool ReadNumber(const vector<Literal> &vec,int &index,shared_ptr<Number> &number
 	index=index+1;
 	return true;
 }
-bool ReadFunctionCall(const vector<Literal> &vec,int &index,shared_ptr<FunctionCall> &fcall){
+bool ReadFunctionCall(const vector<Lexeme> &vec,int &index,shared_ptr<FunctionCall> &fcall){
 	int new_index=index;
 	string fname;
 	if(!IsIdentifier((fname=vec[new_index++].str))){
@@ -170,7 +170,7 @@ bool ReadFunctionCall(const vector<Literal> &vec,int &index,shared_ptr<FunctionC
 	index=new_index;
 	return true;
 }
-bool ReadVariableName(const vector<Literal> &vec,int &index,shared_ptr<VariableName> &variable){
+bool ReadVariableName(const vector<Lexeme> &vec,int &index,shared_ptr<VariableName> &variable){
 	if(!IsIdentifier(vec[index].str)){
 		return false;
 	}

@@ -6,7 +6,7 @@
 #include "block.h"
 #include <memory>
 
-bool Read1stLevelInstruction(const vector<Literal> &vec,int &index,
+bool Read1stLevelInstruction(const vector<Lexeme> &vec,int &index,
 Program &program,set<string> &modules){
 	if(ReadImport(vec,index,program,modules)){
 		return true;
@@ -19,7 +19,7 @@ Program &program,set<string> &modules){
 	}
 	return false;
 }
-bool ReadImport(const vector<Literal> &vec,int &index,Program &program,set<string> &modules){
+bool ReadImport(const vector<Lexeme> &vec,int &index,Program &program,set<string> &modules){
 	if(vec[index]=="import" && vec[index+1].type==STRING && vec[index+2]==";"){
 		string module_path=vec[index+1].str;
 		index+=3;
@@ -31,7 +31,7 @@ bool ReadImport(const vector<Literal> &vec,int &index,Program &program,set<strin
 	}
 	return false;
 }
-bool ReadGlobal(const vector<Literal> &vec,int &index,Program &program){
+bool ReadGlobal(const vector<Lexeme> &vec,int &index,Program &program){
 	int new_index=index;
 	if(vec[new_index++]!="global"){
 		return false;
@@ -64,7 +64,7 @@ bool ReadGlobal(const vector<Literal> &vec,int &index,Program &program){
 	index=new_index;
 	return true;
 }
-bool ReadFunctionDeclaration(const vector<Literal> &vec,int &index,Program &program){
+bool ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index,Program &program){
 	int new_index=index;
 	if(vec[new_index++]!="function"){
 		return false;

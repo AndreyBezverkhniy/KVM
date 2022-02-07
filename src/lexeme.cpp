@@ -1,21 +1,21 @@
-#include "literal.h"
+#include "lexeme.h"
 
-Literal::Literal() {
+Lexeme::Lexeme() {
 	Clean();
 }
-Literal::Literal(string str){
+Lexeme::Lexeme(string str){
 	this->str=str;
 }
-Literal::Literal(char* str){
+Lexeme::Lexeme(char* str){
 	this->str=string(str);
 }
-void Literal::Clean(){
-	type=LiteralType::EMPTY;
+void Lexeme::Clean(){
+	type=EMPTY;
 	str="";
-	status=LiteralStatus::NOT_COMPLITED;
-	state=LiteralState::INIT;
+	status=NOT_COMPLITED;
+	state=INIT;
 }
-bool Literal::AddChar(char ch){
+bool Lexeme::AddChar(char ch){
 	switch(state){
 		case INIT:
 		{
@@ -227,14 +227,14 @@ bool Literal::AddChar(char ch){
 	}
 	return false;
 }
-bool Literal::IsEmpty() const {
-	return state==LiteralState::INIT;
+bool Lexeme::IsEmpty() const {
+	return state==LexemeState::INIT;
 }
-bool Literal::IsReady() const {
-	return status==LiteralStatus::COMPLITED ||
-	status==LiteralStatus::EXTENDABLE;
+bool Lexeme::IsReady() const {
+	return status==LexemeStatus::COMPLITED ||
+	status==LexemeStatus::EXTENDABLE;
 }
-string Literal::ToString() const {
+string Lexeme::ToString() const {
 	string result;
 	switch(type){
 		case EMPTY:
@@ -266,9 +266,9 @@ string Literal::ToString() const {
 	}
 	return result+":{"+str+"}";
 }
-bool operator==(Literal l,Literal r){
+bool operator==(Lexeme l,Lexeme r){
 	return l.str==r.str;
 }
-bool operator!=(Literal l,Literal r){
+bool operator!=(Lexeme l,Lexeme r){
 	return !(l==r);
 }

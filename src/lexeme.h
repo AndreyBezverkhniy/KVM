@@ -3,13 +3,13 @@
 
 using namespace std;
 
-enum LiteralStatus{
+enum LexemeStatus{
 	NOT_COMPLITED,
 	COMPLITED,
 	EXTENDABLE
 };
 
-enum LiteralType{
+enum LexemeType{
 	INCORRECT,
 	EMPTY,
 	SPACE,
@@ -20,7 +20,7 @@ enum LiteralType{
 	STRING
 };
 
-enum LiteralState{
+enum LexemeState{
 	INIT,
 	END, // last for all complited
 	SLASH,
@@ -37,21 +37,21 @@ enum LiteralState{
 	PRE_EQUAL // %*<>=!
 };
 
-class Literal{
+class Lexeme{
 private:
-	LiteralState state;
-	LiteralStatus status;
+	LexemeState state;
+	LexemeStatus status;
 public:
 	string str;
-	LiteralType type;
-	Literal();
-	Literal(string str);
-	Literal(char* str);
+	LexemeType type;
+	Lexeme();
+	Lexeme(string str);
+	Lexeme(char* str);
 	void Clean();
 	bool AddChar(char ch);
 	bool IsEmpty() const;
 	bool IsReady() const;
 	string ToString() const;
-	friend bool operator==(Literal l,Literal r);
-	friend bool operator!=(Literal l,Literal r);
+	friend bool operator==(Lexeme l,Lexeme r);
+	friend bool operator!=(Lexeme l,Lexeme r);
 };

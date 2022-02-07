@@ -1,5 +1,6 @@
 fcall: arg_n, instead of signature
-literal -> lexeme
+	functions=map<<fname,argn>,<arg_names,body>>
+	fcall: fname, argn, expressions
 instruction + ';'
 (Выполнение дерева программы
 					function call

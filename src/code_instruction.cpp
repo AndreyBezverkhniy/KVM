@@ -2,7 +2,7 @@
 #include "code_expression.h"
 #include "utils.h"
 
-bool ReadInstruction(const vector<Literal> &vec,int &index,shared_ptr<Instruction> &instruction){
+bool ReadInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Instruction> &instruction){
     shared_ptr<Block> block;
     if(ReadBlock(vec,index,block)){
         instruction=block;
@@ -35,7 +35,7 @@ bool ReadInstruction(const vector<Literal> &vec,int &index,shared_ptr<Instructio
     }
     return false;
 }
-bool ReadBlock(const vector<Literal> &vec,int &index,shared_ptr<Block> &block){
+bool ReadBlock(const vector<Lexeme> &vec,int &index,shared_ptr<Block> &block){
     int new_index=index;
     if(vec[new_index++]!="{"){
         return false;
@@ -52,7 +52,7 @@ bool ReadBlock(const vector<Literal> &vec,int &index,shared_ptr<Block> &block){
     block=ptr;
     return true;
 }
-bool ReadVar(const vector<Literal> &vec,int &index,shared_ptr<Var> &var){
+bool ReadVar(const vector<Lexeme> &vec,int &index,shared_ptr<Var> &var){
 	int new_index=index;
 	if(vec[new_index++]!="var"){
 		return false;
@@ -84,7 +84,7 @@ bool ReadVar(const vector<Literal> &vec,int &index,shared_ptr<Var> &var){
 	index=new_index;
 	return true;
 }
-bool ReadExpressionInstruction(const vector<Literal> &vec,int &index,shared_ptr<Expression> &expression){
+bool ReadExpressionInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &expression){
     int new_index=index;
     if(!ReadExpression(vec,new_index,expression)){
         return false;
@@ -95,7 +95,7 @@ bool ReadExpressionInstruction(const vector<Literal> &vec,int &index,shared_ptr<
     index=new_index;
     return true;
 }
-bool ReadReturn(const vector<Literal> &vec,int &index,shared_ptr<Return> &ret){
+bool ReadReturn(const vector<Lexeme> &vec,int &index,shared_ptr<Return> &ret){
 	int new_index=index;
 	if(vec[new_index++]!="return"){
 		return false;
@@ -116,7 +116,7 @@ bool ReadReturn(const vector<Literal> &vec,int &index,shared_ptr<Return> &ret){
 	index=new_index;
 	return true;
 }
-bool ReadWhile(const vector<Literal> &vec,int &index,shared_ptr<While> &whileI){
+bool ReadWhile(const vector<Lexeme> &vec,int &index,shared_ptr<While> &whileI){
 	int new_index=index;
 	if(vec[new_index++]!="while"){
 		return false;
@@ -141,7 +141,7 @@ bool ReadWhile(const vector<Literal> &vec,int &index,shared_ptr<While> &whileI){
 	index=new_index;
 	return true;
 }
-bool ReadIf(const vector<Literal> &vec,int &index,shared_ptr<If> &ifI){
+bool ReadIf(const vector<Lexeme> &vec,int &index,shared_ptr<If> &ifI){
 	int new_index=index;
 	if(vec[new_index++]!="if"){
 		return false;

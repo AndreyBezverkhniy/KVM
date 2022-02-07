@@ -24,7 +24,7 @@ src/return.cpp
 src/while.cpp
 src/if.cpp
 src/code.cpp
-src/literal.cpp
+src/lexeme.cpp
 src/code_1st_level_instruction.cpp
 src/code_instruction.cpp
 src/code_expression.cpp

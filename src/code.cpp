@@ -3,7 +3,7 @@
 #include <fstream>
 #include <set>
 
-bool ReadFile(string path,vector<Literal> &vec){
+bool ReadFile(string path,vector<Lexeme> &vec){
     ifstream fin;
 	fin.open(path,ios_base::binary);
 	if(!fin.is_open()){
@@ -14,8 +14,8 @@ bool ReadFile(string path,vector<Literal> &vec){
 	fin.close();
 	return success;
 }
-bool ReadFile(istream &is,vector<Literal> &vec){
-	Literal literal;
+bool ReadFile(istream &is,vector<Lexeme> &vec){
+	Lexeme literal;
 	int ch;
 	while((ch=is.get(),is.good())){
 		if(!literal.AddChar(ch)){
@@ -64,7 +64,7 @@ bool ReadProgramModule(string module_path,Program &program,set<string> &modules)
 	return success;
 }
 bool ReadProgramModule(istream &is,Program &program,set<string> modules){
-	vector<Literal> vec;
+	vector<Lexeme> vec;
 	if(!ReadFile(is,vec)){
 		return false;
 	}
@@ -73,7 +73,7 @@ bool ReadProgramModule(istream &is,Program &program,set<string> modules){
 	}
 	cout<<endl;
 	int index=0;
-	Literal empty;
+	Lexeme empty;
 	while(vec[index]!=empty){
 		if(!Read1stLevelInstruction(vec,index,program,modules)){
 			return false;

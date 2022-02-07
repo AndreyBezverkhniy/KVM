@@ -1,5 +1,5 @@
 #pragma once
-#include "literal.h"
+#include "lexeme.h"
 #include <vector>
 #include "instruction.h"
 #include "block.h"
@@ -11,10 +11,10 @@
 
 using namespace std;
 
-bool ReadInstruction(const vector<Literal> &vec,int &index,shared_ptr<Instruction> &instruction);
-bool ReadBlock(const vector<Literal> &vec,int &index,shared_ptr<Block> &block);
-bool ReadVar(const vector<Literal> &vec,int &index,shared_ptr<Var> &var);
-bool ReadExpressionInstruction(const vector<Literal> &vec,int &index,shared_ptr<Expression> &expression);
-bool ReadReturn(const vector<Literal> &vec,int &index,shared_ptr<Return> &ret);
-bool ReadWhile(const vector<Literal> &vec,int &index,shared_ptr<While> &whileI);
-bool ReadIf(const vector<Literal> &vec,int &index,shared_ptr<If> &ifI);
+bool ReadInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Instruction> &instruction);
+bool ReadBlock(const vector<Lexeme> &vec,int &index,shared_ptr<Block> &block);
+bool ReadVar(const vector<Lexeme> &vec,int &index,shared_ptr<Var> &var);
+bool ReadExpressionInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &expression);
+bool ReadReturn(const vector<Lexeme> &vec,int &index,shared_ptr<Return> &ret);
+bool ReadWhile(const vector<Lexeme> &vec,int &index,shared_ptr<While> &whileI);
+bool ReadIf(const vector<Lexeme> &vec,int &index,shared_ptr<If> &ifI);
