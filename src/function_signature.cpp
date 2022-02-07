@@ -25,16 +25,9 @@ bool FunctionSignature::Load(istream &is){
 	return true;
 }
 bool operator<(FunctionSignature l,FunctionSignature r){
-	if(l==r){ // for case of several main declarations
-		return false;
-	}
 	return l.arg_n<r.arg_n ||
 	l.arg_n==r.arg_n && l.func_name<r.func_name;
 }
 bool operator==(FunctionSignature l,FunctionSignature r){
-	if(l.func_name!=r.func_name){
-		return false;
-	}
-	return l.func_name=="main" || // for case of several main declarations
-	l.arg_n==r.arg_n;
+	return l.arg_n==r.arg_n && l.func_name==r.func_name;
 }
