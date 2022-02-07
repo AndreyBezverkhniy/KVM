@@ -1,7 +1,6 @@
 fcall: arg_n, instead of signature
 	functions=map<<fname,argn>,<arg_names,body>>
 	fcall: fname, argn, expressions
-instruction + ';'
 (Выполнение дерева программы
 					function call
 	instruction
@@ -18,48 +17,4 @@ instruction + ';'
 		return
 		if
 		while
-(Обработка ошибок
-	Code
-		errors
-			literal ptr to module path string
-			literal line column
-			read file
-			program
-			module
-			import
-			global
-			function declaration
-			block
-			instruction
-				block
-				var declaration
-				expression
-					bin
-					operand
-						left unary
-						right unary
-						simple expression
-							number
-							variable name
-							function call
-				return
-				if
-				while
-(Выгрузка исходного кода
-	global
-	functions
-	instruction
-		block
-		var declaration
-		expression
-			operand
-				simple expression
-					number
-					variable name
-					function call
-				left unary
-				right unary
-			bin
-		return
-		if
-		while
+

@@ -8,16 +8,6 @@ bool ReadInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Instruction
         instruction=block;
         return true;
     }
-    shared_ptr<Var> var;
-    if(ReadVar(vec,index,var)){
-        instruction=var;
-        return true;
-    }
-    shared_ptr<Return> ret;
-    if(ReadReturn(vec,index,ret)){
-        instruction=ret;
-        return true;
-    }
     shared_ptr<While> whileI;
     if(ReadWhile(vec,index,whileI)){
         instruction=whileI;
@@ -28,8 +18,29 @@ bool ReadInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Instruction
         instruction=ifI;
         return true;
     }
+	int new_index=index;
+	if(!ReadSemicoloningInstruction(vec,new_index,instruction)){
+		return false;
+	}
+	if(vec[new_index++]!=";"){
+		return false;
+	}
+	index=new_index;
+	return true;
+}
+bool ReadSemicoloningInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Instruction> &instruction){
+    shared_ptr<Var> var;
+    if(ReadVar(vec,index,var)){
+        instruction=var;
+        return true;
+    }
+    shared_ptr<Return> ret;
+    if(ReadReturn(vec,index,ret)){
+        instruction=ret;
+        return true;
+    }
     shared_ptr<Expression> expression;
-    if(ReadExpressionInstruction(vec,index,expression)){
+    if(ReadExpression(vec,index,expression)){
         instruction=expression;
         return true;
     }
@@ -78,22 +89,8 @@ bool ReadVar(const vector<Lexeme> &vec,int &index,shared_ptr<Var> &var){
 		}
 		new_index++;
 	}
-	if(vec[new_index++]!=";"){
-		return false;
-	}
 	index=new_index;
 	return true;
-}
-bool ReadExpressionInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &expression){
-    int new_index=index;
-    if(!ReadExpression(vec,new_index,expression)){
-        return false;
-    }
-    if(vec[new_index++].str!=";"){
-        return false;
-    }
-    index=new_index;
-    return true;
 }
 bool ReadReturn(const vector<Lexeme> &vec,int &index,shared_ptr<Return> &ret){
 	int new_index=index;
@@ -102,17 +99,10 @@ bool ReadReturn(const vector<Lexeme> &vec,int &index,shared_ptr<Return> &ret){
 	}
     ret=make_shared<Return>();
 	shared_ptr<Expression> expression;
-	if(vec[new_index]!=";"){
-		if(!ReadExpression(vec,new_index,expression)){
-			return false;
-		}
-	} else {
+	if(!ReadExpression(vec,new_index,expression)){
 		expression=make_shared<Number>(0);
 	}
 	ret->expression=expression;
-	if(vec[new_index++]!=";"){
-		return false;
-	}
 	index=new_index;
 	return true;
 }
