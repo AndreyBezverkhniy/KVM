@@ -21,8 +21,11 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	string text=	"function func(){ \
-						return; \
-						return 1+2; \
+						while(1)2; \
+						while(3+4){ \
+							5; \
+							6; \
+						} \
 					}";
 
 	istringstream is(text);
