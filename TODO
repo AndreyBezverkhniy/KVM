@@ -1,22 +1,14 @@
 (Загрузка исходного кода
 (Выгрузка исходного кода
-+priority
-+associativity
-+binOrder
-+algo
-+bin operator of expressions
 	Code
 		instruction
-+			expression
-+				bin
 				operand
-					left unary
-					right unary
 					element
-+						number
++						( expression )
 						variable name
 						function call
-						( expression )
+					left unary
+					right unary
 			return
 			if
 			while

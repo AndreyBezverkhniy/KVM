@@ -5,9 +5,9 @@
 
 bool ReadExpression(const vector<Literal> &vec,int &index,shared_ptr<Expression> &expression){
     int new_index=index;
-    vector<shared_ptr<Operand>> ops;
+    vector<shared_ptr<Expression>> ops;
     vector<string> bins;
-    shared_ptr<Operand> operand;
+    shared_ptr<Expression> operand;
     string bin;
     if(!ReadOperand(vec,new_index,operand)){
         return false;
@@ -44,15 +44,21 @@ bool ReadBinOperator(const vector<Literal> &vec,int &index,string &bin){
 	}
 	return false;
 }
-bool ReadOperand(const vector<Literal> &vec,int &index,shared_ptr<Operand> &operand){
-	shared_ptr<Number> number;
+bool ReadOperand(const vector<Literal> &vec,int &index,shared_ptr<Expression> &operand){
 	int new_index=index;
-	if(!ReadNumber(vec,new_index,number)){
-		return false;
+	shared_ptr<Number> number;
+	if(ReadNumber(vec,new_index,number)){
+		operand=number;
+		index=new_index;
+		return true;
 	}
-	operand=number;
-	index=new_index;
-	return true;
+	shared_ptr<Expression> parehthesized;
+	if(ReadParenthesizedExpression(vec,new_index,parehthesized)){
+		operand=parehthesized;
+		index=new_index;
+		return true;
+	}
+	return false;
 }
 bool ReadNumber(const vector<Literal> &vec,int &index,shared_ptr<Number> &number){
 	if(!IsNumber(vec[index].str)){
@@ -60,6 +66,23 @@ bool ReadNumber(const vector<Literal> &vec,int &index,shared_ptr<Number> &number
 	}
 	number=make_shared<Number>(ToInt(vec[index].str));
 	index=index+1;
+	return true;
+}
+bool ReadParenthesizedExpression(const vector<Literal> &vec,int &index,
+shared_ptr<Expression> &parenthesized){
+	int new_index=index;
+	if(vec[new_index++].str!="("){
+		return false;
+	}
+	shared_ptr<Expression> expression;
+	if(!ReadExpression(vec,new_index,expression)){
+		return false;
+	}
+	if(vec[new_index++].str!=")"){
+		return false;
+	}
+	index=new_index;
+	parenthesized=expression;
 	return true;
 }
 int GetBinOperandPriority(string bin){
@@ -98,7 +121,7 @@ bool BinOrder(string binl,string binr){
 	}
 	return !IsRightAssociativeBinOperator(binl);
 }
-shared_ptr<Expression> BuildExpression(vector<shared_ptr<Operand>> &ops,vector<string> &bins){
+shared_ptr<Expression> BuildExpression(vector<shared_ptr<Expression>> &ops,vector<string> &bins){
 	stack<pair<shared_ptr<Expression>,string>> left;
 	stack<pair<string,shared_ptr<Expression>>> right;
 	shared_ptr<Expression> operand=ops[0];
