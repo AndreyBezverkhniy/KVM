@@ -1,9 +1,6 @@
-isOperator
-isBin
-isLUnar
-isRUnar
 fcall: arg_n, instead of signature
 literal -> lexeme
+instruction + ';'
 (Выполнение дерева программы
 					function call
 	instruction

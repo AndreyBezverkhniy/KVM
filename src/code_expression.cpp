@@ -2,6 +2,7 @@
 #include "utils.h"
 #include <stack>
 #include "expression.h"
+#include <algorithm>
 
 bool ReadExpression(const vector<Literal> &vec,int &index,shared_ptr<Expression> &expression){
     int new_index=index;
@@ -27,22 +28,12 @@ bool ReadExpression(const vector<Literal> &vec,int &index,shared_ptr<Expression>
     return true;
 }
 bool ReadBinOperator(const vector<Literal> &vec,int &index,string &bin){
-	// + - * / % = < > == != <= >= += -= *= /= %= && ||
-	vector<const char*> operators{
-		"+","-","*","/","%","=","<",">","==","!=",
-		"<=",">=","+=","-=","*=","/=","%=","&&","||"
-	};
-	if(vec[index].type!=SIGN){
+	if(!IsBinOperator(vec[index].str)){
 		return false;
 	}
-	for(int i=0;i<operators.size();i++){
-		if(vec[index].str==(string)operators[i]){
-			bin=vec[index].str;
-			index=index+1;
-			return true;
-		}
-	}
-	return false;
+	bin=vec[index].str;
+	index++;
+	return true;
 }
 bool ReadOperand(const vector<Literal> &vec,int &index,shared_ptr<Expression> &operand){
 	int new_index=index;
@@ -78,38 +69,20 @@ bool ReadOperand(const vector<Literal> &vec,int &index,shared_ptr<Expression> &o
 	return true;
 }
 bool ReadLeftUnaryOperator(const vector<Literal> &vec,int &index,string &lunar){
-	// ! ++ -- + -
-	vector<const char*> operators{
-		"+","-","++","--","!"
-	};
-	if(vec[index].type!=SIGN){
+	if(!IsLeftUnaryOperator(vec[index].str)){
 		return false;
 	}
-	for(int i=0;i<operators.size();i++){
-		if(vec[index].str==(string)operators[i]){
-			lunar=vec[index].str;
-			index=index+1;
-			return true;
-		}
-	}
-	return false;
+	lunar=vec[index].str;
+	index++;
+	return true;
 }
 bool ReadRightUnaryOperator(const vector<Literal> &vec,int &index,string &runar){
-	// ++ --
-	vector<const char*> operators{
-		"++","--"
-	};
-	if(vec[index].type!=SIGN){
+	if(!IsRightUnaryOperator(vec[index].str)){
 		return false;
 	}
-	for(int i=0;i<operators.size();i++){
-		if(vec[index].str==(string)operators[i]){
-			runar=vec[index].str;
-			index=index+1;
-			return true;
-		}
-	}
-	return false;
+	runar=vec[index].str;
+	index++;
+	return true;
 }
 bool ReadSimpleExpression(const vector<Literal> &vec,int &index,
 shared_ptr<Expression> &simple_expression){
@@ -273,4 +246,23 @@ shared_ptr<Expression> BuildExpression(vector<shared_ptr<Expression>> &ops,vecto
 	    operand = temp;
 	}
 	return operand;
+}
+bool IsBinOperator(string str){
+	vector<string> values{
+		"+","-","*","/","%","=","<",">","==","!=",
+		"<=",">=","+=","-=","*=","/=","%=","&&","||"
+	};
+	return find(values.begin(),values.end(),str)!=values.end();
+}
+bool IsLeftUnaryOperator(string str){
+	vector<const char*> values{
+		"+","-","++","--","!"
+	};
+	return find(values.begin(),values.end(),str)!=values.end();
+}
+bool IsRightUnaryOperator(string str){
+	vector<const char*> values{
+		"++","--"
+	};
+	return find(values.begin(),values.end(),str)!=values.end();
 }

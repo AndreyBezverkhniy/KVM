@@ -29,3 +29,7 @@ int GetBinOperandPriority(string bin);
 bool IsRightAssociativeBinOperator(string bin);
 bool BinOrder(string binl,string binr);
 shared_ptr<Expression> BuildExpression(vector<shared_ptr<Expression>> &ops,vector<string> &bins);
+bool IsBinOperator(string str);
+bool IsLeftUnaryOperator(string str);
+bool IsRightUnaryOperator(string str);
+bool IsOperator(string str,const vector<string> &values);
