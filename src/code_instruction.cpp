@@ -13,6 +13,11 @@ bool ReadInstruction(const vector<Literal> &vec,int &index,shared_ptr<Instructio
         instruction=var;
         return true;
     }
+    shared_ptr<Return> ret;
+    if(ReadReturn(vec,index,ret)){
+        instruction=ret;
+        return true;
+    }
     shared_ptr<Expression> expression;
     if(ReadExpressionInstruction(vec,index,expression)){
         instruction=expression;
@@ -79,4 +84,25 @@ bool ReadExpressionInstruction(const vector<Literal> &vec,int &index,shared_ptr<
     }
     index=new_index;
     return true;
+}
+bool ReadReturn(const vector<Literal> &vec,int &index,shared_ptr<Return> &ret){
+	int new_index=index;
+	if(vec[new_index++]!="return"){
+		return false;
+	}
+    ret=make_shared<Return>();
+	shared_ptr<Expression> expression;
+	if(vec[new_index]!=";"){
+		if(!ReadExpression(vec,new_index,expression)){
+			return false;
+		}
+	} else {
+		expression=make_shared<Number>(0);
+	}
+	ret->expression=expression;
+	if(vec[new_index++]!=";"){
+		return false;
+	}
+	index=new_index;
+	return true;
 }

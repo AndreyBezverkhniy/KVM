@@ -1,7 +1,7 @@
+bug: multiline /**--*-->/**
 (Загрузка исходного кода
 	Code
 		instruction
-			return
 			if
 			while
 (Выполнение дерева программы

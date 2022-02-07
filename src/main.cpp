@@ -21,7 +21,8 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	string text=	"function func(){ \
-						-!+ 4 ++--; \
+						return; \
+						return 1+2; \
 					}";
 
 	istringstream is(text);
