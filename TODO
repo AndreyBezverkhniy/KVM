@@ -1,6 +1,11 @@
-spec/code: multiline /** --*--> /**
 spec: bin-->expressions not operands
 spec: l/r-unary-->expression not operand
+isOperator
+isBin
+isLUnar
+isRUnar
+fcall: arg_n, instead of signature
+literal -> lexeme
 (Выполнение дерева программы
 					function call
 	instruction
@@ -17,12 +22,6 @@ spec: l/r-unary-->expression not operand
 		return
 		if
 		while
-(Доработка
-	fcall: arg_n, instead of signature
-	isOperator
-	isBin
-	isLUnar
-	isRUnar
 (Обработка ошибок
 	Code
 		errors

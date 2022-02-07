@@ -110,6 +110,8 @@ bool Literal::AddChar(char ch){
 				type=MULTILINE_COMMENT;
 				state=END;
 				status=COMPLITED;
+			} else if (ch=='*') {
+				str+=ch;
 			} else {
 				type=INCORRECT;
 				state=SLASH_STAR_X;
