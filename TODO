@@ -2,8 +2,6 @@ comments prefix elimnation
 (Загрузка кода
 	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
-	detect main signature
-	fcall main init with 0-args
 	exec_fcall пользовательские ф-ции
 		add context (arguments)
 	exec_block

@@ -21,7 +21,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	string text=	"function func(a,b){ \
+	string text=	"function main(a,b){ \
 						++0+1--; \
 					}";
 

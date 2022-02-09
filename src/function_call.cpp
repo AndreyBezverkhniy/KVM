@@ -2,9 +2,6 @@
 #include "utils.h"
 
 FunctionCall::FunctionCall(){}
-void FunctionCall::SetFunctionSignature(FunctionSignature signature){
-	this->signature=signature;
-}
 bool FunctionCall::SaveInner(ostream &os) const {
 	if(!signature.Save(os)){
 		return false;
