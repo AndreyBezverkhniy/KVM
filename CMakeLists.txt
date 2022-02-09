@@ -29,6 +29,7 @@ src/code_1st_level_instruction.cpp
 src/code_instruction.cpp
 src/code_expression.cpp
 src/body.cpp
+src/executor.cpp
 )
 
 target_include_directories(kvm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

@@ -1,19 +1,24 @@
+comments prefix elimnation
 (Загрузка кода
 	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
-					function call
-	instruction
-		block
-		var declaration
-		expression
-			operand
-				simple expression
-					number
-					variable name
-				left unary
-				right unary
-			bin
-		return
-		if
-		while
-
+	detect main signature
+	fcall main init with 0-args
+	exec_fcall пользовательские ф-ции
+		add context (arguments)
+	exec_block
+		add context
+	exec_expression
+		exec_operand
+			exec_simple
+				exec_number
+				exec_variable
+			exec_lunary
+			exec_runary
+		exec_bin
+	exec_var
+	exec_return
+	exec_if
+	exec_while
+	exec_instruction
+	exec_fcall встроенные ф-ции

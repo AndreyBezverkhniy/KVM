@@ -16,6 +16,7 @@
 #include "block.h"
 #include "code.h"
 #include <sstream>
+#include "executor.h"
 
 using namespace std;
 
@@ -25,17 +26,19 @@ int main(int argc, char* argv[]) {
 					}";
 
 	istringstream is(text);
-	Program program;
-	if(!ReadProgram(is,program)){
+	Executor executor;
+	if(!ReadProgram(is,executor.program)){
 		cout<<endl<<"ReadProgram Failed"<<endl;
 	}
-	program.Save(cout);
+	executor.program.Save(cout);
 	cout<<"/1"<<endl;
-	program.Save("program.prog");
+	executor.program.Save("program.prog");
 	Program program2;
 	program2.Load("program.prog");
 	program2.Save(cout);
 	cout<<"/2"<<endl;
-	cout<<"OK"<<endl;
+	cout<<"RUN"<<endl;
+	executor.exec();
+	cout<<"END"<<endl;
 	return 0;
 }

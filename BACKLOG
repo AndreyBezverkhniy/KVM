@@ -1,4 +1,5 @@
 empty instruction ";"
+import ';' ???
 (Обработка ошибок
 	Code
 		errors
