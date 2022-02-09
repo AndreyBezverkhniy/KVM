@@ -1,15 +1,11 @@
 comments prefix elimnation
+catch var repeatition error
 (Загрузка кода
 	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
-	exec_fcall пользовательские ф-ции
-		add context (arguments)
-	exec_block
-		add context
 	exec_expression
 		exec_operand
 			exec_simple
-				exec_number
 				exec_variable
 			exec_lunary
 			exec_runary

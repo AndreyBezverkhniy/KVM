@@ -21,7 +21,8 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	string text=	"function main(a,b){ \
+	string text=	"global a=1, c=10; \
+					function main(a,b){ \
 						++0+1--; \
 					}";
 

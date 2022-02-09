@@ -24,14 +24,14 @@ public:
 	shared_ptr<Context> current_context;
 	Executor();
 	int exec();
-	// int exec_instruction(shared_ptr<Instruction> &instruction);
-	// void exec_block(shared_ptr<Block> &block);
-	// int exec_expression(shared_ptr<Expression> &expression`);
+	int exec_fcall(FunctionCall *fcall);
+	int exec_expression(Expression *expression);
+	int exec_number(Number *number);
+	void exec_block(Block *block);
+	void exec_instruction(Instruction *instruction);
 	// int exec_operand(shared_ptr<Operand> &operand);
 	// int exec_simple(shared_ptr<SimpleExpression> &simple_expression);
-	// int exec_number(shared_ptr<Number> &number);
 	// int exec_variable(shared_ptr<VariableName> &varibable);
-	// void exec_fcall(shared_ptr<FunctionCall> &fcall);
 	// int exec_lunary(shared_ptr<LeftUnaryOperator> &lunar);
 	// int exec_runary(shared_ptr<RightUnaryOperator> &runar);
 	// int exec_bin(shared_ptr<BinOperator> &bin);
@@ -40,3 +40,5 @@ public:
 	// void exec_if(shared_ptr<If> &ifI);
 	// void exec_while(shared_ptr<While> &whileI);
 };
+
+void PrintContextChain(shared_ptr<Context> ptr);

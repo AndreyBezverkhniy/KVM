@@ -10,6 +10,12 @@ void Context::SetKeyValue(string key,int value){
 bool Context::DeleteKey(string key){
     return variables.erase(key)==0;
 }
+void Context::SetParentContext(shared_ptr<Context> parent){
+    this->parent=parent;
+}
+shared_ptr<Context> Context::GetParentContext(){
+    return parent;
+}
 bool Context::Load(istream &is){
     int size;
     if(!ULoad(is,size)){
