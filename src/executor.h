@@ -28,6 +28,7 @@ public:
 	void exec_block(Block *block);
 	void exec_instruction(Instruction *instruction);
 	int exec_expression(Expression *expression);
+	int exec_bin(BinOperator *bin);
 	int exec_operand(Operand *operand);
 	int exec_lunary(LeftUnaryOperator *lunar);
 	int exec_runary(RightUnaryOperator *runar);
@@ -35,7 +36,6 @@ public:
 	int exec_number(Number *number);
 	int exec_variable(VariableName *varibable);
 	int exec_fcall(FunctionCall *fcall);
-	// int exec_bin(shared_ptr<BinOperator> &bin);
 	// void exec_var(shared_ptr<Var> &var);
 	// void exec_return(shared_ptr<Return> &ret);
 	// void exec_if(shared_ptr<If> &ifI);

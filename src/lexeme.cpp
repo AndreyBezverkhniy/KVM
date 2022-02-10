@@ -23,6 +23,7 @@ bool Lexeme::AddChar(char ch){
 				type=SIGN;
 				state=SLASH;
 				status=EXTENDABLE;
+				str+=ch;
 			} else if(ch==' ' || ch=='\t' || ch=='\n') {
 				type=SPACE;
 				state=SPACERS;
@@ -84,7 +85,6 @@ bool Lexeme::AddChar(char ch){
 				type=SIGN;
 				state=END;
 				status=COMPLITED;
-				str+='/';
 				str+=ch;
 			} else if (ch=='*') {
 				type=INCORRECT;

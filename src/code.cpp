@@ -69,6 +69,7 @@ bool ReadProgramModule(istream &is,Program &program,set<string> modules){
 		return false;
 	}
 	for(auto e:vec){
+		//cout<<"<"<<e.str<<">";
 		cout<<e.ToString();
 	}
 	cout<<endl;
@@ -81,4 +82,3 @@ bool ReadProgramModule(istream &is,Program &program,set<string> modules){
 	}
 	return true;
 }
-	

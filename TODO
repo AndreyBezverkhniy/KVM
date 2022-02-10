@@ -4,11 +4,16 @@ catch var repeatition error
 catch non-exist variable.get() access try error
 catch unary operand inc/dec is not variable error
 comments prefix elimnation
+import chain working dir path
 (Загрузка кода
 	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
+inc/dec unary, bin X= setvalue in context chain
+print context chain to context .h/cpp
 	exec_expression
-		exec_bin
+		exec_lunary inc/dec check existence if variable
+		exec_runary inc/dec check existence if variable
+		exec_bin =,X= operators
 	exec_var
 	exec_return
 	exec_if

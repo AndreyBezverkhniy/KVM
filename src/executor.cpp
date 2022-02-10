@@ -46,7 +46,60 @@ int Executor::exec_expression(Expression *expression){
 	if(auto ptr=dynamic_cast<Operand*>(expression)){
 		return exec_operand(ptr);
 	}
+	if(auto ptr=dynamic_cast<BinOperator*>(expression)){
+		return exec_bin(ptr);
+	}
 	cout<<"incorrect expression"<<endl;
+}
+int Executor::exec_bin(BinOperator *bin){
+	int return_value=0;
+	const string &operation=bin->operation;
+	int left=exec_expression(bin->left.get());
+	int right=exec_expression(bin->right.get());
+	if(operation=="+"){
+		return_value=left+right;
+	} else if(operation=="-"){
+		return_value=left-right;
+	} else if(operation=="*"){
+		return_value=left*right;
+	} else if(operation=="/"){
+		return_value=left/right;
+	} else if(operation=="%"){
+		return_value=left%right;
+	} else if(operation=="%"){
+		return_value=left+right;
+	} else if(operation=="<"){
+		return_value=left<right;
+	} else if(operation==">"){
+		return_value=left>right;
+	} else if(operation=="=="){
+		return_value=left==right;
+	} else if(operation=="!="){
+		return_value=left!=right;
+	} else if(operation=="<="){
+		return_value=left<=right;
+	} else if(operation==">="){
+		return_value=left>=right;
+	} else if(operation=="&&"){
+		return_value=left&&right;
+	} else if(operation=="||"){
+		return_value=left||right;
+	} else if(operation=="="){
+		return_value=left+right;///
+	} else if(operation=="+="){
+		return_value=left+right;///
+	} else if(operation=="-="){
+		return_value=left+right;///
+	} else if(operation=="*="){
+		return_value=left+right;///
+	} else if(operation=="/="){
+		return_value=left+right;///
+	} else if(operation=="%="){
+		return_value=left+right;///
+	} else {
+		cout<<"unknown lunary"<<endl;
+	}
+	return return_value;
 }
 int Executor::exec_operand(Operand *operand){
 	if(auto ptr=dynamic_cast<SimpleExpression*>(operand)){
