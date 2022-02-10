@@ -43,10 +43,75 @@ void Executor::exec_block(Block *block){
 	current_context=current_context->GetParentContext();
 }
 int Executor::exec_expression(Expression *expression){
-	if(auto ptr=dynamic_cast<SimpleExpression*>(expression)){
-		return exec_simple(ptr);
+	if(auto ptr=dynamic_cast<Operand*>(expression)){
+		return exec_operand(ptr);
 	}
 	cout<<"incorrect expression"<<endl;
+}
+int Executor::exec_operand(Operand *operand){
+	if(auto ptr=dynamic_cast<SimpleExpression*>(operand)){
+		return exec_simple(ptr);
+	}
+	if(auto ptr=dynamic_cast<LeftUnaryOperator*>(operand)){
+		return exec_lunary(ptr);
+	}
+	if(auto ptr=dynamic_cast<RightUnaryOperator*>(operand)){
+		return exec_runary(ptr);
+	}
+	cout<<"incorrect operand"<<endl;
+}
+int Executor::exec_lunary(LeftUnaryOperator *lunar){
+	int return_value;
+	const string &operation=lunar->operation;
+	if(operation=="++" || operation=="--"){
+		auto variable=dynamic_cast<VariableName*>(lunar->operand.get());
+		if(!variable){
+			cout<<"lunary operator inc/dec: operand is not a variable"<<endl;
+			return 0;
+		}
+		string name=variable->name;
+		int old_value=current_context->GetValue(name);
+		if(operation=="++"){
+			current_context->SetKeyValue(name,old_value+1);
+			return_value=old_value+1;
+		} else {
+			current_context->SetKeyValue(name,old_value-1);
+			return_value=old_value-1;
+		}
+	} else {
+		return_value=exec_expression(lunar->operand.get());
+		if(operation=="+"){
+			return_value=return_value;
+		} else if(operation=="-"){
+			return_value=-return_value;
+		} else if(operation=="!"){
+			return_value=(return_value?0:1);
+		} else {
+			cout<<"unknown lunary"<<endl;
+		}
+	}
+	return return_value;
+}
+int Executor::exec_runary(RightUnaryOperator *runar){
+	int return_value;
+	const string &operation=runar->operation;
+	auto variable=dynamic_cast<VariableName*>(runar->operand.get());
+	if(!variable){
+		cout<<"runary operator inc/dec: operand is not a variable"<<endl;
+		return 0;
+	}
+	string name=variable->name;
+	int old_value=current_context->GetValue(name);
+	if(operation=="++"){
+		current_context->SetKeyValue(name,old_value+1);
+		return_value=old_value;
+	} else if (operation=="--"){
+		current_context->SetKeyValue(name,old_value-1);
+		return_value=old_value;
+	} else {
+		cout<<"unknown lunary"<<endl;
+	}
+	return return_value;
 }
 int Executor::exec_simple(SimpleExpression *simple){
 	if(auto ptr=dynamic_cast<Number*>(simple)){

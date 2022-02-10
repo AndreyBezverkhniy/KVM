@@ -1,13 +1,13 @@
+check catching global repeatition error
+check catching arguments repeatition error
 catch var repeatition error
-catch non-exist variable.get() access try
+catch non-exist variable.get() access try error
+catch unary operand inc/dec is not variable error
 comments prefix elimnation
 (Загрузка кода
 	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
 	exec_expression
-		exec_operand
-			exec_lunary
-			exec_runary
 		exec_bin
 	exec_var
 	exec_return

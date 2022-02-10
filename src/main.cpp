@@ -24,13 +24,22 @@ int main(int argc, char* argv[]) {
 	string text=" \
 global a=1, c=10; \
 function main(a,b){ \
-	123; \
+	+123; \
+	-c; \
+	!0; \
+	!123; \
+	++a; \
 	a; \
-	c; \
-	d; \
-	f(4); \
+	--a; \
+	a; \
+	++1; \
+	1000000; \
+	123++; \
+	a++; \
+	a; \
+	a--; \
+	a; \
 } \
-function f(a){a;} \
 ";
 
 	cout<<text<<endl;

@@ -28,13 +28,13 @@ public:
 	void exec_block(Block *block);
 	void exec_instruction(Instruction *instruction);
 	int exec_expression(Expression *expression);
+	int exec_operand(Operand *operand);
+	int exec_lunary(LeftUnaryOperator *lunar);
+	int exec_runary(RightUnaryOperator *runar);
 	int exec_simple(SimpleExpression *simple_expression);
 	int exec_number(Number *number);
 	int exec_variable(VariableName *varibable);
 	int exec_fcall(FunctionCall *fcall);
-	// int exec_operand(shared_ptr<Operand> &operand);
-	// int exec_lunary(shared_ptr<LeftUnaryOperator> &lunar);
-	// int exec_runary(shared_ptr<RightUnaryOperator> &runar);
 	// int exec_bin(shared_ptr<BinOperator> &bin);
 	// void exec_var(shared_ptr<Var> &var);
 	// void exec_return(shared_ptr<Return> &ret);
