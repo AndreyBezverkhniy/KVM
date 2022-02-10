@@ -7,15 +7,18 @@
 using namespace std;
 
 class Context{
-public:
+private:
 	shared_ptr<Context> parent;
 	map<string,int> variables;
-	bool Have(string key) const;
+	Context* GetContextByVariableName(string name);
+public:
+	bool Have(string key);
 	void SetKeyValue(string key,int value);
-	int GetValue(string key);
-	bool DeleteKey(string key);
+	bool SetValueInChain(string key,int value);
+	int GetValueInChain(string key);
 	void SetParentContext(shared_ptr<Context> parent);
 	shared_ptr<Context> GetParentContext();
 	bool Load(istream &is);
 	bool Save(ostream &os) const;
+	friend void PrintContextChain(shared_ptr<Context> ptr);
 };

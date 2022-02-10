@@ -41,5 +41,3 @@ public:
 	// void exec_if(shared_ptr<If> &ifI);
 	// void exec_while(shared_ptr<While> &whileI);
 };
-
-void PrintContextChain(shared_ptr<Context> ptr);

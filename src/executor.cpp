@@ -123,7 +123,7 @@ int Executor::exec_lunary(LeftUnaryOperator *lunar){
 			return 0;
 		}
 		string name=variable->name;
-		int old_value=current_context->GetValue(name);
+		int old_value=current_context->GetValueInChain(name);
 		if(operation=="++"){
 			current_context->SetKeyValue(name,old_value+1);
 			return_value=old_value+1;
@@ -154,7 +154,7 @@ int Executor::exec_runary(RightUnaryOperator *runar){
 		return 0;
 	}
 	string name=variable->name;
-	int old_value=current_context->GetValue(name);
+	int old_value=current_context->GetValueInChain(name);
 	if(operation=="++"){
 		current_context->SetKeyValue(name,old_value+1);
 		return_value=old_value;
@@ -189,7 +189,7 @@ int Executor::exec_variable(VariableName *variable){
 	while(context){
 		if(context->Have(name)){
 			name_exist=true;
-			value=context->GetValue(name);
+			value=context->GetValueInChain(name);
 			break;
 		}
 		context=context->GetParentContext();
@@ -212,16 +212,4 @@ int Executor::exec_fcall(FunctionCall *fcall){
 	exec_block(program.functions[fcall->signature].block.get());
 	current_context=old_current_context;
 	return return_value;
-}
-void PrintContextChain(shared_ptr<Context> ptr){
-	if(!ptr){
-		cout<<"Null Context Pointer"<<endl;
-		return;
-	}
-	PrintContextChain(ptr->parent);
-	cout<<"{ ";
-	for(auto e:ptr->variables){
-		cout<<e.first<<"="<<e.second<<" ";
-	}
-	cout<<"}"<<endl;
 }

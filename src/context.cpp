@@ -1,17 +1,30 @@
 #include "context.h"
 #include "utils.h"
 
-bool Context::Have(string key) const {
-    return variables.find(key)!=variables.end();
+Context* Context::GetContextByVariableName(string key){
+    if(variables.find(key)!=variables.end()){
+        return this;
+    }
+    if(parent){
+        return parent->GetContextByVariableName(key);
+    }
+    return nullptr;
+}
+bool Context::Have(string key){
+    return GetContextByVariableName(key)!=nullptr;
 }
 void Context::SetKeyValue(string key,int value){
     variables[key]=value;
 }
-int Context::GetValue(string key){
-    return variables[key];
+bool Context::SetValueInChain(string key,int value){
+    if(auto ptr=GetContextByVariableName(key)){
+		ptr->variables[key]=value;
+		return true;
+	}
+	return false;
 }
-bool Context::DeleteKey(string key){
-    return variables.erase(key)==0;
+int Context::GetValueInChain(string key){
+    return GetContextByVariableName(key)->variables[key];
 }
 void Context::SetParentContext(shared_ptr<Context> parent){
     this->parent=parent;
@@ -50,4 +63,16 @@ bool Context::Save(ostream &os) const {
         }
     }
     return true;
+}
+void PrintContextChain(shared_ptr<Context> ptr){
+	if(!ptr){
+		cout<<"Null Context Pointer"<<endl;
+		return;
+	}
+	PrintContextChain(ptr->parent);
+	cout<<"{ ";
+	for(auto e:ptr->variables){
+		cout<<e.first<<"="<<e.second<<" ";
+	}
+	cout<<"}"<<endl;
 }
