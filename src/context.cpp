@@ -7,6 +7,9 @@ bool Context::Have(string key) const {
 void Context::SetKeyValue(string key,int value){
     variables[key]=value;
 }
+int Context::GetValue(string key){
+    return variables[key];
+}
 bool Context::DeleteKey(string key){
     return variables.erase(key)==0;
 }

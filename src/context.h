@@ -12,6 +12,7 @@ public:
 	map<string,int> variables;
 	bool Have(string key) const;
 	void SetKeyValue(string key,int value);
+	int GetValue(string key);
 	bool DeleteKey(string key);
 	void SetParentContext(shared_ptr<Context> parent);
 	shared_ptr<Context> GetParentContext();

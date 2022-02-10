@@ -25,7 +25,61 @@ int Executor::exec(){
 	return 0;
 }
 void Executor::exec_instruction(Instruction *instruction){
+	if(auto ptr=dynamic_cast<Expression*>(instruction)){
+		/*return/**/ cout<<exec_expression(ptr)<<endl;
+		return;
+	}
 	cout<<"instruction: no handler"<<endl;
+}
+void Executor::exec_block(Block *block){
+	shared_ptr<Context> block_context=make_shared<Context>();
+	block_context->SetParentContext(current_context);
+	current_context=block_context;
+	// PrintContextChain(current_context);
+	// handle block
+	for(shared_ptr<Instruction> instruction:block->instructions){
+		exec_instruction(instruction.get());
+	}
+	current_context=current_context->GetParentContext();
+}
+int Executor::exec_expression(Expression *expression){
+	if(auto ptr=dynamic_cast<SimpleExpression*>(expression)){
+		return exec_simple(ptr);
+	}
+	cout<<"incorrect expression"<<endl;
+}
+int Executor::exec_simple(SimpleExpression *simple){
+	if(auto ptr=dynamic_cast<Number*>(simple)){
+		return exec_number(ptr);
+	}
+	if(auto ptr=dynamic_cast<VariableName*>(simple)){
+		return exec_variable(ptr);
+	}
+	if(auto ptr=dynamic_cast<FunctionCall*>(simple)){
+		return exec_fcall(ptr);
+	}
+	cout<<"incorrect simple"<<endl;
+}
+int Executor::exec_number(Number *number){
+	return number->n;
+}
+int Executor::exec_variable(VariableName *variable){
+	int value;
+	shared_ptr<Context> context=current_context;
+	bool name_exist=false;
+	string &name=variable->name;
+	while(context){
+		if(context->Have(name)){
+			name_exist=true;
+			value=context->GetValue(name);
+			break;
+		}
+		context=context->GetParentContext();
+	}
+	if(!name_exist){
+		cout<<"try to access variable by unknown name "<<variable->name<<endl;
+	}
+	return value;
 }
 int Executor::exec_fcall(FunctionCall *fcall){
 	int return_value=0;
@@ -35,27 +89,11 @@ int Executor::exec_fcall(FunctionCall *fcall){
 		arguments_context->SetKeyValue(arg_names[i],exec_expression(fcall->arguments[i].get()));
 	}
 	arguments_context->SetParentContext(global_context);
+	shared_ptr<Context> old_current_context=current_context;
 	current_context=arguments_context;
 	exec_block(program.functions[fcall->signature].block.get());
-	current_context=current_context->GetParentContext();
+	current_context=old_current_context;
 	return return_value;
-}
-void Executor::exec_block(Block *block){
-	shared_ptr<Context> block_context=make_shared<Context>();
-	block_context->SetParentContext(current_context);
-	current_context=block_context;
-	PrintContextChain(current_context);
-	// handle block
-	for(shared_ptr<Instruction> instruction:block->instructions){
-		exec_instruction(instruction.get());
-	}
-	current_context=current_context->GetParentContext();
-}
-int Executor::exec_expression(Expression *expression){
-	return exec_number(dynamic_cast<Number*>(expression));
-}
-int Executor::exec_number(Number *number){
-	return number->n;
 }
 void PrintContextChain(shared_ptr<Context> ptr){
 	if(!ptr){

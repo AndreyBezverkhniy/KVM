@@ -1,12 +1,11 @@
 catch var repeatition error
+catch non-exist variable.get() access try
 comments prefix elimnation
 (Загрузка кода
 	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
 	exec_expression
 		exec_operand
-			exec_simple
-				exec_variable
 			exec_lunary
 			exec_runary
 		exec_bin

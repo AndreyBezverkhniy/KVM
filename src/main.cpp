@@ -21,11 +21,19 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	string text=	"global a=1, c=10; \
-					function main(a,b){ \
-						++0+1--; \
-					}";
+	string text=" \
+global a=1, c=10; \
+function main(a,b){ \
+	123; \
+	a; \
+	c; \
+	d; \
+	f(4); \
+} \
+function f(a){a;} \
+";
 
+	cout<<text<<endl;
 	istringstream is(text);
 	Executor executor;
 	if(!ReadProgram(is,executor.program)){
