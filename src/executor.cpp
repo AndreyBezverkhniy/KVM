@@ -19,7 +19,8 @@ int Executor::exec(){
 	for(int i=0;i<main_signature.arg_n;i++){
 		main_call->arguments.push_back(make_shared<Number>(0));
 	}
-	current_context=make_shared<Context>(program.global);
+	global_context=make_shared<Context>(program.global);
+	current_context=global_context;
 	exec_fcall(main_call.get());
 	return 0;
 }
@@ -33,7 +34,7 @@ int Executor::exec_fcall(FunctionCall *fcall){
 	for(int i=0;i<arg_names.size();i++){
 		arguments_context->SetKeyValue(arg_names[i],exec_expression(fcall->arguments[i].get()));
 	}
-	arguments_context->SetParentContext(current_context);
+	arguments_context->SetParentContext(global_context);
 	current_context=arguments_context;
 	exec_block(program.functions[fcall->signature].block.get());
 	current_context=current_context->GetParentContext();

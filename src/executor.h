@@ -22,6 +22,7 @@ class Executor{
 public:
 	Program program;
 	shared_ptr<Context> current_context;
+	shared_ptr<Context> global_context;
 	Executor();
 	int exec();
 	int exec_fcall(FunctionCall *fcall);
