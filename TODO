@@ -12,9 +12,5 @@ import chain working dir path
 			check is left operand a variable
 			check existence if variable then set
 	exec_var
-	exec_return
-		check f() {no ret}
-		check f() {ret 2}
-		check f() {ret 2*g(){ret 10}}
 	exec_instruction
 	exec_fcall встроенные ф-ции

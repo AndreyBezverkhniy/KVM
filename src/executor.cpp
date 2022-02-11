@@ -1,4 +1,5 @@
 #include "executor.h"
+#include "return_exception.h"
 
 Executor::Executor(){}
 int Executor::exec(){
@@ -33,6 +34,8 @@ void Executor::exec_instruction(Instruction *instruction){
 		exec_if(ptr);
 	} else if(auto ptr=dynamic_cast<While*>(instruction)){
 		exec_while(ptr);
+	} else if(auto ptr=dynamic_cast<Return*>(instruction)){
+		exec_return(ptr);
 	} else {
 		cout<<"instruction: no handler"<<endl;
 	}
@@ -61,6 +64,10 @@ void Executor::exec_while(While *whileI){
 	while(condition=exec_expression(whileI->condition.get())){
 		exec_instruction(whileI->instruction.get());
 	}
+}
+void Executor::exec_return(Return *ret){
+	int value=exec_expression(ret->expression.get());
+	throw ReturnException(value);
 }
 int Executor::exec_expression(Expression *expression){
 	if(auto ptr=dynamic_cast<Operand*>(expression)){
@@ -237,7 +244,11 @@ int Executor::exec_fcall(FunctionCall *fcall){
 	arguments_context->SetParentContext(global_context);
 	shared_ptr<Context> old_current_context=current_context;
 	current_context=arguments_context;
-	exec_block(program.functions[fcall->signature].block.get());
+	try{
+		exec_block(program.functions[fcall->signature].block.get());
+	} catch(ReturnException e){
+		return_value=e.GetValue();
+	}
 	current_context=old_current_context;
 	return return_value;
 }

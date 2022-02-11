@@ -29,6 +29,7 @@ public:
 	void exec_block(Block *block);
 	void exec_if(If *ifI);
 	void exec_while(While *whileI);
+	void exec_return(Return *ret);
 	int exec_expression(Expression *expression);
 	int exec_bin(BinOperator *bin);
 	int exec_operand(Operand *operand);
@@ -39,5 +40,4 @@ public:
 	int exec_variable(VariableName *varibable);
 	int exec_fcall(FunctionCall *fcall);
 	// void exec_var(shared_ptr<Var> &var);
-	// void exec_return(shared_ptr<Return> &ret);
 };

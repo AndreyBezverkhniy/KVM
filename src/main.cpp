@@ -24,19 +24,17 @@ int main(int argc, char* argv[]) {
 	string text=" \
 global a=1, c=3; \
 function main(a,b){ \
-	while(c>0){ \
-		--c; \
-	} \
-	--a; \
-	a; \
-	{--a;a;} \
-	a; \
-	--d; \
-	d++; \
-	a++; \
-	a; \
+	f1(); \
+	f2(); \
+	f3(); \
+	f4(); \
 } \
- // oneline comment ";
+function f1(){} \
+function f2(){return;} \
+function f3(){return 10+10;} \
+function f4(){return 2*f41()*2;} \
+function f41(){return 41;} \
+";
 
 	cout<<text<<endl;
 	istringstream is(text);
