@@ -22,11 +22,15 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	string text=" \
-global a=1, c=10; \
+global a=1, c=3; \
 function main(a,b){ \
-	while(1){ \
-		1000; \
+	while(c>0){ \
+		--c; \
 	} \
+	--a; \
+	a; \
+	{--a;a;} \
+	a; \
 } \
  // oneline comment ";
 

@@ -143,12 +143,16 @@ int Executor::exec_lunary(LeftUnaryOperator *lunar){
 			return 0;
 		}
 		string name=variable->name;
+		if(!current_context->Have(name)){
+			cout<<"lunary operator inc/dec: variable is not exist"<<endl;
+			return 0;
+		}
 		int old_value=current_context->GetValueInChain(name);
 		if(operation=="++"){
-			current_context->SetKeyValue(name,old_value+1);
+			current_context->SetValueInChain(name,old_value+1);
 			return_value=old_value+1;
 		} else {
-			current_context->SetKeyValue(name,old_value-1);
+			current_context->SetValueInChain(name,old_value-1);
 			return_value=old_value-1;
 		}
 	} else {

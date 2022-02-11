@@ -8,9 +8,10 @@ import chain working dir path
 	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
 	exec_expression
-		exec_lunary inc/dec check existence if variable then set
 		exec_runary inc/dec check existence if variable then set
 		exec_bin =,X= operators
+			check is left operand a variable
+			check existence if variable then set
 	exec_var
 	exec_return
 		check f() {no ret}
