@@ -29,6 +29,8 @@ void Executor::exec_instruction(Instruction *instruction){
 		cout<<exec_expression(ptr)<<endl;
 	} else if(auto ptr=dynamic_cast<Block*>(instruction)){
 		exec_block(ptr);
+	} else if(auto ptr=dynamic_cast<If*>(instruction)){
+		exec_if(ptr);
 	} else {
 		cout<<"instruction: no handler"<<endl;
 	}
@@ -43,6 +45,14 @@ void Executor::exec_block(Block *block){
 		exec_instruction(instruction.get());
 	}
 	current_context=current_context->GetParentContext();
+}
+void Executor::exec_if(If *ifI){
+	int condition=exec_expression(ifI->condition.get());
+	if(condition){
+		exec_instruction(ifI->instructionTrue.get());
+	} else if(ifI->instructionFalse){
+		exec_instruction(ifI->instructionFalse.get());
+	}
 }
 int Executor::exec_expression(Expression *expression){
 	if(auto ptr=dynamic_cast<Operand*>(expression)){

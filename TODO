@@ -16,10 +16,6 @@ import chain working dir path
 		check f() {no ret}
 		check f() {ret 2}
 		check f() {ret 2*g(){ret 10}}
-	exec_if
-		check if
-		check if else
-		check if else if else
 	exec_while
 		check loop 10 to 0
 	exec_instruction
