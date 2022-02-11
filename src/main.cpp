@@ -24,11 +24,9 @@ int main(int argc, char* argv[]) {
 	string text=" \
 global a=1, c=10; \
 function main(a,b){ \
-	if(10)1; \
-	if(0)2; \
-	if(0)3;else 4; \
-	if(0)5;else if(1)6; \
-	if(0)7;else if(0)8;else 9; \
+	while(1){ \
+		1000; \
+	} \
 } \
  // oneline comment ";
 

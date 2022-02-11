@@ -16,7 +16,5 @@ import chain working dir path
 		check f() {no ret}
 		check f() {ret 2}
 		check f() {ret 2*g(){ret 10}}
-	exec_while
-		check loop 10 to 0
 	exec_instruction
 	exec_fcall встроенные ф-ции

@@ -31,6 +31,8 @@ void Executor::exec_instruction(Instruction *instruction){
 		exec_block(ptr);
 	} else if(auto ptr=dynamic_cast<If*>(instruction)){
 		exec_if(ptr);
+	} else if(auto ptr=dynamic_cast<While*>(instruction)){
+		exec_while(ptr);
 	} else {
 		cout<<"instruction: no handler"<<endl;
 	}
@@ -52,6 +54,12 @@ void Executor::exec_if(If *ifI){
 		exec_instruction(ifI->instructionTrue.get());
 	} else if(ifI->instructionFalse){
 		exec_instruction(ifI->instructionFalse.get());
+	}
+}
+void Executor::exec_while(While *whileI){
+	int condition;
+	while(condition=exec_expression(whileI->condition.get())){
+		exec_instruction(whileI->instruction.get());
 	}
 }
 int Executor::exec_expression(Expression *expression){
