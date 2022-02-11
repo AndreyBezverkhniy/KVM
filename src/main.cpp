@@ -24,13 +24,13 @@ int main(int argc, char* argv[]) {
 	string text=" \
 global a=1, c=10; \
 function main(a,b){ \
-	{ \
+	{ /* multiline comment ** /**/ \
 		++a; \
 		a; \
 	} \
 	a; \
 } \
-";
+ // oneline comment ";
 
 	cout<<text<<endl;
 	istringstream is(text);

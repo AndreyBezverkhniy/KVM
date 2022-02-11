@@ -81,6 +81,7 @@ bool Lexeme::AddChar(char ch){
 				type=ONELINE_COMMENT;
 				state=SLASH_SLASH_X;
 				status=EXTENDABLE;
+				str="";
 			} else if (ch=='=') {
 				type=SIGN;
 				state=END;
@@ -90,6 +91,7 @@ bool Lexeme::AddChar(char ch){
 				type=INCORRECT;
 				state=SLASH_STAR_X;
 				status=NOT_COMPLITED;
+				str="";
 			} else {
 				return false;
 			}
@@ -101,6 +103,8 @@ bool Lexeme::AddChar(char ch){
 				type=INCORRECT;
 				state=SLASH_STAR_X_STAR;
 				status=NOT_COMPLITED;
+			} else {
+				str+=ch;
 			}
 			return true;
 		}

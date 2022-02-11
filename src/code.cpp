@@ -15,34 +15,34 @@ bool ReadFile(string path,vector<Lexeme> &vec){
 	return success;
 }
 bool ReadFile(istream &is,vector<Lexeme> &vec){
-	Lexeme literal;
+	Lexeme lexeme;
 	int ch;
 	while((ch=is.get(),is.good())){
-		if(!literal.AddChar(ch)){
-			if(literal.IsEmpty() || !literal.IsReady()){
+		if(!lexeme.AddChar(ch)){
+			if(lexeme.IsEmpty() || !lexeme.IsReady()){
 				return false;
 			}
-			if(literal.type!=SPACE && literal.type!=ONELINE_COMMENT &&
-			literal.type!=MULTILINE_COMMENT){
-				vec.push_back(literal);
+			if(lexeme.type!=SPACE && lexeme.type!=ONELINE_COMMENT &&
+			lexeme.type!=MULTILINE_COMMENT){
+				vec.push_back(lexeme);
 			}
-			literal.Clean();
-			if(!literal.AddChar(ch)){
+			lexeme.Clean();
+			if(!lexeme.AddChar(ch)){
 				return false;
 			}
 		}
 	}
-	if(!literal.IsEmpty()){
-		if(!literal.IsReady()){
+	if(!lexeme.IsEmpty()){
+		if(!lexeme.IsReady()){
 			return false;
 		}
-		if(literal.type!=SPACE && literal.type!=ONELINE_COMMENT &&
-			literal.type!=MULTILINE_COMMENT){
-			vec.push_back(literal);
+		if(lexeme.type!=SPACE && lexeme.type!=ONELINE_COMMENT &&
+			lexeme.type!=MULTILINE_COMMENT){
+			vec.push_back(lexeme);
 		}
 	}
-	literal.Clean();
-	vec.push_back(literal);
+	lexeme.Clean();
+	vec.push_back(lexeme);
     return true;
 }
 bool ReadProgram(string module_path,Program &program){
@@ -69,7 +69,6 @@ bool ReadProgramModule(istream &is,Program &program,set<string> modules){
 		return false;
 	}
 	for(auto e:vec){
-		//cout<<"<"<<e.str<<">";
 		cout<<e.ToString();
 	}
 	cout<<endl;

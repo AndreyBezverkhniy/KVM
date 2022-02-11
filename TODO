@@ -3,7 +3,6 @@ check catching arguments repeatition error
 catch var repeatition error
 catch non-exist variable.get() access try error
 catch unary operand inc/dec is not variable error
-comments prefix elimnation
 import chain working dir path
 (Загрузка кода
 	встроенные функции: запрещённые сигнатуры функций
