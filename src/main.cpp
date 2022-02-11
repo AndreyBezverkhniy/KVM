@@ -24,16 +24,17 @@ int main(int argc, char* argv[]) {
 	string text=" \
 global a=1, c=3; \
 function main(a,b){ \
-	f1(); \
-	f2(); \
-	f3(); \
-	f4(); \
+	var x=14; \
+	{ \
+		x+2; \
+		{ \
+			var x=10; \
+			x; \
+		} \
+		++x; \
+	} \
+	x; \
 } \
-function f1(){} \
-function f2(){return;} \
-function f3(){return 10+10;} \
-function f4(){return 2*f41()*2;} \
-function f41(){return 41;} \
 ";
 
 	cout<<text<<endl;

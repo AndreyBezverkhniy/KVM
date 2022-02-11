@@ -36,6 +36,8 @@ void Executor::exec_instruction(Instruction *instruction){
 		exec_while(ptr);
 	} else if(auto ptr=dynamic_cast<Return*>(instruction)){
 		exec_return(ptr);
+	} else if(auto ptr=dynamic_cast<Var*>(instruction)){
+		exec_var(ptr);
 	} else {
 		cout<<"instruction: no handler"<<endl;
 	}
@@ -68,6 +70,13 @@ void Executor::exec_while(While *whileI){
 void Executor::exec_return(Return *ret){
 	int value=exec_expression(ret->expression.get());
 	throw ReturnException(value);
+}
+void Executor::exec_var(Var *var){
+	for(auto e:var->declarations){
+		string &name=e.first;
+		int value=exec_expression(e.second.get());
+		current_context->SetValueInContext(name,value);
+	}
 }
 int Executor::exec_expression(Expression *expression){
 	if(auto ptr=dynamic_cast<Operand*>(expression)){

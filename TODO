@@ -11,6 +11,4 @@ import chain working dir path
 		exec_bin =,X= operators
 			check is left operand a variable
 			check existence if variable then set
-	exec_var
-	exec_instruction
 	exec_fcall встроенные ф-ции

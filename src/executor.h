@@ -30,6 +30,7 @@ public:
 	void exec_if(If *ifI);
 	void exec_while(While *whileI);
 	void exec_return(Return *ret);
+	void exec_var(Var *var);
 	int exec_expression(Expression *expression);
 	int exec_bin(BinOperator *bin);
 	int exec_operand(Operand *operand);
@@ -39,5 +40,4 @@ public:
 	int exec_number(Number *number);
 	int exec_variable(VariableName *varibable);
 	int exec_fcall(FunctionCall *fcall);
-	// void exec_var(shared_ptr<Var> &var);
 };
