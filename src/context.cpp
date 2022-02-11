@@ -13,7 +13,7 @@ Context* Context::GetContextByVariableName(string key){
 bool Context::Have(string key){
     return GetContextByVariableName(key)!=nullptr;
 }
-void Context::SetKeyValue(string key,int value){
+void Context::SetValueInContext(string key,int value){
     variables[key]=value;
 }
 bool Context::SetValueInChain(string key,int value){
@@ -46,7 +46,7 @@ bool Context::Load(istream &is){
         if(!ULoad(is,value)){
             return false;
         }
-        SetKeyValue(key,value);
+        SetValueInContext(key,value);
     }
     return true;
 }

@@ -178,12 +178,16 @@ int Executor::exec_runary(RightUnaryOperator *runar){
 		return 0;
 	}
 	string name=variable->name;
+	if(!current_context->Have(name)){
+		cout<<"runary operator inc/dec: variable is not exist"<<endl;
+		return 0;
+	}
 	int old_value=current_context->GetValueInChain(name);
 	if(operation=="++"){
-		current_context->SetKeyValue(name,old_value+1);
+		current_context->SetValueInChain(name,old_value+1);
 		return_value=old_value;
 	} else if (operation=="--"){
-		current_context->SetKeyValue(name,old_value-1);
+		current_context->SetValueInChain(name,old_value-1);
 		return_value=old_value;
 	} else {
 		cout<<"unknown lunary"<<endl;
@@ -228,7 +232,7 @@ int Executor::exec_fcall(FunctionCall *fcall){
 	shared_ptr<Context> arguments_context=make_shared<Context>();
 	const vector<string> &arg_names=program.functions[fcall->signature].argument_names;
 	for(int i=0;i<arg_names.size();i++){
-		arguments_context->SetKeyValue(arg_names[i],exec_expression(fcall->arguments[i].get()));
+		arguments_context->SetValueInContext(arg_names[i],exec_expression(fcall->arguments[i].get()));
 	}
 	arguments_context->SetParentContext(global_context);
 	shared_ptr<Context> old_current_context=current_context;

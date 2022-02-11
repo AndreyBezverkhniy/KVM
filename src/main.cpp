@@ -31,6 +31,10 @@ function main(a,b){ \
 	a; \
 	{--a;a;} \
 	a; \
+	--d; \
+	d++; \
+	a++; \
+	a; \
 } \
  // oneline comment ";
 

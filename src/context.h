@@ -13,7 +13,7 @@ private:
 	Context* GetContextByVariableName(string name);
 public:
 	bool Have(string key);
-	void SetKeyValue(string key,int value);
+	void SetValueInContext(string key,int value);
 	bool SetValueInChain(string key,int value);
 	int GetValueInChain(string key);
 	void SetParentContext(shared_ptr<Context> parent);

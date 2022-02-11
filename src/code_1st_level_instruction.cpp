@@ -52,7 +52,7 @@ bool ReadGlobal(const vector<Lexeme> &vec,int &index,Program &program){
 		if(program.global.Have(identifier)){
 			return false;
 		}
-		program.global.SetKeyValue(identifier,init_value);
+		program.global.SetValueInContext(identifier,init_value);
 		if(vec[new_index]!=","){
 			break;
 		}
