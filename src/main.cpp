@@ -24,7 +24,11 @@ int main(int argc, char* argv[]) {
 	string text=" \
 global a=1, c=10; \
 function main(a,b){ \
-	1>2; \
+	{ \
+		++a; \
+		a; \
+	} \
+	a; \
 } \
 ";
 

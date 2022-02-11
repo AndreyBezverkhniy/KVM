@@ -26,10 +26,12 @@ int Executor::exec(){
 }
 void Executor::exec_instruction(Instruction *instruction){
 	if(auto ptr=dynamic_cast<Expression*>(instruction)){
-		/*return/**/ cout<<exec_expression(ptr)<<endl;
-		return;
+		cout<<exec_expression(ptr)<<endl;
+	} else if(auto ptr=dynamic_cast<Block*>(instruction)){
+		exec_block(ptr);
+	} else {
+		cout<<"instruction: no handler"<<endl;
 	}
-	cout<<"instruction: no handler"<<endl;
 }
 void Executor::exec_block(Block *block){
 	shared_ptr<Context> block_context=make_shared<Context>();
