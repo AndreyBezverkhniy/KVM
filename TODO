@@ -1,14 +1,14 @@
-check catching global repeatition error
 check catching arguments repeatition error
+check catching global repeatition error
 catch var repeatition error
-catch non-exist variable.get() access try error
+catch non-exist variable get access try error
+catch non-exist variable set access try error
 catch unary operand inc/dec is not variable error
+catch =,X= left operand is not variable error
+catch call of non-existing function error
 import chain working dir path
 (Загрузка кода
 	встроенные функции: запрещённые сигнатуры функций
 (Выполнение дерева программы
-	exec_expression
-		exec_bin =,X= operators
-			check is left operand a variable
-			check existence if variable then set
 	exec_fcall встроенные ф-ции
+

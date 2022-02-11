@@ -24,16 +24,23 @@ int main(int argc, char* argv[]) {
 	string text=" \
 global a=1, c=3; \
 function main(a,b){ \
-	var x=14; \
+	var x=1; \
+	x=2; \
 	{ \
-		x+2; \
-		{ \
-			var x=10; \
-			x; \
-		} \
-		++x; \
+		x=14; \
+		x; \
+		var x=1; \
+		x; \
 	} \
 	x; \
+	1000; \
+	x=1; \
+	x+=1; \
+	x-=4; \
+	x*=-2; \
+	x/=2; \
+	x=x+5; \
+	x%=3; \
 } \
 ";
 

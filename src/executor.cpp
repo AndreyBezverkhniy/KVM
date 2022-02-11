@@ -120,20 +120,35 @@ int Executor::exec_bin(BinOperator *bin){
 		return_value=left&&right;
 	} else if(operation=="||"){
 		return_value=left||right;
-	} else if(operation=="="){
-		return_value=left+right;///
-	} else if(operation=="+="){
-		return_value=left+right;///
-	} else if(operation=="-="){
-		return_value=left+right;///
-	} else if(operation=="*="){
-		return_value=left+right;///
-	} else if(operation=="/="){
-		return_value=left+right;///
-	} else if(operation=="%="){
-		return_value=left+right;///
-	} else {
-		cout<<"unknown lunary"<<endl;
+	} else if(operation[operation.size()-1]=='='){
+		auto variable=dynamic_cast<VariableName*>(bin->left.get());
+		if(!variable){
+			cout<<"bin operator =/X=: operand is not a variable"<<endl;
+			return 0;
+		}
+		string name=variable->name;
+		if(!current_context->Have(name)){
+			cout<<"bin operator =/X=: variable is not exist"<<endl;
+			return 0;
+		}
+		int left=current_context->GetValueInChain(name);
+		int right=exec_expression(bin->right.get());
+		if(operation=="="){
+			return_value=right;
+		} else if(operation=="+="){
+			return_value=left+right;
+		} else if(operation=="-="){
+			return_value=left-right;
+		} else if(operation=="*="){
+			return_value=left*right;
+		} else if(operation=="/="){
+			return_value=left/right;
+		} else if(operation=="%="){
+			return_value=left%right;
+		} else {
+			cout<<"unknown lunary"<<endl;
+		}
+		current_context->SetValueInChain(name,return_value);
 	}
 	return return_value;
 }
