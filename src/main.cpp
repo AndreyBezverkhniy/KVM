@@ -22,25 +22,9 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	string text=" \
-global a=1, c=3; \
-function main(a,b){ \
-	var x=1; \
-	x=2; \
-	{ \
-		x=14; \
-		x; \
-		var x=1; \
-		x; \
-	} \
-	x; \
-	1000; \
-	x=1; \
-	x+=1; \
-	x-=4; \
-	x*=-2; \
-	x/=2; \
-	x=x+5; \
-	x%=3; \
+function main(){ \
+	var x=read(); \
+	write(x); \
 } \
 ";
 

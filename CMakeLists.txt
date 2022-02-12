@@ -31,6 +31,7 @@ src/code_expression.cpp
 src/body.cpp
 src/executor.cpp
 src/return_exception.cpp
+src/inbuilt_functions.cpp
 )
 
 target_include_directories(kvm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

@@ -1,5 +1,6 @@
 #include "executor.h"
 #include "return_exception.h"
+#include "inbuilt_functions.h"
 
 Executor::Executor(){}
 int Executor::exec(){
@@ -27,7 +28,7 @@ int Executor::exec(){
 }
 void Executor::exec_instruction(Instruction *instruction){
 	if(auto ptr=dynamic_cast<Expression*>(instruction)){
-		cout<<exec_expression(ptr)<<endl;
+		exec_expression(ptr);
 	} else if(auto ptr=dynamic_cast<Block*>(instruction)){
 		exec_block(ptr);
 	} else if(auto ptr=dynamic_cast<If*>(instruction)){
@@ -131,8 +132,6 @@ int Executor::exec_bin(BinOperator *bin){
 			cout<<"bin operator =/X=: variable is not exist"<<endl;
 			return 0;
 		}
-		int left=current_context->GetValueInChain(name);
-		int right=exec_expression(bin->right.get());
 		if(operation=="="){
 			return_value=right;
 		} else if(operation=="+="){
@@ -260,10 +259,26 @@ int Executor::exec_variable(VariableName *variable){
 }
 int Executor::exec_fcall(FunctionCall *fcall){
 	int return_value=0;
+	vector<int> argument_values;
+	for(int i=0;i<fcall->signature.arg_n;i++){
+		argument_values.push_back(exec_expression(fcall->arguments[i].get()));
+	}
 	shared_ptr<Context> arguments_context=make_shared<Context>();
-	const vector<string> &arg_names=program.functions[fcall->signature].argument_names;
-	for(int i=0;i<arg_names.size();i++){
-		arguments_context->SetValueInContext(arg_names[i],exec_expression(fcall->arguments[i].get()));
+	auto iter=program.functions.find(fcall->signature);
+	if(iter==program.functions.end()){
+		if(fcall->signature==function_write){
+			return exec_write(argument_values);
+		}
+		if(fcall->signature==function_read){
+			return exec_read(argument_values);
+		}
+		cout<<"unknown inbuilt function "<<fcall->signature.func_name<<"("
+		<<fcall->signature.arg_n<<endl;
+		return 0;
+	}
+	const vector<string> &arg_names=(*iter).second.argument_names;
+	for(int i=0;i<fcall->signature.arg_n;i++){
+		arguments_context->SetValueInContext(arg_names[i],argument_values[i]);
 	}
 	arguments_context->SetParentContext(global_context);
 	shared_ptr<Context> old_current_context=current_context;
