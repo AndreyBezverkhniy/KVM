@@ -41,12 +41,18 @@ class Lexeme{
 private:
 	LexemeState state;
 	LexemeStatus status;
+	int line,column;
+	const string * module;
 public:
 	string str;
 	LexemeType type;
 	Lexeme();
 	Lexeme(string str);
 	Lexeme(char* str);
+	void SetFilePositionLexeme(const string * str,int line,int column);
+	const string& GetFile() const;
+	int GetLine() const;
+	int GetColumn() const;
 	void Clean();
 	bool AddChar(char ch);
 	bool IsEmpty() const;

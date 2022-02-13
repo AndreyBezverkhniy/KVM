@@ -1,10 +1,28 @@
-check catching arguments repeatition error
-check catching global repeatition error
-catch var repeatition error
-function signature repetition error
-catch non-exist variable get access try error
-catch non-exist variable set access try error
+try-catch compile-time errors
+
+try-catch run-time errors
+
 catch unary operand inc/dec is not variable error
 catch =,X= left operand is not variable error
-catch call of non-existing function error
+
+class code
+	code::modules
+	program/file reads
+
+code::stack<string> current_module
+fileread save module file path of lexeme
 import chain working dir path
+	GetDirOfCurrentModule
+	ImportingModulePathCalculate
+
+code::vector<vector<tring>> context_declarations
+variable declaration repetition error
+	check catching arguments repeatition error
+	check catching global repeatition error
+	catch var repeatition error
+catch non-exist variable get access try error
+catch non-exist variable set access try error
+
+function signature repetition error
+	code::vector<FunctionSignature> functions
+catch call of non-existing function error

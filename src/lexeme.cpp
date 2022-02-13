@@ -9,6 +9,20 @@ Lexeme::Lexeme(string str){
 Lexeme::Lexeme(char* str){
 	this->str=string(str);
 }
+void Lexeme::SetFilePositionLexeme(const string * str,int line,int column){
+	this->module=str;
+	this->line=line;
+	this->column=column;
+}
+const string& Lexeme::GetFile() const {
+	return *module;
+}
+int Lexeme::GetLine() const {
+	return line;
+}
+int Lexeme::GetColumn() const {
+	return column;
+}
 void Lexeme::Clean(){
 	type=EMPTY;
 	str="";
