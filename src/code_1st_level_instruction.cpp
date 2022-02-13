@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "function_signature.h"
 #include "block.h"
+#include "inbuilt_functions.h"
 #include <memory>
 
 bool Read1stLevelInstruction(const vector<Lexeme> &vec,int &index,
@@ -97,6 +98,11 @@ bool ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index,Program &progr
 		return false;
 	}
 	signature.arg_n=body.argument_names.size();
+	if(signature==function_read || signature==function_write){
+		cout<<"redeclaration of inbuilt function "<<signature.func_name
+		<<"("<<signature.arg_n<<")"<<endl;
+		return false;
+	}
 	for(auto pair:program.functions){
 		auto func_signature=pair.first;
 		if(func_signature.func_name==signature.func_name && (signature.func_name=="main" ||

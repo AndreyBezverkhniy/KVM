@@ -2,7 +2,6 @@ check catching arguments repeatition error
 check catching global repeatition error
 catch var repeatition error
 function signature repetition error
-function forbidden inbuilt signature error
 catch non-exist variable get access try error
 catch non-exist variable set access try error
 catch unary operand inc/dec is not variable error

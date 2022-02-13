@@ -22,6 +22,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	string text=" \
+function write(){} \
 function main(){ \
 	var x=read(); \
 	write(x); \
