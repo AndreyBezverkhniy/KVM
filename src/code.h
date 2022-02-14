@@ -20,6 +20,7 @@
 #include "function_call.h"
 #include "left_unary_operator.h"
 #include "right_unary_operator.h"
+#include "compile_time_error_exception.h"
 
 using namespace std;
 

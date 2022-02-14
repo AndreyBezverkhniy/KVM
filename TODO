@@ -3,8 +3,6 @@ runtime errors to separate header
 catch unary operand inc/dec is not variable error
 catch =,X= left operand is not variable error
 
-try-catch compile-time errors
-
 code::stack<string> current_module
 fileread save module file path of lexeme
 import chain working dir path

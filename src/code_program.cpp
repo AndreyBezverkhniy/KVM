@@ -46,11 +46,23 @@ bool Code::ReadFile(istream &is,vector<Lexeme> &vec){
 }
 bool Code::ReadProgram(string module_path){
 	modules=set<string>();
-	return ReadProgramModule(module_path);
+	bool result=false;
+	try{
+		result=ReadProgramModule(module_path);
+	} catch (CompileTimeErrorException e){
+		cout<<e.what()<<endl;
+	}
+	return result;
 }
 bool Code::ReadProgram(istream &is){
 	modules=set<string>();
-	return ReadProgramModule(is);
+	bool result=false;
+	try{
+		result=ReadProgramModule(is);
+	} catch (CompileTimeErrorException e){
+		cout<<e.what()<<endl;
+	}
+	return result;
 }
 bool Code::ReadProgramModule(string module_path){
 	ifstream fin;
