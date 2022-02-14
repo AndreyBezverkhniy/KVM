@@ -1,6 +1,3 @@
-runtime error place
-	executor::instruction position
-	vector<pair<string,int>> block_stack_trace(fname/block,instruction_number);
 existing run-time errors
 
 catch unary operand inc/dec is not variable error

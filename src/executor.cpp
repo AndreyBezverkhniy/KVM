@@ -27,6 +27,10 @@ int Executor::exec(){
 		exec_fcall(main_call.get());
 	} catch (RunTimeErrorException e){
 		cout<<"KRTE: "<<e.what()<<endl;
+		cout<<"instruction stack trace:"<<endl;
+		for(auto place:instruction_stack_trace){
+			cout<<"\t"<<place.first<<":"<<place.second<<endl;
+		}
 	}
 	return 0;
 }
@@ -34,7 +38,7 @@ void Executor::exec_instruction(Instruction *instruction){
 	if(auto ptr=dynamic_cast<Expression*>(instruction)){
 		exec_expression(ptr);
 	} else if(auto ptr=dynamic_cast<Block*>(instruction)){
-		exec_block(ptr);
+		exec_block(ptr,"{block}");
 	} else if(auto ptr=dynamic_cast<If*>(instruction)){
 		exec_if(ptr);
 	} else if(auto ptr=dynamic_cast<While*>(instruction)){
@@ -47,16 +51,20 @@ void Executor::exec_instruction(Instruction *instruction){
 		cout<<"instruction: no handler"<<endl;
 	}
 }
-void Executor::exec_block(Block *block){
+void Executor::exec_block(Block *block,string block_name){
+	instruction_stack_trace.push_back(pair<string,int>(block_name,0));
 	shared_ptr<Context> block_context=make_shared<Context>();
 	block_context->SetParentContext(current_context);
 	current_context=block_context;
 	// PrintContextChain(current_context);
 	// handle block
+	int trace_index=instruction_stack_trace.size()-1;
 	for(shared_ptr<Instruction> instruction:block->instructions){
+		instruction_stack_trace[trace_index].second++;
 		exec_instruction(instruction.get());
 	}
 	current_context=current_context->GetParentContext();
+	instruction_stack_trace.pop_back();
 }
 void Executor::exec_if(If *ifI){
 	int condition=exec_expression(ifI->condition.get());
@@ -276,9 +284,10 @@ int Executor::exec_fcall(FunctionCall *fcall){
 		if(fcall->signature==function_read){
 			return exec_read(argument_values);
 		}
-		cout<<"unknown inbuilt function "<<fcall->signature.func_name<<"("
-		<<fcall->signature.arg_n<<endl;
-		return 0;
+		string message;
+		message="unknown inbuilt function "+fcall->signature.func_name+"("
+		+to_string(fcall->signature.arg_n);
+		throw RunTimeErrorException(message);
 	}
 	const vector<string> &arg_names=(*iter).second.argument_names;
 	for(int i=0;i<fcall->signature.arg_n;i++){
@@ -288,7 +297,9 @@ int Executor::exec_fcall(FunctionCall *fcall){
 	shared_ptr<Context> old_current_context=current_context;
 	current_context=arguments_context;
 	try{
-		exec_block(program.functions[fcall->signature].block.get());
+		string block_name;
+		block_name=fcall->signature.func_name+"-"+to_string(fcall->signature.arg_n);
+		exec_block(program.functions[fcall->signature].block.get(),block_name);
 	} catch(ReturnException e){
 		return_value=e.GetValue();
 	}

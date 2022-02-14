@@ -22,10 +22,25 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	string text=" \
-function write(){} \
+function f(a,b,c){ \
+	var x=0; \
+	write(0,0,0); \
+	x++; \
+} \
+function f(){} \
 function main(){ \
-	var x=read(); \
-	write(x); \
+	var a; \
+	{ \
+		a; \
+		a; \
+		{ \
+			a; \
+			f(); \
+			{} \
+			f(0,0,0); \
+		} \
+		a; \
+	} \
 } \
 ";
 

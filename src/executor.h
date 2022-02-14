@@ -15,6 +15,7 @@
 #include "return.h"
 #include "if.h"
 #include "while.h"
+#include <string>
 
 using namespace std;
 
@@ -23,10 +24,11 @@ public:
 	Program program;
 	shared_ptr<Context> current_context;
 	shared_ptr<Context> global_context;
+	vector<pair<string,int>> instruction_stack_trace;
 	Executor();
 	int exec();
 	void exec_instruction(Instruction *instruction);
-	void exec_block(Block *block);
+	void exec_block(Block *block,string block_name);
 	void exec_if(If *ifI);
 	void exec_while(While *whileI);
 	void exec_return(Return *ret);
