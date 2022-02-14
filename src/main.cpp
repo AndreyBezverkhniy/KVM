@@ -47,7 +47,8 @@ function main(){ \
 	cout<<text<<endl;
 	istringstream is(text);
 	Executor executor;
-	if(!ReadProgram(is,executor.program)){
+	Code code(executor.program);
+	if(!code.ReadProgram(is)){
 		cout<<endl<<"ReadProgram Failed"<<endl;
 	}
 	executor.program.Save(cout);

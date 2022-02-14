@@ -1,8 +1,8 @@
-#include "code_instruction.h"
-#include "code_expression.h"
+#include "code.h"
 #include "utils.h"
 
-bool ReadInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Instruction> &instruction){
+bool Code::ReadInstruction(const vector<Lexeme> &vec,int &index,
+shared_ptr<Instruction> &instruction){
     shared_ptr<Block> block;
     if(ReadBlock(vec,index,block)){
         instruction=block;
@@ -28,7 +28,8 @@ bool ReadInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Instruction
 	index=new_index;
 	return true;
 }
-bool ReadSemicoloningInstruction(const vector<Lexeme> &vec,int &index,shared_ptr<Instruction> &instruction){
+bool Code::ReadSemicoloningInstruction(const vector<Lexeme> &vec,int &index,
+shared_ptr<Instruction> &instruction){
     shared_ptr<Var> var;
     if(ReadVar(vec,index,var)){
         instruction=var;
@@ -46,7 +47,7 @@ bool ReadSemicoloningInstruction(const vector<Lexeme> &vec,int &index,shared_ptr
     }
     return false;
 }
-bool ReadBlock(const vector<Lexeme> &vec,int &index,shared_ptr<Block> &block){
+bool Code::ReadBlock(const vector<Lexeme> &vec,int &index,shared_ptr<Block> &block){
     int new_index=index;
     if(vec[new_index++]!="{"){
         return false;
@@ -63,7 +64,7 @@ bool ReadBlock(const vector<Lexeme> &vec,int &index,shared_ptr<Block> &block){
     block=ptr;
     return true;
 }
-bool ReadVar(const vector<Lexeme> &vec,int &index,shared_ptr<Var> &var){
+bool Code::ReadVar(const vector<Lexeme> &vec,int &index,shared_ptr<Var> &var){
 	int new_index=index;
 	if(vec[new_index++]!="var"){
 		return false;
@@ -92,7 +93,7 @@ bool ReadVar(const vector<Lexeme> &vec,int &index,shared_ptr<Var> &var){
 	index=new_index;
 	return true;
 }
-bool ReadReturn(const vector<Lexeme> &vec,int &index,shared_ptr<Return> &ret){
+bool Code::ReadReturn(const vector<Lexeme> &vec,int &index,shared_ptr<Return> &ret){
 	int new_index=index;
 	if(vec[new_index++]!="return"){
 		return false;
@@ -106,7 +107,7 @@ bool ReadReturn(const vector<Lexeme> &vec,int &index,shared_ptr<Return> &ret){
 	index=new_index;
 	return true;
 }
-bool ReadWhile(const vector<Lexeme> &vec,int &index,shared_ptr<While> &whileI){
+bool Code::ReadWhile(const vector<Lexeme> &vec,int &index,shared_ptr<While> &whileI){
 	int new_index=index;
 	if(vec[new_index++]!="while"){
 		return false;
@@ -131,7 +132,7 @@ bool ReadWhile(const vector<Lexeme> &vec,int &index,shared_ptr<While> &whileI){
 	index=new_index;
 	return true;
 }
-bool ReadIf(const vector<Lexeme> &vec,int &index,shared_ptr<If> &ifI){
+bool Code::ReadIf(const vector<Lexeme> &vec,int &index,shared_ptr<If> &ifI){
 	int new_index=index;
 	if(vec[new_index++]!="if"){
 		return false;

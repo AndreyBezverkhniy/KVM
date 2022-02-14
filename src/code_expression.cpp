@@ -1,10 +1,9 @@
-#include "code_expression.h"
+#include "code.h"
 #include "utils.h"
 #include <stack>
-#include "expression.h"
 #include <algorithm>
 
-bool ReadExpression(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &expression){
+bool Code::ReadExpression(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &expression){
     int new_index=index;
     vector<shared_ptr<Expression>> ops;
     vector<string> bins;
@@ -27,7 +26,7 @@ bool ReadExpression(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> 
     index=new_index;
     return true;
 }
-bool ReadBinOperator(const vector<Lexeme> &vec,int &index,string &bin){
+bool Code::ReadBinOperator(const vector<Lexeme> &vec,int &index,string &bin){
 	if(!IsBinOperator(vec[index].str)){
 		return false;
 	}
@@ -35,7 +34,7 @@ bool ReadBinOperator(const vector<Lexeme> &vec,int &index,string &bin){
 	index++;
 	return true;
 }
-bool ReadOperand(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &operand){
+bool Code::ReadOperand(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &operand){
 	int new_index=index;
 	vector<string> lunars,runars;
 	shared_ptr<Expression> simple_expression;
@@ -68,7 +67,7 @@ bool ReadOperand(const vector<Lexeme> &vec,int &index,shared_ptr<Expression> &op
 	index=new_index;
 	return true;
 }
-bool ReadLeftUnaryOperator(const vector<Lexeme> &vec,int &index,string &lunar){
+bool Code::ReadLeftUnaryOperator(const vector<Lexeme> &vec,int &index,string &lunar){
 	if(!IsLeftUnaryOperator(vec[index].str)){
 		return false;
 	}
@@ -76,7 +75,7 @@ bool ReadLeftUnaryOperator(const vector<Lexeme> &vec,int &index,string &lunar){
 	index++;
 	return true;
 }
-bool ReadRightUnaryOperator(const vector<Lexeme> &vec,int &index,string &runar){
+bool Code::ReadRightUnaryOperator(const vector<Lexeme> &vec,int &index,string &runar){
 	if(!IsRightUnaryOperator(vec[index].str)){
 		return false;
 	}
@@ -84,7 +83,7 @@ bool ReadRightUnaryOperator(const vector<Lexeme> &vec,int &index,string &runar){
 	index++;
 	return true;
 }
-bool ReadSimpleExpression(const vector<Lexeme> &vec,int &index,
+bool Code::ReadSimpleExpression(const vector<Lexeme> &vec,int &index,
 shared_ptr<Expression> &simple_expression){
 	int new_index=index;
 	shared_ptr<Expression> parehthesized;
@@ -113,7 +112,7 @@ shared_ptr<Expression> &simple_expression){
 	}
 	return false;
 }
-bool ReadParenthesizedExpression(const vector<Lexeme> &vec,int &index,
+bool Code::ReadParenthesizedExpression(const vector<Lexeme> &vec,int &index,
 shared_ptr<Expression> &parenthesized){
 	int new_index=index;
 	if(vec[new_index++].str!="("){
@@ -130,7 +129,7 @@ shared_ptr<Expression> &parenthesized){
 	parenthesized=expression;
 	return true;
 }
-bool ReadNumber(const vector<Lexeme> &vec,int &index,shared_ptr<Number> &number){
+bool Code::ReadNumber(const vector<Lexeme> &vec,int &index,shared_ptr<Number> &number){
 	if(!IsNumber(vec[index].str)){
 		return false;
 	}
@@ -138,7 +137,7 @@ bool ReadNumber(const vector<Lexeme> &vec,int &index,shared_ptr<Number> &number)
 	index=index+1;
 	return true;
 }
-bool ReadFunctionCall(const vector<Lexeme> &vec,int &index,shared_ptr<FunctionCall> &fcall){
+bool Code::ReadFunctionCall(const vector<Lexeme> &vec,int &index,shared_ptr<FunctionCall> &fcall){
 	int new_index=index;
 	string fname;
 	if(!IsIdentifier((fname=vec[new_index++].str))){
@@ -170,7 +169,7 @@ bool ReadFunctionCall(const vector<Lexeme> &vec,int &index,shared_ptr<FunctionCa
 	index=new_index;
 	return true;
 }
-bool ReadVariableName(const vector<Lexeme> &vec,int &index,shared_ptr<VariableName> &variable){
+bool Code::ReadVariableName(const vector<Lexeme> &vec,int &index,shared_ptr<VariableName> &variable){
 	if(!IsIdentifier(vec[index].str)){
 		return false;
 	}
@@ -178,7 +177,7 @@ bool ReadVariableName(const vector<Lexeme> &vec,int &index,shared_ptr<VariableNa
 	index=index+1;
 	return true;
 }
-int GetBinOperandPriority(string bin){
+int Code::GetBinOperandPriority(string bin){
 	if(IsRightAssociativeBinOperator(bin)){
 		return 1;
 	}
@@ -199,11 +198,11 @@ int GetBinOperandPriority(string bin){
 	}
 	return 0;
 }
-bool IsRightAssociativeBinOperator(string bin){
+bool Code::IsRightAssociativeBinOperator(string bin){
 	return bin=="=" || bin=="+=" || bin=="-=" ||
 	bin=="*=" || bin=="/=" || bin=="%=";
 }
-bool BinOrder(string binl,string binr){
+bool Code::BinOrder(string binl,string binr){
 	// true: binl<binr
 	// false: binl>binr
 	if(GetBinOperandPriority(binl)>GetBinOperandPriority(binr)){
@@ -214,7 +213,8 @@ bool BinOrder(string binl,string binr){
 	}
 	return !IsRightAssociativeBinOperator(binl);
 }
-shared_ptr<Expression> BuildExpression(vector<shared_ptr<Expression>> &ops,vector<string> &bins){
+shared_ptr<Expression> Code::BuildExpression(vector<shared_ptr<Expression>> &ops,
+vector<string> &bins){
 	stack<pair<shared_ptr<Expression>,string>> left;
 	stack<pair<string,shared_ptr<Expression>>> right;
 	shared_ptr<Expression> operand=ops[0];
@@ -247,20 +247,20 @@ shared_ptr<Expression> BuildExpression(vector<shared_ptr<Expression>> &ops,vecto
 	}
 	return operand;
 }
-bool IsBinOperator(string str){
+bool Code::IsBinOperator(string str){
 	vector<string> values{
 		"+","-","*","/","%","=","<",">","==","!=",
 		"<=",">=","+=","-=","*=","/=","%=","&&","||"
 	};
 	return find(values.begin(),values.end(),str)!=values.end();
 }
-bool IsLeftUnaryOperator(string str){
+bool Code::IsLeftUnaryOperator(string str){
 	vector<const char*> values{
 		"+","-","++","--","!"
 	};
 	return find(values.begin(),values.end(),str)!=values.end();
 }
-bool IsRightUnaryOperator(string str){
+bool Code::IsRightUnaryOperator(string str){
 	vector<const char*> values{
 		"++","--"
 	};

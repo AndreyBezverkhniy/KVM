@@ -1,9 +1,8 @@
 #include "code.h"
-#include "code_1st_level_instruction.h"
 #include <fstream>
-#include <set>
 
-bool ReadFile(string path,vector<Lexeme> &vec){
+Code::Code(Program &program):program(program){}
+bool Code::ReadFile(string path,vector<Lexeme> &vec){
     ifstream fin;
 	fin.open(path,ios_base::binary);
 	if(!fin.is_open()){
@@ -14,7 +13,7 @@ bool ReadFile(string path,vector<Lexeme> &vec){
 	fin.close();
 	return success;
 }
-bool ReadFile(istream &is,vector<Lexeme> &vec){
+bool Code::ReadFile(istream &is,vector<Lexeme> &vec){
 	Lexeme lexeme;
 	int ch;
 	while((ch=is.get(),is.good())){
@@ -45,25 +44,26 @@ bool ReadFile(istream &is,vector<Lexeme> &vec){
 	vec.push_back(lexeme);
     return true;
 }
-bool ReadProgram(string module_path,Program &program){
-	set<string> modules;
-	return ReadProgramModule(module_path,program,modules);
+bool Code::ReadProgram(string module_path){
+	modules=set<string>();
+	return ReadProgramModule(module_path);
 }
-bool ReadProgram(istream &is,Program &program){
-	return ReadProgramModule(is,program,set<string>());
+bool Code::ReadProgram(istream &is){
+	modules=set<string>();
+	return ReadProgramModule(is);
 }
-bool ReadProgramModule(string module_path,Program &program,set<string> &modules){
+bool Code::ReadProgramModule(string module_path){
 	ifstream fin;
 	fin.open(module_path,ios_base::binary);
 	if(!fin.is_open()){
 		return false;
 	}
 	modules.insert(module_path);
-	bool success=ReadProgramModule(fin,program,modules);
+	bool success=ReadProgramModule(fin);
 	fin.close();
 	return success;
 }
-bool ReadProgramModule(istream &is,Program &program,set<string> modules){
+bool Code::ReadProgramModule(istream &is){
 	vector<Lexeme> vec;
 	if(!ReadFile(is,vec)){
 		return false;
@@ -75,7 +75,7 @@ bool ReadProgramModule(istream &is,Program &program,set<string> modules){
 	int index=0;
 	Lexeme empty;
 	while(vec[index]!=empty){
-		if(!Read1stLevelInstruction(vec,index,program,modules)){
+		if(!Read1stLevelInstruction(vec,index)){
 			return false;
 		}
 	}

@@ -1,38 +1,32 @@
-#include "code_1st_level_instruction.h"
 #include "code.h"
-#include "code_instruction.h"
 #include "utils.h"
-#include "function_signature.h"
-#include "block.h"
 #include "inbuilt_functions.h"
-#include <memory>
 
-bool Read1stLevelInstruction(const vector<Lexeme> &vec,int &index,
-Program &program,set<string> &modules){
-	if(ReadImport(vec,index,program,modules)){
+bool Code::Read1stLevelInstruction(const vector<Lexeme> &vec,int &index){
+	if(ReadImport(vec,index)){
 		return true;
 	}
-	if(ReadGlobal(vec,index,program)){
+	if(ReadGlobal(vec,index)){
 		return true;
 	}
-	if(ReadFunctionDeclaration(vec,index,program)){
+	if(ReadFunctionDeclaration(vec,index)){
 		return true;
 	}
 	return false;
 }
-bool ReadImport(const vector<Lexeme> &vec,int &index,Program &program,set<string> &modules){
+bool Code::ReadImport(const vector<Lexeme> &vec,int &index){
 	if(vec[index]=="import" && vec[index+1].type==STRING && vec[index+2]==";"){
 		string module_path=vec[index+1].str;
 		index+=3;
 		if(modules.find(module_path)==modules.end()){
-			return ReadProgramModule(module_path,program,modules);
+			return ReadProgramModule(module_path);
 		} else {
 			return true;
 		}
 	}
 	return false;
 }
-bool ReadGlobal(const vector<Lexeme> &vec,int &index,Program &program){
+bool Code::ReadGlobal(const vector<Lexeme> &vec,int &index){
 	int new_index=index;
 	if(vec[new_index++]!="global"){
 		return false;
@@ -65,7 +59,7 @@ bool ReadGlobal(const vector<Lexeme> &vec,int &index,Program &program){
 	index=new_index;
 	return true;
 }
-bool ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index,Program &program){
+bool Code::ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index){
 	int new_index=index;
 	if(vec[new_index++]!="function"){
 		return false;

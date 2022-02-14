@@ -23,7 +23,7 @@ src/function_call.cpp
 src/return.cpp
 src/while.cpp
 src/if.cpp
-src/code.cpp
+src/code_program.cpp
 src/lexeme.cpp
 src/code_1st_level_instruction.cpp
 src/code_instruction.cpp
