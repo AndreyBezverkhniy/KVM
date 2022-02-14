@@ -99,9 +99,11 @@ bool Code::ReadFunctionDeclaration(const vector<Lexeme> &vec,int &index){
 	}
 	for(auto pair:program.functions){
 		auto func_signature=pair.first;
-		if(func_signature.func_name==signature.func_name && (signature.func_name=="main" ||
-		func_signature.arg_n==signature.arg_n)){
-			return false;
+		if(signature==func_signature){
+			throw CompileTimeErrorException("function redeclaration",vec[index+1]);
+		}
+		if(signature.func_name=="main" && func_signature.func_name=="main"){
+			throw CompileTimeErrorException("another main function declaration",vec[index+1]);
 		}
 	}
 	shared_ptr<Block> block;

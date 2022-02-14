@@ -17,6 +17,6 @@ variable declaration repetition error
 catch non-exist variable get access try error
 catch non-exist variable set access try error
 
-function signature repetition error
+*function signature repetition error
 	code::vector<FunctionSignature> functions
 catch call of non-existing function error
