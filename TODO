@@ -1,6 +1,7 @@
-try-catch compile-time errors
-
-try-catch run-time errors
+runtime error place
+	executor::instruction position
+	vector<pair<string,int>> block_stack_trace(fname/block,instruction_number);
+existing run-time errors
 
 catch unary operand inc/dec is not variable error
 catch =,X= left operand is not variable error
@@ -8,6 +9,7 @@ catch =,X= left operand is not variable error
 class code
 	code::modules
 	program/file reads
+try-catch compile-time errors
 
 code::stack<string> current_module
 fileread save module file path of lexeme

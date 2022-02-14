@@ -1,29 +1,33 @@
 #include "executor.h"
 #include "return_exception.h"
 #include "inbuilt_functions.h"
+#include "run_time_error_exception.h"
 
 Executor::Executor(){}
 int Executor::exec(){
-	bool main_exists=false;
-	FunctionSignature main_signature;
-	for(auto key_value:program.functions){
-		if(key_value.first.func_name=="main"){
-			main_signature=key_value.first;
-			main_exists=true;
+	try{
+		bool main_exists=false;
+		FunctionSignature main_signature;
+		for(auto key_value:program.functions){
+			if(key_value.first.func_name=="main"){
+				main_signature=key_value.first;
+				main_exists=true;
+			}
 		}
+		if(!main_exists){
+			throw RunTimeErrorException("main function has no place to be");
+		}
+		shared_ptr<FunctionCall> main_call=make_shared<FunctionCall>();
+		main_call->signature=main_signature;
+		for(int i=0;i<main_signature.arg_n;i++){
+			main_call->arguments.push_back(make_shared<Number>(0));
+		}
+		global_context=make_shared<Context>(program.global);
+		current_context=global_context;
+		exec_fcall(main_call.get());
+	} catch (RunTimeErrorException e){
+		cout<<"KRTE: "<<e.what()<<endl;
 	}
-	if(!main_exists){
-		cout<<"main function has no place to be"<<endl;
-		return -1;
-	}
-	shared_ptr<FunctionCall> main_call=make_shared<FunctionCall>();
-	main_call->signature=main_signature;
-	for(int i=0;i<main_signature.arg_n;i++){
-		main_call->arguments.push_back(make_shared<Number>(0));
-	}
-	global_context=make_shared<Context>(program.global);
-	current_context=global_context;
-	exec_fcall(main_call.get());
 	return 0;
 }
 void Executor::exec_instruction(Instruction *instruction){
