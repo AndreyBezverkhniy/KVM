@@ -3,8 +3,6 @@ runtime errors to separate header
 catch unary operand inc/dec is not variable error
 catch =,X= left operand is not variable error
 
-code::stack<string> current_module
-fileread save module file path of lexeme
 import chain working dir path
 	GetDirOfCurrentModule
 	ImportingModulePathCalculate
@@ -17,6 +15,4 @@ variable declaration repetition error
 catch non-exist variable get access try error
 catch non-exist variable set access try error
 
-*function signature repetition error
-	code::vector<FunctionSignature> functions
 catch call of non-existing function error

@@ -32,7 +32,7 @@ function main(){ \
 	istringstream is(text);
 	Executor executor;
 	Code code(executor.program);
-	if(!code.ReadProgram(is)){
+	if(!code.ReadProgram("s1.ksc")){
 		cout<<endl<<"ReadProgram Failed"<<endl;
 	}
 	executor.program.Save(cout);

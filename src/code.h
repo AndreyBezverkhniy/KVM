@@ -4,6 +4,7 @@
 #include <string>
 #include <set>
 #include <memory>
+#include <stack>
 #include "lexeme.h"
 #include "program.h"
 #include "instruction.h"
@@ -28,10 +29,10 @@ class Code{
 public:
 	Program &program;
 	set<string> modules;
+	stack<string> current_module_path;
 
 	// program
 	Code(Program &program);
-	bool ReadFile(string path,vector<Lexeme> &vec);
 	bool ReadFile(istream &is,vector<Lexeme> &vec);
 	bool ReadProgram(string module_path);
 	bool ReadProgram(istream &is);

@@ -2,20 +2,12 @@
 #include <fstream>
 
 Code::Code(Program &program):program(program){}
-bool Code::ReadFile(string path,vector<Lexeme> &vec){
-    ifstream fin;
-	fin.open(path,ios_base::binary);
-	if(!fin.is_open()){
-		return false;
-	}
-	bool success;
-	success=ReadFile(fin,vec);
-	fin.close();
-	return success;
-}
 bool Code::ReadFile(istream &is,vector<Lexeme> &vec){
 	Lexeme lexeme;
 	int ch;
+	int line=1,column=1;
+	string *file=&current_module_path.top();
+	lexeme.SetFilePositionLexeme(file,line,column);
 	while((ch=is.get(),is.good())){
 		if(!lexeme.AddChar(ch)){
 			if(lexeme.IsEmpty() || !lexeme.IsReady()){
@@ -29,6 +21,13 @@ bool Code::ReadFile(istream &is,vector<Lexeme> &vec){
 			if(!lexeme.AddChar(ch)){
 				return false;
 			}
+			lexeme.SetFilePositionLexeme(file,line,column);
+		}
+		if(ch=='\n'){
+			line++;
+			column=1;
+		} else {
+			column++;
 		}
 	}
 	if(!lexeme.IsEmpty()){
@@ -41,6 +40,7 @@ bool Code::ReadFile(istream &is,vector<Lexeme> &vec){
 		}
 	}
 	lexeme.Clean();
+	line++;
 	vec.push_back(lexeme);
     return true;
 }
@@ -50,17 +50,19 @@ bool Code::ReadProgram(string module_path){
 	try{
 		result=ReadProgramModule(module_path);
 	} catch (CompileTimeErrorException e){
-		cout<<e.what()<<endl;
+		cout<<"KCTE: "<<e.what()<<endl;
 	}
 	return result;
 }
 bool Code::ReadProgram(istream &is){
 	modules=set<string>();
+	current_module_path=stack<string>();
+	current_module_path.push("");
 	bool result=false;
 	try{
 		result=ReadProgramModule(is);
 	} catch (CompileTimeErrorException e){
-		cout<<e.what()<<endl;
+		cout<<"KCTE: "<<e.what()<<endl;
 	}
 	return result;
 }
@@ -71,7 +73,9 @@ bool Code::ReadProgramModule(string module_path){
 		return false;
 	}
 	modules.insert(module_path);
+	current_module_path.push(module_path);
 	bool success=ReadProgramModule(fin);
+	current_module_path.pop();
 	fin.close();
 	return success;
 }
