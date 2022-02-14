@@ -27,9 +27,11 @@ int Executor::exec(){
 		exec_fcall(main_call.get());
 	} catch (RunTimeErrorException e){
 		cout<<"KRTE: "<<e.what()<<endl;
-		cout<<"instruction stack trace:"<<endl;
-		for(auto place:instruction_stack_trace){
-			cout<<"\t"<<place.first<<":"<<place.second<<endl;
+		if(instruction_stack_trace.size()>0){
+			cout<<"instruction stack trace:"<<endl;
+			for(auto place:instruction_stack_trace){
+				cout<<"\t"<<place.first<<":"<<place.second<<endl;
+			}
 		}
 	}
 	return 0;
@@ -48,7 +50,7 @@ void Executor::exec_instruction(Instruction *instruction){
 	} else if(auto ptr=dynamic_cast<Var*>(instruction)){
 		exec_var(ptr);
 	} else {
-		cout<<"instruction: no handler"<<endl;
+		throw RunTimeErrorException("unknown instruction");
 	}
 }
 void Executor::exec_block(Block *block,string block_name){
@@ -56,8 +58,6 @@ void Executor::exec_block(Block *block,string block_name){
 	shared_ptr<Context> block_context=make_shared<Context>();
 	block_context->SetParentContext(current_context);
 	current_context=block_context;
-	// PrintContextChain(current_context);
-	// handle block
 	int trace_index=instruction_stack_trace.size()-1;
 	for(shared_ptr<Instruction> instruction:block->instructions){
 		instruction_stack_trace[trace_index].second++;
@@ -98,7 +98,7 @@ int Executor::exec_expression(Expression *expression){
 	if(auto ptr=dynamic_cast<BinOperator*>(expression)){
 		return exec_bin(ptr);
 	}
-	cout<<"incorrect expression"<<endl;
+	throw RunTimeErrorException("incorrect expression");
 }
 int Executor::exec_bin(BinOperator *bin){
 	int return_value=0;
@@ -141,8 +141,7 @@ int Executor::exec_bin(BinOperator *bin){
 		}
 		string name=variable->name;
 		if(!current_context->Have(name)){
-			cout<<"bin operator =/X=: variable is not exist"<<endl;
-			return 0;
+			throw RunTimeErrorException("bin operator =/X=: variable is not exist");
 		}
 		if(operation=="="){
 			return_value=right;
@@ -157,9 +156,11 @@ int Executor::exec_bin(BinOperator *bin){
 		} else if(operation=="%="){
 			return_value=left%right;
 		} else {
-			cout<<"unknown lunary"<<endl;
+			throw RunTimeErrorException("unknown bin");
 		}
 		current_context->SetValueInChain(name,return_value);
+	} else {
+		throw RunTimeErrorException("unknown bin");
 	}
 	return return_value;
 }
@@ -173,7 +174,7 @@ int Executor::exec_operand(Operand *operand){
 	if(auto ptr=dynamic_cast<RightUnaryOperator*>(operand)){
 		return exec_runary(ptr);
 	}
-	cout<<"incorrect operand"<<endl;
+	throw RunTimeErrorException("incorrect operand");
 }
 int Executor::exec_lunary(LeftUnaryOperator *lunar){
 	int return_value;
@@ -181,13 +182,11 @@ int Executor::exec_lunary(LeftUnaryOperator *lunar){
 	if(operation=="++" || operation=="--"){
 		auto variable=dynamic_cast<VariableName*>(lunar->operand.get());
 		if(!variable){
-			cout<<"lunary operator inc/dec: operand is not a variable"<<endl;
-			return 0;
+			throw RunTimeErrorException("lunary operator inc/dec: operand is not a variable");
 		}
 		string name=variable->name;
 		if(!current_context->Have(name)){
-			cout<<"lunary operator inc/dec: variable is not exist"<<endl;
-			return 0;
+			throw RunTimeErrorException("lunary operator inc/dec: variable is not exist");
 		}
 		int old_value=current_context->GetValueInChain(name);
 		if(operation=="++"){
@@ -206,7 +205,7 @@ int Executor::exec_lunary(LeftUnaryOperator *lunar){
 		} else if(operation=="!"){
 			return_value=(return_value?0:1);
 		} else {
-			cout<<"unknown lunary"<<endl;
+			throw RunTimeErrorException("unknown lunary");
 		}
 	}
 	return return_value;
@@ -216,13 +215,11 @@ int Executor::exec_runary(RightUnaryOperator *runar){
 	const string &operation=runar->operation;
 	auto variable=dynamic_cast<VariableName*>(runar->operand.get());
 	if(!variable){
-		cout<<"runary operator inc/dec: operand is not a variable"<<endl;
-		return 0;
+		throw RunTimeErrorException("runary operator inc/dec: operand is not a variable");
 	}
 	string name=variable->name;
 	if(!current_context->Have(name)){
-		cout<<"runary operator inc/dec: variable is not exist"<<endl;
-		return 0;
+		throw RunTimeErrorException("runary operator inc/dec: variable is not exist");
 	}
 	int old_value=current_context->GetValueInChain(name);
 	if(operation=="++"){
@@ -232,7 +229,7 @@ int Executor::exec_runary(RightUnaryOperator *runar){
 		current_context->SetValueInChain(name,old_value-1);
 		return_value=old_value;
 	} else {
-		cout<<"unknown lunary"<<endl;
+		throw RunTimeErrorException("unknown runary");
 	}
 	return return_value;
 }
@@ -246,7 +243,7 @@ int Executor::exec_simple(SimpleExpression *simple){
 	if(auto ptr=dynamic_cast<FunctionCall*>(simple)){
 		return exec_fcall(ptr);
 	}
-	cout<<"incorrect simple"<<endl;
+	throw RunTimeErrorException("incorrect simple");
 }
 int Executor::exec_number(Number *number){
 	return number->n;
@@ -265,7 +262,7 @@ int Executor::exec_variable(VariableName *variable){
 		context=context->GetParentContext();
 	}
 	if(!name_exist){
-		cout<<"try to access variable by unknown name "<<variable->name<<endl;
+		throw RunTimeErrorException("try to access variable by unknown name ");
 	}
 	return value;
 }
@@ -285,7 +282,7 @@ int Executor::exec_fcall(FunctionCall *fcall){
 			return exec_read(argument_values);
 		}
 		string message;
-		message="unknown inbuilt function "+fcall->signature.func_name+"("
+		message="unknown function "+fcall->signature.func_name+"-"
 		+to_string(fcall->signature.arg_n);
 		throw RunTimeErrorException(message);
 	}
